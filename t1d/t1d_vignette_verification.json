@@ -1,0 +1,534 @@
+{
+  "arm_variables": 20,
+  "atoms": 10,
+  "axis_sizes": {
+    "engraftment_microenvironment": 3,
+    "immune_challenge": 4,
+    "model_system": 6,
+    "readout_maturity": 3
+  },
+  "contexts": 216,
+  "corpus_comparison": {
+    "findings": {
+      "R1_0098:O8": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T4_Human_Islet_or_SC_Islet_InVitro",
+        "corpus_n_summary": "not reported",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC6518073",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0116:O1": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T1_Human_Clinical",
+        "corpus_n_summary": "Forty recipients in the cohort",
+        "corpus_source_type": "abstract",
+        "figure_flag_identical": true,
+        "pmcid": null,
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0141:O9": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T1_Human_Clinical",
+        "corpus_n_summary": "n = 5-9 wells from three differentiations (Extended Data Fig. 4 caption, panels e-g)",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC6858874",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0202:O7": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T4_Human_Islet_or_SC_Islet_InVitro",
+        "corpus_n_summary": "n = 5 (five CD59-KO clones, each averaged over three independent repeats; Fig. 3A caption)",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC9214515",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0214:O12": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T3_Humanized_Mouse",
+        "corpus_n_summary": "Figure 4E protein-expression assay n = 3\u20134. Figure 4D CXCL10 secretion assay n is not stated in its caption; do not reuse the 4E denominator for 4D.",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC9481918",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0214:O4": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T3_Humanized_Mouse",
+        "corpus_n_summary": "n = 6 hPi vs n = 6 control mice; 4 targeting gRNAs per gene",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC9481918",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0215:O27": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T4_Human_Islet_or_SC_Islet_InVitro",
+        "corpus_n_summary": "Fig. 1A reports n = 5 for experimental design and Fig. 1B n = 5 paired bulk RNA-seq experiments; scRNA-seq biological sample count for this cell-cluster contrast is not separately specified. The 73,834 integrated cells in Fig. 1G include untreated and IFN\u03b1-exposed cells across all clusters, not independent replicates for this contrast.",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC9473574",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0215:O7": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T4_Human_Islet_or_SC_Islet_InVitro",
+        "corpus_n_summary": "four to seven independent experiments (Fig. 3 caption)",
+        "corpus_source_type": "figure_caption",
+        "figure_flag_identical": true,
+        "pmcid": "PMC9473574",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0340:O2": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T1_Human_Clinical",
+        "corpus_n_summary": "case and control counts for this analysis not stated; PGR has 145,037 sequenced participants (abstract)",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC12594714",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      },
+      "R1_0376:O15": {
+        "arms_exist_in_corpus": true,
+        "corpus_fidelity_tier": "T4_Human_Islet_or_SC_Islet_InVitro",
+        "corpus_n_summary": "scRNA-seq from a single SC-islet differentiation batch",
+        "corpus_source_type": "results_text",
+        "figure_flag_identical": true,
+        "pmcid": "PMC13357543",
+        "pmid_identical": true,
+        "polarity_matches_direction": true,
+        "quote_identical": true,
+        "sample_size_supported": true
+      }
+    },
+    "graph_version": "v19.0.0-R4S4-SOL61-FOLDIN"
+  },
+  "findings": {
+    "R1_0098:O8": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "normoxic_2d_culture",
+        "immune_challenge": "unreconstituted_or_basal",
+        "model_system": "human_sc_or_donor_islet_invitro",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {},
+      "pmid": "27787618",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0098:O8 the endpoint CD55 (DAF) complement regulator expression, hESC-EC vs hESC-PE was reported without a numeric value.",
+      "requires_figure_digitization": true,
+      "sample_size": null,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0116:O1": {
+      "arms": 1,
+      "context": {
+        "engraftment_microenvironment": "vascularized_marginal_mass_graft",
+        "immune_challenge": "immunocompetent_auto_plus_allo_t1d",
+        "model_system": "clinical_t1d_islet_graft",
+        "readout_maturity": "durable_c_peptide_and_insulin_independence"
+      },
+      "contrast_kind": "single_arm",
+      "inadmissible_because": {},
+      "pmid": "29679103",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0116:O1 the endpoint Independent risk factors for failure to achieve insulin independence (multivariate analysis) was reported without a numeric value (n = 40).",
+      "requires_figure_digitization": false,
+      "sample_size": 40,
+      "transfer_class": "DIRECT_MATCH",
+      "unresolved_axes": []
+    },
+    "R1_0141:O9": {
+      "arms": 3,
+      "context": {
+        "engraftment_microenvironment": "normoxic_2d_culture",
+        "immune_challenge": "unreconstituted_or_basal",
+        "model_system": "human_sc_or_donor_islet_invitro",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "multi_arm_joint",
+      "inadmissible_because": {},
+      "pmid": "31676859",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0141:O9 the endpoint Number of INS- and SLC30A8-transcript expressing cells in hiPSC-derived beta-like cells was reported without a numeric value.",
+      "requires_figure_digitization": true,
+      "sample_size": null,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0202:O7": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "normoxic_2d_culture",
+        "immune_challenge": "unreconstituted_or_basal",
+        "model_system": "immortalized_beta_line",
+        "readout_maturity": "functional_gsis_exocytosis"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {
+        "model_system": "is below the floor"
+      },
+      "pmid": "35666870",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0202:O7 the endpoint GSIS in INS-1 cells after CD59 knockout was reported without a numeric value (n = 5).",
+      "requires_figure_digitization": true,
+      "sample_size": 5,
+      "transfer_class": "INADMISSIBLE_TRANSFER",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0214:O12": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "acute_hypoxic_or_inflammatory_stress",
+        "immune_challenge": "cytokine_or_single_effector_invitro",
+        "model_system": "human_sc_or_donor_islet_invitro",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {},
+      "pmid": "36055241",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0214:O12 the endpoint IFN-gamma-induced HLA, CXCL10 and inhibitory protein expression in STAT1 KO (ST1L) SC-islets was reported without a numeric value.",
+      "requires_figure_digitization": true,
+      "sample_size": null,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0214:O4": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "vascularized_marginal_mass_graft",
+        "immune_challenge": "pbmc_allogeneic_reconstituted",
+        "model_system": "humanized_mouse_allograft",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {},
+      "pmid": "36055241",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0214:O4 the endpoint gRNA enrichment in hPi grafts in the whole-genome CRISPR screen was reported without a numeric value (n = 12).",
+      "requires_figure_digitization": true,
+      "sample_size": 12,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0215:O27": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "acute_hypoxic_or_inflammatory_stress",
+        "immune_challenge": "cytokine_or_single_effector_invitro",
+        "model_system": "human_sc_or_donor_islet_invitro",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {},
+      "pmid": "36103539",
+      "primary_pdf_verified": false,
+      "quantity_kind": "relative_change",
+      "rendered_sentence": "In R1_0215:O27 the endpoint BCL2L1 (Bcl-XL) expression in alpha-like versus beta-like IFN-alpha-exposed iPSC-islet cells showed a relative increase of 0.13 log2_fc.",
+      "requires_figure_digitization": false,
+      "sample_size": null,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0215:O7": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "acute_hypoxic_or_inflammatory_stress",
+        "immune_challenge": "cytokine_or_single_effector_invitro",
+        "model_system": "human_sc_or_donor_islet_invitro",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {},
+      "pmid": "36103539",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0215:O7 the endpoint HLA-ABC expression after NLRC5 knockdown in iPSC-derived beta-like cells exposed to IFN-alpha was reported without a numeric value.",
+      "requires_figure_digitization": true,
+      "sample_size": null,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "R1_0340:O2": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "normoxic_2d_culture",
+        "immune_challenge": "unreconstituted_or_basal",
+        "model_system": "adult_population_t2d_genetics",
+        "readout_maturity": "durable_c_peptide_and_insulin_independence"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {
+        "model_system": "has no common upper bound"
+      },
+      "pmid": "41020949",
+      "primary_pdf_verified": false,
+      "quantity_kind": "relative_change",
+      "rendered_sentence": "In R1_0340:O2 the endpoint Type 2 diabetes risk in SLC30A8 LoF heterozygotes (additive model) showed a relative decrease of 37 %.",
+      "requires_figure_digitization": false,
+      "sample_size": null,
+      "transfer_class": "INADMISSIBLE_TRANSFER",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system"
+      ]
+    },
+    "R1_0376:O15": {
+      "arms": 2,
+      "context": {
+        "engraftment_microenvironment": "acute_hypoxic_or_inflammatory_stress",
+        "immune_challenge": "unreconstituted_or_basal",
+        "model_system": "human_sc_or_donor_islet_invitro",
+        "readout_maturity": "transcript_or_surface_marker"
+      },
+      "contrast_kind": "pairwise",
+      "inadmissible_because": {},
+      "pmid": "42120510",
+      "primary_pdf_verified": false,
+      "quantity_kind": "missing_numeric",
+      "rendered_sentence": "In R1_0376:O15 the endpoint TXNIP in SC-beta cells under hypoxia was reported without a numeric value.",
+      "requires_figure_digitization": true,
+      "sample_size": null,
+      "transfer_class": "BOUNDED_BRIDGE",
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    }
+  },
+  "model_system_class_toward_target": {
+    "adult_population_t2d_genetics": "INADMISSIBLE_TRANSFER",
+    "clinical_t1d_islet_graft": "DIRECT_MATCH",
+    "human_sc_or_donor_islet_invitro": "BOUNDED_BRIDGE",
+    "humanized_mouse_allograft": "BOUNDED_BRIDGE",
+    "immortalized_beta_line": "INADMISSIBLE_TRANSFER",
+    "primary_islet_or_sc_floor": "BOUNDED_BRIDGE"
+  },
+  "ordered_context_pairs": 46656,
+  "pair_classes": {
+    "BOUNDED_BRIDGE": 23112,
+    "DIRECT_MATCH": 5400,
+    "INADMISSIBLE_TRANSFER": 18144
+  },
+  "patch_replay": {
+    "bijective_replay_verified": true,
+    "distinct_patched_studies": 3,
+    "events_replayed": 3,
+    "initial_sha256": "5c38c177c0b72348d69e02cc4cb5083643080fda3ddcd6f6084ea57c0f394bea",
+    "ledger_sha256": "ad2631df1ff8e2f5f4fd9cff5bb31d555688526bc4b12f57cffb62f3662271ee",
+    "settled_sha256": "fd1e9336453a77ff3dd8a9bc10b171dc94594e1d43f78c9705b58487f9523c70",
+    "step_digests_checked": true
+  },
+  "probes": {
+    "PROBE_ODDS_RATIO_READ_AS_PERCENT_DECREASE": {
+      "codes": [
+        "I3_TOK_UNGROUNDED_VALUE"
+      ],
+      "expected_code": "I3_TOK_UNGROUNDED_VALUE"
+    },
+    "PROBE_PROMOTION_FROM_UNVERIFIED_SOURCE": {
+      "codes": [
+        "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE"
+      ],
+      "expected_code": "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE"
+    },
+    "PROBE_T2D_GENETICS_PROMOTED_TO_T1D_GRAFT": {
+      "codes": [
+        "I4_ILLEGAL_QUANTITATIVE_PROMOTION_ACROSS_CONTEXT_GAP",
+        "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE",
+        "I4_INADMISSIBLE_CONTEXT_TRANSFER"
+      ],
+      "expected_code": "I4_INADMISSIBLE_CONTEXT_TRANSFER"
+    },
+    "PROBE_UPGRADE_WITHOUT_FALSIFIER_GATE": {
+      "codes": [
+        "I4_MISSING_PROSPECTIVE_FALSIFIER_GATE"
+      ],
+      "expected_code": "I4_MISSING_PROSPECTIVE_FALSIFIER_GATE"
+    }
+  },
+  "records": {
+    "T1D-CEG-H1-SLC30A8-INVERSION": {
+      "counterevidence": [
+        "R1_0340:O2"
+      ],
+      "gate": "GATE-H1-SLC30A8-MARGINAL-MASS",
+      "polarity": "SCOPING_QUALIFICATION",
+      "promotion_decision": "HOLD_FOR_PROSPECTIVE_FALSIFIER",
+      "supporting": [
+        "R1_0141:O9",
+        "R1_0116:O1"
+      ],
+      "transfer_classes": {
+        "R1_0116:O1": "DIRECT_MATCH",
+        "R1_0141:O9": "BOUNDED_BRIDGE"
+      },
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "T1D-CEG-H2-NLRC5-UNCOUPLING": {
+      "counterevidence": [
+        "R1_0214:O12"
+      ],
+      "gate": "GATE-H2-NLRC5-VS-STAT1KO",
+      "polarity": "CANDIDATE_UPGRADE",
+      "promotion_decision": "HOLD_FOR_PROSPECTIVE_FALSIFIER",
+      "supporting": [
+        "R1_0214:O4",
+        "R1_0215:O7"
+      ],
+      "transfer_classes": {
+        "R1_0214:O4": "BOUNDED_BRIDGE",
+        "R1_0215:O7": "BOUNDED_BRIDGE"
+      },
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "T1D-CEG-H4-CD55-ARMOR-PRESERVE-CD59": {
+      "counterevidence": [
+        "R1_0202:O7"
+      ],
+      "gate": "GATE-H4-CD55-ECTOPIC-CD59-UNTOUCHED",
+      "polarity": "CANDIDATE_UPGRADE",
+      "promotion_decision": "HOLD_FOR_PROSPECTIVE_FALSIFIER",
+      "supporting": [
+        "R1_0098:O8"
+      ],
+      "transfer_classes": {
+        "R1_0098:O8": "BOUNDED_BRIDGE"
+      },
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "T1D-CEG-H5-TXNIP-HYPOXIA-UNCOUPLING": {
+      "counterevidence": [
+        "R1_0376:O15"
+      ],
+      "gate": "GATE-H5-TXNIP-CIS-EDIT",
+      "polarity": "CANDIDATE_UPGRADE",
+      "promotion_decision": "HOLD_FOR_PROSPECTIVE_FALSIFIER",
+      "supporting": [
+        "R1_0215:O27"
+      ],
+      "transfer_classes": {
+        "R1_0215:O27": "BOUNDED_BRIDGE"
+      },
+      "unresolved_axes": [
+        "engraftment_microenvironment",
+        "immune_challenge",
+        "model_system",
+        "readout_maturity"
+      ]
+    },
+    "T1D-CLIN-DIRECT-01": {
+      "counterevidence": [],
+      "gate": null,
+      "polarity": "SUPPORTS",
+      "promotion_decision": "QUALITATIVE_SCOPING_ONLY",
+      "supporting": [
+        "R1_0116:O1"
+      ],
+      "transfer_classes": {
+        "R1_0116:O1": "DIRECT_MATCH"
+      },
+      "unresolved_axes": []
+    }
+  },
+  "reference_release": "3.1",
+  "run_digest": "828eb74aa3d860c8fdf2b67b030c42923ff7d86c3853274a2730e5b747856689",
+  "studies": 8,
+  "target_context": {
+    "engraftment_microenvironment": "vascularized_marginal_mass_graft",
+    "immune_challenge": "immunocompetent_auto_plus_allo_t1d",
+    "model_system": "clinical_t1d_islet_graft",
+    "readout_maturity": "durable_c_peptide_and_insulin_independence"
+  }
+}

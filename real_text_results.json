@@ -1,0 +1,1534 @@
+{
+  "evaluation_version": "3.0",
+  "reference_version": "3.1",
+  "corpus_summary": {
+    "studies": 12,
+    "domains": {
+      "IPF": 4,
+      "HF": 4,
+      "ONC": 4
+    },
+    "clinical_rcts": 9,
+    "preclinical_studies": 3,
+    "atoms": 31,
+    "quantity_kinds": {
+      "point_level": 25,
+      "relative_change": 2,
+      "interval_bound": 2,
+      "censored_observation": 2
+    },
+    "graph_integrity_errors": 0,
+    "atom_corpus_binding_errors": 0,
+    "curation_ledger": {
+      "events_replayed": 4,
+      "distinct_patched_studies": 3,
+      "initial_sha256": "bad3c6d29dab3f2b71b5dd4f3bf6f1df7fc6e531d50b7faa610b2e4202d75d8c",
+      "settled_sha256": "adda477aab37841fe0b428996807e45977e45033d6f88f66ee8946eae5d825e4",
+      "ledger_sha256": "5697cf35bc0a3084d681b593b20db0eed0653e8c7e978b16ca21f8af890eb9c8",
+      "step_digests_checked": true,
+      "bijective_replay_verified": true
+    },
+    "study_metadata": {
+      "R101": {
+        "pmid": "24836310",
+        "doi": "10.1056/NEJMoa1402584",
+        "trial": "INPULSIS-1 and INPULSIS-2",
+        "domain": "IPF",
+        "citation": "Richeldi et al., N Engl J Med 2014;370(22):2071-2082"
+      },
+      "R102": {
+        "pmid": "24836312",
+        "doi": "10.1056/NEJMoa1402582",
+        "trial": "ASCEND",
+        "domain": "IPF",
+        "citation": "King et al., N Engl J Med 2014;370(22):2083-2092"
+      },
+      "R103": {
+        "pmid": "35569036",
+        "doi": "10.1056/NEJMoa2201737",
+        "trial": "1305-0013 (BI 1015550 Phase 2)",
+        "domain": "IPF",
+        "citation": "Richeldi et al., N Engl J Med 2022;386(23):2178-2187"
+      },
+      "R104": {
+        "pmid": "36585256",
+        "doi": "10.1183/13993003.00604-2022",
+        "trial": "Pirfenidone MRTF Fibroblast Study",
+        "domain": "IPF",
+        "citation": "Ma et al., Eur Respir J 2023;61(4):2200604"
+      },
+      "R201": {
+        "pmid": "25176015",
+        "doi": "10.1056/NEJMoa1409077",
+        "trial": "PARADIGM-HF",
+        "domain": "HF",
+        "citation": "McMurray et al., N Engl J Med 2014;371(11):993-1004"
+      },
+      "R202": {
+        "pmid": "31475794",
+        "doi": "10.1056/NEJMoa1908655",
+        "trial": "PARAGON-HF",
+        "domain": "HF",
+        "citation": "Solomon et al., N Engl J Med 2019;381(17):1609-1620"
+      },
+      "R203": {
+        "pmid": "32222134",
+        "doi": "10.1056/NEJMoa1915928",
+        "trial": "VICTORIA",
+        "domain": "HF",
+        "citation": "Armstrong et al., N Engl J Med 2020;382(20):1883-1893"
+      },
+      "R204": {
+        "pmid": "25362207",
+        "doi": "10.1161/CIRCHEARTFAILURE.114.001785",
+        "trial": "Post-MI Rat LCZ696 Remodeling",
+        "domain": "HF",
+        "citation": "von Lueder et al., Circ Heart Fail 2015;8(1):71-78"
+      },
+      "R301": {
+        "pmid": "27718847",
+        "doi": "10.1056/NEJMoa1606774",
+        "trial": "KEYNOTE-024",
+        "domain": "ONC",
+        "citation": "Reck et al., N Engl J Med 2016;375(19):1823-1833"
+      },
+      "R302": {
+        "pmid": "27959700",
+        "doi": "10.1056/NEJMoa1612674",
+        "trial": "AURA3",
+        "domain": "ONC",
+        "citation": "Mok et al., N Engl J Med 2017;376(7):629-640"
+      },
+      "R303": {
+        "pmid": "32955177",
+        "doi": "10.1056/NEJMoa2027071",
+        "trial": "ADAURA",
+        "domain": "ONC",
+        "citation": "Wu et al., N Engl J Med 2020;383(18):1711-1723"
+      },
+      "R304": {
+        "pmid": "31108249",
+        "doi": "10.1016/j.jtho.2019.05.006",
+        "trial": "Preclinical EGFR Exon 20 Insertion Osimertinib",
+        "domain": "ONC",
+        "citation": "Lee et al., J Thorac Oncol 2019;14(9):1556-1566"
+      }
+    }
+  },
+  "track_a_verbatim_prose": {
+    "total_verbatim_sentences": 36,
+    "unanchored_summary": {
+      "V0_citation_presence": {
+        "accepted": 0,
+        "refused": 36,
+        "accepted_pct": 0.0
+      },
+      "V1_study_pool_numeric": {
+        "accepted": 0,
+        "refused": 36,
+        "accepted_pct": 0.0
+      },
+      "V2_prose_pooled_permitted": {
+        "accepted": 3,
+        "refused": 33,
+        "accepted_pct": 8.33
+      },
+      "V2s_prose_pooled_rejected": {
+        "accepted": 3,
+        "refused": 33,
+        "accepted_pct": 8.33
+      },
+      "V3_full_ceg": {
+        "accepted": 3,
+        "refused": 33,
+        "accepted_pct": 8.33
+      }
+    },
+    "source_anchored_summary": {
+      "V0_citation_presence": {
+        "accepted": 36,
+        "refused": 0,
+        "accepted_pct": 100.0,
+        "refused_pct": 0.0
+      },
+      "V1_study_pool_numeric": {
+        "accepted": 9,
+        "refused": 27,
+        "accepted_pct": 25.0,
+        "refused_pct": 75.0
+      },
+      "V2_prose_pooled_permitted": {
+        "accepted": 7,
+        "refused": 29,
+        "accepted_pct": 19.44,
+        "refused_pct": 80.56
+      },
+      "V2s_prose_pooled_rejected": {
+        "accepted": 6,
+        "refused": 30,
+        "accepted_pct": 16.67,
+        "refused_pct": 83.33
+      },
+      "V3_full_ceg": {
+        "accepted": 6,
+        "refused": 30,
+        "accepted_pct": 16.67,
+        "refused_pct": 83.33
+      }
+    },
+    "source_anchored_by_domain": {
+      "IPF": {
+        "n": 12,
+        "V0_accepted": 12,
+        "V1_accepted": 5,
+        "V2_accepted": 4,
+        "V2s_accepted": 3,
+        "V3_accepted": 3
+      },
+      "HF": {
+        "n": 12,
+        "V0_accepted": 12,
+        "V1_accepted": 1,
+        "V2_accepted": 1,
+        "V2s_accepted": 1,
+        "V3_accepted": 1
+      },
+      "ONC": {
+        "n": 12,
+        "V0_accepted": 12,
+        "V1_accepted": 3,
+        "V2_accepted": 2,
+        "V2s_accepted": 2,
+        "V3_accepted": 2
+      }
+    },
+    "v3_primary_outcome_codes": {
+      "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION": 3,
+      "I3_CLAUSE_NON_CONTRAST_MULTI_ARM": 1,
+      "I3_TOK_FORBIDDEN_UNICODE": 4,
+      "I3_TOK_NONCANONICAL_NUMERAL": 2,
+      "I3_TOK_UNGROUNDED_VALUE": 20,
+      "accepted": 6
+    },
+    "phenomenon_breakdown": {
+      "contextual_exon_numeral_matched_via_endpoint": {
+        "total": 1,
+        "v3_accepted": 1,
+        "v3_refused": 0
+      },
+      "derived_relative_risk_reduction": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "glued_gene_mutation_identifier": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "inline_ci_and_derived_difference": {
+        "total": 3,
+        "v3_accepted": 0,
+        "v3_refused": 3
+      },
+      "inline_ci_and_hazard_ratio": {
+        "total": 6,
+        "v3_accepted": 0,
+        "v3_refused": 6
+      },
+      "inline_event_counts_hr_and_ci": {
+        "total": 6,
+        "v3_accepted": 0,
+        "v3_refused": 6
+      },
+      "inline_or_hr_and_ci": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "inline_sem_dispersion_and_multi_outcome": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "inline_sem_dispersion_and_other_drug": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "pooled_multi_outcome_and_pk_bound": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "pooled_multi_outcome_clause": {
+        "total": 3,
+        "v3_accepted": 0,
+        "v3_refused": 3
+      },
+      "qualitative_mechanistic_sentence": {
+        "total": 3,
+        "v3_accepted": 3,
+        "v3_refused": 0
+      },
+      "sample_size_only_sentence": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "single_bound_clinical_prose": {
+        "total": 1,
+        "v3_accepted": 1,
+        "v3_refused": 0
+      },
+      "single_contrast_clinical_prose": {
+        "total": 1,
+        "v3_accepted": 1,
+        "v3_refused": 0
+      },
+      "unmodeled_arm_denominators": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "unmodeled_dose_and_arm_denominators": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "unmodeled_dose_or_design_numeral": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "unmodeled_ratio_or_design_numeral": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      },
+      "unmodeled_secondary_pvalue": {
+        "total": 1,
+        "v3_accepted": 0,
+        "v3_refused": 1
+      }
+    },
+    "per_sentence": [
+      {
+        "sentence_id": "TA-R101-1",
+        "domain": "IPF",
+        "study_id": "R101",
+        "pmid": "24836310",
+        "true_tuples": [
+          "R101:O1"
+        ],
+        "primary_phenomenon": "unmodeled_ratio_or_design_numeral",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R101:O1): '3' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R101:O1): '2' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R101-2",
+        "domain": "IPF",
+        "study_id": "R101",
+        "pmid": "24836310",
+        "true_tuples": [
+          "R101:O1",
+          "R101:O2"
+        ],
+        "primary_phenomenon": "inline_ci_and_derived_difference",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION",
+        "v3_violations": [
+          "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION (['R101:O1', 'R101:O2']): numerals ['-114.7', '-239.9', '125.3', '95', '77.7', '172.8', '0.001', '-113.6', '-207.3', '93.7', '95', '44.8', '142.7', '0.001'] cannot be bound to one cited outcome"
+        ]
+      },
+      {
+        "sentence_id": "TA-R101-3",
+        "domain": "IPF",
+        "study_id": "R101",
+        "pmid": "24836310",
+        "true_tuples": [
+          "R101:O4"
+        ],
+        "primary_phenomenon": "single_bound_clinical_prose",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": true,
+          "V3_full_ceg": true
+        },
+        "v3_primary_code": "accepted",
+        "v3_violations": []
+      },
+      {
+        "sentence_id": "TA-R102-1",
+        "domain": "IPF",
+        "study_id": "R102",
+        "pmid": "24836312",
+        "true_tuples": [
+          "R102:O1"
+        ],
+        "primary_phenomenon": "unmodeled_dose_or_design_numeral",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R102:O1): '3' is not licensed by the cited atom",
+          "I3_CLAUSE_NON_CONTRAST_MULTI_ARM (R102:O1): multi-arm binding requires an explicit contrast connector"
+        ]
+      },
+      {
+        "sentence_id": "TA-R102-2",
+        "domain": "IPF",
+        "study_id": "R102",
+        "pmid": "24836312",
+        "true_tuples": [
+          "R102:O1",
+          "R102:O2"
+        ],
+        "primary_phenomenon": "pooled_multi_outcome_clause",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION",
+        "v3_violations": [
+          "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION (['R102:O1', 'R102:O2']): numerals ['47.9', '10', '132.5', '0.001'] cannot be bound to one cited outcome"
+        ]
+      },
+      {
+        "sentence_id": "TA-R102-3",
+        "domain": "IPF",
+        "study_id": "R102",
+        "pmid": "24836312",
+        "true_tuples": [
+          "R102:O1"
+        ],
+        "primary_phenomenon": "unmodeled_secondary_pvalue",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R102:O1): '6 min' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R102:O1): '0.04' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R103-1",
+        "domain": "IPF",
+        "study_id": "R103",
+        "pmid": "35569036",
+        "true_tuples": [
+          "R103:O1"
+        ],
+        "primary_phenomenon": "inline_ci_and_derived_difference",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R103:O1): '95 %' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R103:O1): '-39.1' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R103-2",
+        "domain": "IPF",
+        "study_id": "R103",
+        "pmid": "35569036",
+        "true_tuples": [
+          "R103:O2"
+        ],
+        "primary_phenomenon": "inline_ci_and_derived_difference",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R103:O2): '95 %' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R103:O2): '-32.8' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R103-3",
+        "domain": "IPF",
+        "study_id": "R103",
+        "pmid": "35569036",
+        "true_tuples": [
+          "R103:O1"
+        ],
+        "primary_phenomenon": "sample_size_only_sentence",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_CLAUSE_NON_CONTRAST_MULTI_ARM",
+        "v3_violations": [
+          "I3_CLAUSE_NON_CONTRAST_MULTI_ARM (R103:O1): multi-arm binding requires an explicit contrast connector"
+        ]
+      },
+      {
+        "sentence_id": "TA-R104-1",
+        "domain": "IPF",
+        "study_id": "R104",
+        "pmid": "36585256",
+        "true_tuples": [
+          "R104:O1",
+          "R104:O2"
+        ],
+        "primary_phenomenon": "pooled_multi_outcome_and_pk_bound",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_FORBIDDEN_UNICODE",
+        "v3_violations": [
+          "I3_TOK_FORBIDDEN_UNICODE: ['U+2005@pos176', 'U+2005@pos251']"
+        ]
+      },
+      {
+        "sentence_id": "TA-R104-2",
+        "domain": "IPF",
+        "study_id": "R104",
+        "pmid": "36585256",
+        "true_tuples": [
+          "R104:O1"
+        ],
+        "primary_phenomenon": "qualitative_mechanistic_sentence",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": true,
+          "V3_full_ceg": true
+        },
+        "v3_primary_code": "accepted",
+        "v3_violations": []
+      },
+      {
+        "sentence_id": "TA-R104-3",
+        "domain": "IPF",
+        "study_id": "R104",
+        "pmid": "36585256",
+        "true_tuples": [
+          "R104:O1"
+        ],
+        "primary_phenomenon": "qualitative_mechanistic_sentence",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": true,
+          "V3_full_ceg": true
+        },
+        "v3_primary_code": "accepted",
+        "v3_violations": []
+      },
+      {
+        "sentence_id": "TA-R201-1",
+        "domain": "HF",
+        "study_id": "R201",
+        "pmid": "25176015",
+        "true_tuples": [
+          "R201:O1"
+        ],
+        "primary_phenomenon": "inline_event_counts_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R201:O1): '914' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R201:O1): '1117' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R201-2",
+        "domain": "HF",
+        "study_id": "R201",
+        "pmid": "25176015",
+        "true_tuples": [
+          "R201:O2",
+          "R201:O3"
+        ],
+        "primary_phenomenon": "inline_event_counts_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (['R201:O2', 'R201:O3']): '711' is not licensed by any cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (['R201:O2', 'R201:O3']): '835' is not licensed by any cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R201-3",
+        "domain": "HF",
+        "study_id": "R201",
+        "pmid": "25176015",
+        "true_tuples": [
+          "R201:O1"
+        ],
+        "primary_phenomenon": "derived_relative_risk_reduction",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R201:O1): '21 %' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R202-1",
+        "domain": "HF",
+        "study_id": "R202",
+        "pmid": "31475794",
+        "true_tuples": [
+          "R202:O1"
+        ],
+        "primary_phenomenon": "inline_event_counts_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_FORBIDDEN_UNICODE",
+        "v3_violations": [
+          "I3_TOK_FORBIDDEN_UNICODE: ['U+2009@pos207', 'U+2009@pos209']"
+        ]
+      },
+      {
+        "sentence_id": "TA-R202-2",
+        "domain": "HF",
+        "study_id": "R202",
+        "pmid": "31475794",
+        "true_tuples": [
+          "R202:O1"
+        ],
+        "primary_phenomenon": "inline_event_counts_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R202:O1): '0.95' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R202:O1): '95 %' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R202-3",
+        "domain": "HF",
+        "study_id": "R202",
+        "pmid": "31475794",
+        "true_tuples": [
+          "R202:O2",
+          "R202:O3"
+        ],
+        "primary_phenomenon": "inline_or_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (['R202:O2', 'R202:O3']): '1.45' is not licensed by any cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (['R202:O2', 'R202:O3']): '95' is not licensed by any cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R203-1",
+        "domain": "HF",
+        "study_id": "R203",
+        "pmid": "32222134",
+        "true_tuples": [
+          "R203:O1"
+        ],
+        "primary_phenomenon": "inline_event_counts_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_FORBIDDEN_UNICODE",
+        "v3_violations": [
+          "I3_TOK_FORBIDDEN_UNICODE: ['U+2009@pos242', 'U+2009@pos244']"
+        ]
+      },
+      {
+        "sentence_id": "TA-R203-2",
+        "domain": "HF",
+        "study_id": "R203",
+        "pmid": "32222134",
+        "true_tuples": [
+          "R203:O2"
+        ],
+        "primary_phenomenon": "inline_event_counts_hr_and_ci",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R203:O2): '691' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R203:O2): '747' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R203-3",
+        "domain": "HF",
+        "study_id": "R203",
+        "pmid": "32222134",
+        "true_tuples": [
+          "R203:O3"
+        ],
+        "primary_phenomenon": "pooled_multi_outcome_clause",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_FORBIDDEN_UNICODE",
+        "v3_violations": [
+          "I3_TOK_FORBIDDEN_UNICODE: ['U+2009@pos132', 'U+2009@pos134', 'U+2009@pos262', 'U+2009@pos264']"
+        ]
+      },
+      {
+        "sentence_id": "TA-R204-1",
+        "domain": "HF",
+        "study_id": "R204",
+        "pmid": "25362207",
+        "true_tuples": [
+          "R204:O1"
+        ],
+        "primary_phenomenon": "unmodeled_dose_and_arm_denominators",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R204:O1): '1 weeks' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R204:O1): '4 weeks' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R204-2",
+        "domain": "HF",
+        "study_id": "R204",
+        "pmid": "25362207",
+        "true_tuples": [
+          "R204:O1",
+          "R204:O2"
+        ],
+        "primary_phenomenon": "inline_sem_dispersion_and_multi_outcome",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION",
+        "v3_violations": [
+          "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION (['R204:O1', 'R204:O2']): numerals ['5', '9.7', '0.2', '10.5', '0.3', '60', '2', '47', '5', '0.23', '0.02', '0.13', '0.02', '-9.8', '0.5', '-7.3', '0.5', '0.05'] cannot be bound to one cited outcome"
+        ]
+      },
+      {
+        "sentence_id": "TA-R204-3",
+        "domain": "HF",
+        "study_id": "R204",
+        "pmid": "25362207",
+        "true_tuples": [
+          "R204:O1"
+        ],
+        "primary_phenomenon": "qualitative_mechanistic_sentence",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": true,
+          "V3_full_ceg": true
+        },
+        "v3_primary_code": "accepted",
+        "v3_violations": []
+      },
+      {
+        "sentence_id": "TA-R301-1",
+        "domain": "ONC",
+        "study_id": "R301",
+        "pmid": "27718847",
+        "true_tuples": [
+          "R301:O1"
+        ],
+        "primary_phenomenon": "inline_ci_and_hazard_ratio",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R301:O1): '95 %' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R301:O1): '6.7' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R301-2",
+        "domain": "ONC",
+        "study_id": "R301",
+        "pmid": "27718847",
+        "true_tuples": [
+          "R301:O2"
+        ],
+        "primary_phenomenon": "inline_ci_and_hazard_ratio",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R301:O2): '0.6' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R301:O2): '95 %' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R301-3",
+        "domain": "ONC",
+        "study_id": "R301",
+        "pmid": "27718847",
+        "true_tuples": [
+          "R301:O3"
+        ],
+        "primary_phenomenon": "pooled_multi_outcome_clause",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R301:O3): '44.8 %' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R301:O3): '27.8 %' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R302-1",
+        "domain": "ONC",
+        "study_id": "R302",
+        "pmid": "27959700",
+        "true_tuples": [
+          "R302:O1"
+        ],
+        "primary_phenomenon": "inline_ci_and_hazard_ratio",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R302:O1): '0.3' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R302:O1): '95 %' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R302-2",
+        "domain": "ONC",
+        "study_id": "R302",
+        "pmid": "27959700",
+        "true_tuples": [
+          "R302:O2"
+        ],
+        "primary_phenomenon": "inline_ci_and_hazard_ratio",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R302:O2): '0.32' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R302:O2): '95 %' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R302-3",
+        "domain": "ONC",
+        "study_id": "R302",
+        "pmid": "27959700",
+        "true_tuples": [
+          "R302:O4"
+        ],
+        "primary_phenomenon": "single_contrast_clinical_prose",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": true,
+          "V3_full_ceg": true
+        },
+        "v3_primary_code": "accepted",
+        "v3_violations": []
+      },
+      {
+        "sentence_id": "TA-R303-1",
+        "domain": "ONC",
+        "study_id": "R303",
+        "pmid": "32955177",
+        "true_tuples": [
+          "R303:O2"
+        ],
+        "primary_phenomenon": "unmodeled_arm_denominators",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R303:O2): '339' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R303:O2): '343' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R303-2",
+        "domain": "ONC",
+        "study_id": "R303",
+        "pmid": "32955177",
+        "true_tuples": [
+          "R303:O1"
+        ],
+        "primary_phenomenon": "inline_ci_and_hazard_ratio",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R303:O1): '95 %' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R303:O1): '84' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R303-3",
+        "domain": "ONC",
+        "study_id": "R303",
+        "pmid": "32955177",
+        "true_tuples": [
+          "R303:O2"
+        ],
+        "primary_phenomenon": "inline_ci_and_hazard_ratio",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
+        "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R303:O2): '95 %' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R303:O2): '85' is not licensed by the cited atom"
+        ]
+      },
+      {
+        "sentence_id": "TA-R304-1",
+        "domain": "ONC",
+        "study_id": "R304",
+        "pmid": "31108249",
+        "true_tuples": [
+          "R304:O1"
+        ],
+        "primary_phenomenon": "inline_sem_dispersion_and_other_drug",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": false,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_NONCANONICAL_NUMERAL",
+        "v3_violations": [
+          "I3_TOK_NONCANONICAL_NUMERAL: ['glued:A763@pos58']"
+        ]
+      },
+      {
+        "sentence_id": "TA-R304-2",
+        "domain": "ONC",
+        "study_id": "R304",
+        "pmid": "31108249",
+        "true_tuples": [
+          "R304:O1"
+        ],
+        "primary_phenomenon": "glued_gene_mutation_identifier",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": false,
+          "V2s_prose_pooled_rejected": false,
+          "V3_full_ceg": false
+        },
+        "v3_primary_code": "I3_TOK_NONCANONICAL_NUMERAL",
+        "v3_violations": [
+          "I3_TOK_NONCANONICAL_NUMERAL: ['glued:H773@pos137']"
+        ]
+      },
+      {
+        "sentence_id": "TA-R304-3",
+        "domain": "ONC",
+        "study_id": "R304",
+        "pmid": "31108249",
+        "true_tuples": [
+          "R304:O1"
+        ],
+        "primary_phenomenon": "contextual_exon_numeral_matched_via_endpoint",
+        "anchored_verdicts": {
+          "V0_citation_presence": true,
+          "V1_study_pool_numeric": true,
+          "V2_prose_pooled_permitted": true,
+          "V2s_prose_pooled_rejected": true,
+          "V3_full_ceg": true
+        },
+        "v3_primary_code": "accepted",
+        "v3_violations": []
+      }
+    ]
+  },
+  "track_b_grounded_synthesis": {
+    "total_cases": 84,
+    "valid_cases": 24,
+    "adversarial_cases": 60,
+    "overall_summary": {
+      "V0_citation_presence": {
+        "adversarial_total": 60,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 60,
+        "adversarial_rejection_rate_pct": 0.0,
+        "valid_total": 24,
+        "valid_accepted": 24,
+        "valid_rejected": 0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V1_study_pool_numeric": {
+        "adversarial_total": 60,
+        "adversarial_rejected": 7,
+        "adversarial_accepted": 53,
+        "adversarial_rejection_rate_pct": 11.67,
+        "valid_total": 24,
+        "valid_accepted": 24,
+        "valid_rejected": 0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V2_prose_pooled_permitted": {
+        "adversarial_total": 60,
+        "adversarial_rejected": 33,
+        "adversarial_accepted": 27,
+        "adversarial_rejection_rate_pct": 55.0,
+        "valid_total": 24,
+        "valid_accepted": 24,
+        "valid_rejected": 0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V2s_prose_pooled_rejected": {
+        "adversarial_total": 60,
+        "adversarial_rejected": 38,
+        "adversarial_accepted": 22,
+        "adversarial_rejection_rate_pct": 63.33,
+        "valid_total": 24,
+        "valid_accepted": 24,
+        "valid_rejected": 0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V3_full_ceg": {
+        "adversarial_total": 60,
+        "adversarial_rejected": 60,
+        "adversarial_accepted": 0,
+        "adversarial_rejection_rate_pct": 100.0,
+        "valid_total": 24,
+        "valid_accepted": 24,
+        "valid_rejected": 0,
+        "valid_acceptance_rate_pct": 100.0
+      }
+    },
+    "mode_b_self_attesting_summary": {
+      "adversarial_total": 60,
+      "semantic_rejected": 60,
+      "semantic_rejection_rate_pct": 100.0,
+      "valid_total": 24,
+      "valid_accepted": 24,
+      "valid_acceptance_rate_pct": 100.0
+    },
+    "by_family": {
+      "B_P1_direct_clinical_promotion": {
+        "n": 9,
+        "is_adversarial": false,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 9,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 9,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 9,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 9,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V3_full_ceg": {
+            "accepted": 9,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          }
+        }
+      },
+      "B_P2_bounded_translational_bridge": {
+        "n": 6,
+        "is_adversarial": false,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 6,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 6,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 6,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 6,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V3_full_ceg": {
+            "accepted": 6,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          }
+        }
+      },
+      "B_P3_safety_counterevidence_scoping": {
+        "n": 5,
+        "is_adversarial": false,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 5,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 5,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 5,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 5,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V3_full_ceg": {
+            "accepted": 5,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          }
+        }
+      },
+      "B_P4_natural_comparative_and_censored_syntax": {
+        "n": 4,
+        "is_adversarial": false,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 4,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 4,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 4,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 4,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V3_full_ceg": {
+            "accepted": 4,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          }
+        }
+      },
+      "D1_cross_trial_incompatible_pooling": {
+        "n": 10,
+        "is_adversarial": true,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 9,
+            "rejected": 1,
+            "rejection_rate_pct": 10.0,
+            "acceptance_rate_pct": 90.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 9,
+            "rejected": 1,
+            "rejection_rate_pct": 10.0,
+            "acceptance_rate_pct": 90.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 4,
+            "rejected": 6,
+            "rejection_rate_pct": 60.0,
+            "acceptance_rate_pct": 40.0
+          },
+          "V3_full_ceg": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          }
+        }
+      },
+      "D2_active_placebo_arm_and_appositive_swap": {
+        "n": 10,
+        "is_adversarial": true,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 1,
+            "rejected": 9,
+            "rejection_rate_pct": 90.0,
+            "acceptance_rate_pct": 10.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 1,
+            "rejected": 9,
+            "rejection_rate_pct": 90.0,
+            "acceptance_rate_pct": 10.0
+          },
+          "V3_full_ceg": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          }
+        }
+      },
+      "D3_subgroup_to_overall_promotion": {
+        "n": 10,
+        "is_adversarial": true,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 7,
+            "rejected": 3,
+            "rejection_rate_pct": 30.0,
+            "acceptance_rate_pct": 70.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 7,
+            "rejected": 3,
+            "rejection_rate_pct": 30.0,
+            "acceptance_rate_pct": 70.0
+          },
+          "V3_full_ceg": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          }
+        }
+      },
+      "D4_rounding_unit_and_si_case_drift": {
+        "n": 10,
+        "is_adversarial": true,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 7,
+            "rejected": 3,
+            "rejection_rate_pct": 30.0,
+            "acceptance_rate_pct": 70.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          },
+          "V3_full_ceg": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          }
+        }
+      },
+      "D5_preclinical_to_clinical_conflation": {
+        "n": 10,
+        "is_adversarial": true,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V3_full_ceg": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          }
+        }
+      },
+      "D6_cross_clause_theft_and_negated_bounds": {
+        "n": 10,
+        "is_adversarial": true,
+        "by_verifier": {
+          "V0_citation_presence": {
+            "accepted": 10,
+            "rejected": 0,
+            "rejection_rate_pct": 0.0,
+            "acceptance_rate_pct": 100.0
+          },
+          "V1_study_pool_numeric": {
+            "accepted": 7,
+            "rejected": 3,
+            "rejection_rate_pct": 30.0,
+            "acceptance_rate_pct": 70.0
+          },
+          "V2_prose_pooled_permitted": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          },
+          "V2s_prose_pooled_rejected": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          },
+          "V3_full_ceg": {
+            "accepted": 0,
+            "rejected": 10,
+            "rejection_rate_pct": 100.0,
+            "acceptance_rate_pct": 0.0
+          }
+        }
+      }
+    },
+    "by_domain": {
+      "IPF": {
+        "valid_total": 7,
+        "adversarial_total": 22,
+        "v3_valid_accepted": 7,
+        "v3_adversarial_rejected": 22
+      },
+      "HF": {
+        "valid_total": 8,
+        "adversarial_total": 16,
+        "v3_valid_accepted": 8,
+        "v3_adversarial_rejected": 16
+      },
+      "ONC": {
+        "valid_total": 9,
+        "adversarial_total": 22,
+        "v3_valid_accepted": 9,
+        "v3_adversarial_rejected": 22
+      }
+    }
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "bytes": {
+    "indexed_graph": 70625398,
+    "outcomes_per_study": 12.3,
+    "raw_extraction_packet_studies": 1151,
+    "raw_extraction_packets": 41746322,
+    "settled_corpus_canonical": 20412758,
+    "settled_corpus_canonical_per_outcome": 1447,
+    "settled_corpus_canonical_per_study": 17735,
+    "settled_corpus_file": 25520705,
+    "single_window_views": {
+      "IIP-0007": 9644648,
+      "IIP-0008": 3677507,
+      "IIP-0009": 3239524
+    },
+    "single_window_views_total": 16561679
+  },
+  "certification": {
+    "certified_outcomes": 0,
+    "ledger_status": "ALL_OUTCOMES_PENDING_BLIND_PRIMARY_RECONSTRUCTION"
+  },
+  "dossiers": {
+    "active_studies": {
+      "IIP-0008": 146,
+      "IIP-0009": 230,
+      "union": 320
+    },
+    "active_tuples": {
+      "IIP-0008": 653,
+      "IIP-0009": 1104,
+      "union": 1565
+    },
+    "checked_items_by_dossier": {
+      "IIP-0008": 117,
+      "IIP-0009": 290
+    },
+    "distinct_record_ids": 378,
+    "indexed_records": 407,
+    "mirrored_records": 29,
+    "numeric_span_occurrences": 11995,
+    "numeric_token_occurrences": 11116,
+    "parser_derived_atoms": {
+      "missing": 1426,
+      "point": 139,
+      "total": 1565
+    },
+    "unvisited_active_records": 0,
+    "verdict_flags": {
+      "IIP-0008": {
+        "numeric_promotion_authorized": false
+      },
+      "IIP-0009": {
+        "numeric_model_update_allowed": false,
+        "payload_promotion_allowed": false,
+        "quantitative_promotion_supported_for_any_item": false
+      }
+    }
+  },
+  "extraction_quality": {
+    "abstract_sourced_percent": 21.4,
+    "outcomes_by_source_type": {
+      "abstract": 3014,
+      "figure_caption": 721,
+      "methods_text": 88,
+      "results_text": 9919,
+      "table_grid": 363
+    },
+    "outcomes_with_verbatim_quote": 14105,
+    "qualitative_with_pvalue": 8580,
+    "qualitative_with_pvalue_percent": 60.8,
+    "requires_figure_digitization": 4949,
+    "requires_figure_digitization_percent": 35.1,
+    "results_text_percent": 70.3,
+    "studies_with_pmcid_percent": 63.1
+  },
+  "funnel": {
+    "advanced_at_title_abstract": 3246,
+    "advanced_not_extracted": 2095,
+    "deferred_supporting_catalog_records": 2095,
+    "excluded_off_topic": 153,
+    "extracted_all_stage1_advance": true,
+    "extracted_from_candidate_records": 747,
+    "extracted_from_ring1_records": 404,
+    "extracted_studies": 1151,
+    "parked_as_context": 523,
+    "screened_distinct_identifier_pairs": 3921,
+    "screened_records": 3922
+  },
+  "ledger": {
+    "events": 106,
+    "events_by_phase": {
+      "PHASE1_SOL61_PILOT_RULINGS_V1_TO_V2": 25,
+      "PHASE2_SOL61_CONTROL_AUDIT_V2_TO_V3": 16,
+      "PHASE3_SOL61_STEP2_GAUNTLET_V3_TO_V4": 65
+    },
+    "events_by_record_part": {
+      "arms": 5,
+      "blueprint_links": 9,
+      "outcomes": 89,
+      "study_design": 3
+    },
+    "forward_replay_flag": true,
+    "patched_studies": 29,
+    "reverse_replay_flag": true
+  },
+  "pins": {
+    "claims_ledger_sha256": "730dae65d0526f158bf08cac9babee2263219fa8043f70b8d9136233989dbe58",
+    "dossier_sha256": {
+      "IIP-0008": "d69d04cab42de11cbebd05c2e16c4aa4dba8544fdf07ce729430587892023927",
+      "IIP-0009": "1156ed6dae638882b6fb9ede8be92c0caca88aed9990dfa27d942af4c0d51ada"
+    },
+    "graph_sha256": "60e03dddb198f8fa32a4ead4285510842b2be2bbbf6e703248a170b6fcbee753",
+    "ledger_sha256": "f28a2a22af7f20f125d357bee2356dc8b997808ffb22db16bafab5db437ed113",
+    "master_sha256": {
+      "v1": "6f14f1ec627e45b14d2364d73dd8c970a064c21618934875a442242f0e2d4feb",
+      "v2": "0223c41dab1dfbadc3847b191c35ee53ba602b3a12c526bc0dd44d6f0ff134c6",
+      "v3": "895cbdcede3b2dbbf44d4bf34d9059a112b3d39d9ea3de6cce8dd40d2e9f8aad",
+      "v4": "cb24687ac7a6f6e305992b6a65b009b33f88713498b6c527ebb269871cadbc92"
+    },
+    "refresh_sha256": "8c7df36df47b64c8b038ea0976216693362c1f1b9dd8f8a4581ae2437a3f9eac",
+    "view_sha256": {
+      "IIP-0007": "17c614f498302e60a564eb174f9c8ae2465a198a18756de290876d41fcd61d01",
+      "IIP-0008": "f03b67cb4cc78ef7821c04e1b680d22c13dae03c2581c35116e6e74f2aa897d4",
+      "IIP-0009": "25caab8e40e9a6e6c1fd07f0d2a476aa25feb053b6746807f07530f4b70a8dc0"
+    }
+  },
+  "pins_verified": {
+    "cited_tuples_match_release_record": true,
+    "graph_pins_ledger": true,
+    "graph_pins_master_v4": true,
+    "graph_pins_views": true,
+    "ledger_pins_masters": true,
+    "reach_matches_release_summary": true
+  },
+  "reachability": {
+    "background_percent": 35.3,
+    "cited_by_claim_or_dossier": 9119,
+    "cited_percent": 64.7,
+    "claim_and_dossier_cited": 1372,
+    "claim_cited_only": 7554,
+    "dossier_cited_only": 193,
+    "study_arm_background_only": 4986
+  },
+  "source": {
+    "corpus": "OpenIslet type 1 diabetes evidence graph",
+    "graph_schema": "ceg_v19_canonical_graph",
+    "graph_version": "v19.0.0-R4S4-SOL61-FOLDIN",
+    "note": "Figures are recomputed from the release files listed under pins; paths are relative to the OpenIslet checkout."
+  },
+  "structure": {
+    "directions": {
+      "context_dependent_or_mixed": 3262,
+      "favorable_to_intervention": 5311,
+      "null_or_no_difference": 1827,
+      "unfavorable_or_toxic": 3166,
+      "unknown_or_unresolvable": 539
+    },
+    "edge_relations": {
+      "contradicts": 2,
+      "noninformative": 19,
+      "novel_upgrade_hypothesis": 613,
+      "scoping_qualification": 784,
+      "supports": 1029
+    },
+    "edges": 2447,
+    "effector_nodes": 20,
+    "outcomes": 14105,
+    "studies": 1151,
+    "studies_with_pmcid": 726,
+    "study_arms": 7659,
+    "tiers": {
+      "T1_Human_Clinical": 158,
+      "T2_NHP": 59,
+      "T3_Humanized_Mouse": 50,
+      "T4_Human_Islet_or_SC_Islet_InVitro": 296,
+      "T5_Rodent_or_CellLine": 562,
+      "T6_Biophysical_Model_or_Regulatory": 26
+    }
+  }
+}

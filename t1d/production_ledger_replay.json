@@ -1,0 +1,118 @@
+{
+  "adapter": "study_id := queue_id; pointers /settled_extractions/<i>/... -> /studies/<i>/...; study digests recomputed (RFC 8785) from the replayed states",
+  "controls": [
+    {
+      "code": "I2_FORWARD_SETTLED_DIGEST_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C1",
+      "layer": 1,
+      "tamper": "delete one event",
+      "verdict": "REJECTED"
+    },
+    {
+      "code": "I2_OLD_VALUE_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C2",
+      "layer": 1,
+      "tamper": "duplicate one event under a fresh identifier",
+      "verdict": "REJECTED"
+    },
+    {
+      "code": "I2_FORWARD_SETTLED_DIGEST_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C3",
+      "layer": 1,
+      "tamper": "alter one string of the settled corpus",
+      "verdict": "REJECTED"
+    },
+    {
+      "code": "I2_FORWARD_SETTLED_DIGEST_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C4",
+      "layer": 1,
+      "tamper": "alter one string of the initial corpus",
+      "verdict": "REJECTED"
+    },
+    {
+      "code": "I2_OLD_VALUE_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C5",
+      "layer": 1,
+      "tamper": "redirect one pointer to a sibling field",
+      "verdict": "REJECTED"
+    },
+    {
+      "distinct_patched_studies": 29,
+      "events_replayed": 106,
+      "expected": "ACCEPTED",
+      "id": "C6",
+      "layer": 1,
+      "tamper": "transpose two adjacent events of one study that edit different fields",
+      "verdict": "ACCEPTED"
+    },
+    {
+      "code": "I2_PRE_HASH_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C6",
+      "layer": 2,
+      "tamper": "transpose two adjacent events of one study that edit different fields",
+      "verdict": "REJECTED"
+    },
+    {
+      "distinct_patched_studies": 29,
+      "events_replayed": 106,
+      "expected": "ACCEPTED",
+      "id": "C7",
+      "layer": 2,
+      "ledger_digest_changed": true,
+      "tamper": "reword one rationale",
+      "verdict": "ACCEPTED"
+    },
+    {
+      "distinct_patched_studies": 29,
+      "events_replayed": 106,
+      "expected": "ACCEPTED",
+      "id": "C8",
+      "layer": 1,
+      "tamper": "overwrite one per-step study digest",
+      "verdict": "ACCEPTED"
+    },
+    {
+      "code": "I2_POST_HASH_MISMATCH",
+      "expected": "REJECTED",
+      "id": "C8",
+      "layer": 2,
+      "tamper": "overwrite one per-step study digest",
+      "verdict": "REJECTED"
+    }
+  ],
+  "controls_as_expected": 10,
+  "controls_total": 10,
+  "production_convention_replay": {
+    "digest_convention": "sha256(json.dumps(study, sort_keys=True, ensure_ascii=False))",
+    "events": 106,
+    "forward_payload_equals_v4": true,
+    "guard_or_digest_failures": 0,
+    "patched_studies": 29,
+    "reverse_payload_equals_v1": true
+  },
+  "reference_digests": {
+    "initial_corpus_sha256": "13d72762f0c9d465e087d78e6fa170fcac5c6fe895a2d16f306256d2df568bff",
+    "ledger_sha256": "6a5aee8a7e3df3cf5881badee82a6b33c3f8902ebb23f2810c8b28726c765be3",
+    "settled_corpus_sha256": "b4ffc780cda351842e6ad39dc8f3c9ad1fa79480649678e2fc73bdec865a99c0"
+  },
+  "reference_release": "v3.1",
+  "reference_replay": {
+    "layer1": {
+      "distinct_patched_studies": 29,
+      "events_replayed": 106,
+      "verdict": "ACCEPTED"
+    },
+    "layer2": {
+      "distinct_patched_studies": 29,
+      "events_replayed": 106,
+      "verdict": "ACCEPTED"
+    }
+  },
+  "reference_sha256": "b97857207035cf6d3b73e4ff9f7d7d3153b2fa823b7c0e7c5ae2f9e1e4c58f29"
+}

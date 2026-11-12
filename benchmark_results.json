@@ -1,0 +1,4031 @@
+{
+  "benchmark_version": "ceg-synthetic-benchmark-3.0",
+  "reference_version": "3.1",
+  "total_cases": 1931,
+  "adversarial_cases": 1521,
+  "valid_cases": 410,
+  "distinct_templates": 199,
+  "suites": {
+    "core": {
+      "cases": 800,
+      "adversarial_cases": 600,
+      "valid_cases": 200,
+      "distinct_templates": 37
+    },
+    "stress": {
+      "cases": 800,
+      "adversarial_cases": 600,
+      "valid_cases": 200,
+      "distinct_templates": 59
+    },
+    "residual": {
+      "cases": 240,
+      "adversarial_cases": 240,
+      "valid_cases": 0,
+      "distinct_templates": 12
+    },
+    "redteam": {
+      "cases": 43,
+      "adversarial_cases": 43,
+      "valid_cases": 0,
+      "distinct_templates": 43
+    },
+    "gauntlet": {
+      "cases": 48,
+      "adversarial_cases": 38,
+      "valid_cases": 10,
+      "distinct_templates": 48
+    }
+  },
+  "worked_vignette_verification": {
+    "drug_development": {
+      "domain_name": "drug_development",
+      "studies_count": 5,
+      "variables_count": 11,
+      "atoms_count": 9,
+      "patch_replay": {
+        "events_replayed": 3,
+        "distinct_patched_studies": 2,
+        "initial_sha256": "a12490cea51f0c7b247e2ce22d745ce7c18f4812fc99826cb7041f67e96ccae1",
+        "settled_sha256": "93b4de08b9a8949437d60ec57f81413b20fbeb4ee8a121d3c6d3128cd32ef66d",
+        "ledger_sha256": "0b722540787b22281ebcef990e16bb93715369dc0e432ece803566f089a86313",
+        "step_digests_checked": true,
+        "bijective_replay_verified": true
+      },
+      "atoms_bound_to_settled_corpus": true,
+      "valid_records_verified": {
+        "SYN-CLIN-01": {
+          "polarity": "SUPPORTS",
+          "transfer_classes": {
+            "S104:O1": "DIRECT_MATCH"
+          },
+          "unresolved_axes": [],
+          "promotion_decision": "PROMOTE_QUANTITATIVE_PARAMETER"
+        },
+        "SYN-BRIDGE-02": {
+          "polarity": "CANDIDATE_UPGRADE",
+          "transfer_classes": {
+            "S102:O1": "BOUNDED_BRIDGE",
+            "S103:O1": "BOUNDED_BRIDGE",
+            "S103:O2": "BOUNDED_BRIDGE"
+          },
+          "unresolved_axes": [
+            "disease_chronicity",
+            "dosing_exposure",
+            "model_system",
+            "readout_maturity"
+          ],
+          "promotion_decision": "HOLD_FOR_PROSPECTIVE_FALSIFIER"
+        },
+        "SYN-SCOPE-03": {
+          "polarity": "FALSIFIED_GRAVEYARD",
+          "transfer_classes": {},
+          "unresolved_axes": [],
+          "promotion_decision": "QUALITATIVE_SCOPING_ONLY"
+        }
+      },
+      "invalid_probes_rejected": {
+        "PROBE_INADMISSIBLE_2D_OVERCLAIM": {
+          "expected_code_prefix": "I4_INADMISSIBLE_CONTEXT_TRANSFER",
+          "violations": [
+            "I4_INADMISSIBLE_CONTEXT_TRANSFER: transfers={'S101:O1': 'INADMISSIBLE_TRANSFER'}"
+          ]
+        },
+        "PROBE_CLAUSE_CROSS_OUTCOME_SWAP": {
+          "expected_code_prefix": "I3_CLAUSE_CROSS_OUTCOME_SWAP",
+          "violations": [
+            "I3_CLAUSE_CROSS_OUTCOME_SWAP (S103:O1): value '96.2 ng/mL' belongs to sibling tuple ['S103:O2']",
+            "I3_CLAUSE_CROSS_OUTCOME_SWAP (S103:O2): value '29.4 %' belongs to sibling tuple ['S103:O1']"
+          ]
+        },
+        "PROBE_POOLED_CLAUSE_ENDPOINT_MISBINDING_CAUGHT_BY_I3_TYPED": {
+          "expected_code_prefix": "I3_TYPED_QUANTITY_MISMATCH",
+          "violations": [
+            "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION (['S104:O1', 'S104:O2']): numerals ['-31', '-79.5'] cannot be bound to one cited outcome",
+            "I3_TYPED_QUANTITY_MISMATCH (PROP:BAD-03): QuantitySpec(kind='point_level', relation='=', value='-31.0', lower=None, upper=None, unit='mL', unit_dimension='volume', change_direction=None, missing_reason=None) != QuantitySpec(kind='point_level', relation='=', value='-28.5', lower=None, upper=None, unit='mL', unit_dimension='volume', change_direction=None, missing_reason=None)",
+            "I3_TYPED_COMPARATOR_QUANTITY_MISMATCH (PROP:BAD-03): QuantitySpec(kind='point_level', relation='=', value='-79.5', lower=None, upper=None, unit='mL', unit_dimension='volume', change_direction=None, missing_reason=None) != QuantitySpec(kind='point_level', relation='=', value='-84.0', lower=None, upper=None, unit='mL', unit_dimension='volume', change_direction=None, missing_reason=None)",
+            "I3_TYPED_PROMOTION_COVERAGE_GAP: no typed proposition for ['S104:O2']"
+          ]
+        },
+        "PROBE_UNDIGITIZED_FIGURE_PROMOTION": {
+          "expected_code_prefix": "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE",
+          "violations": [
+            "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE"
+          ]
+        },
+        "PROBE_SUPPORT_COUNTER_OVERLAP": {
+          "expected_code_prefix": "I6_SUPPORT_COUNTEREVIDENCE_OVERLAP",
+          "violations": [
+            "I6_SUPPORT_COUNTEREVIDENCE_OVERLAP: ['S104:O3']"
+          ]
+        }
+      }
+    },
+    "sport_science": {
+      "domain_name": "sport_science",
+      "studies_count": 2,
+      "variables_count": 4,
+      "atoms_count": 2,
+      "patch_replay": {
+        "events_replayed": 1,
+        "distinct_patched_studies": 1,
+        "initial_sha256": "5f3c17012fbceef40a5ef526edf1d1d1e23873427fbf8b5b95bb03a4e25f42d0",
+        "settled_sha256": "af45e4e1608babaabb5b0a5218310ffd20e71a1bb9a151b8df61b59c4eadd0ee",
+        "ledger_sha256": "33bbfad523288de21a8748d873c9ca2843913524eab1edfa9fa1fd3dcb26a0e6",
+        "step_digests_checked": true,
+        "bijective_replay_verified": true
+      },
+      "atoms_bound_to_settled_corpus": true,
+      "valid_records_verified": {
+        "SPORT-PROM-01": {
+          "polarity": "SUPPORTS",
+          "transfer_classes": {
+            "E202:O1": "DIRECT_MATCH"
+          },
+          "unresolved_axes": [],
+          "promotion_decision": "PROMOTE_QUANTITATIVE_PARAMETER"
+        }
+      },
+      "invalid_probes_rejected": {
+        "SPORT_VITRO_OVERCLAIM": {
+          "expected_code_prefix": "I4_INADMISSIBLE_CONTEXT_TRANSFER",
+          "violations": [
+            "I3_TYPED_MISSING_FOR_QUANTITATIVE_PROMOTION",
+            "I4_ILLEGAL_QUANTITATIVE_PROMOTION_ACROSS_CONTEXT_GAP: transfers={'E201:O1': 'INADMISSIBLE_TRANSFER'}, unresolved=['cohort_training_tier', 'environmental_stress']",
+            "I4_INADMISSIBLE_CONTEXT_TRANSFER: transfers={'E201:O1': 'INADMISSIBLE_TRANSFER'}"
+          ]
+        }
+      }
+    }
+  },
+  "overall_summary": {
+    "core": {
+      "V0_citation_presence": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 600,
+        "valid_total": 200,
+        "valid_accepted": 200,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V1_study_pool_numeric": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 90,
+        "adversarial_accepted": 510,
+        "valid_total": 200,
+        "valid_accepted": 200,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 15.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V2_prose_pooled_permitted": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 300,
+        "adversarial_accepted": 300,
+        "valid_total": 200,
+        "valid_accepted": 200,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 50.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V2s_prose_pooled_rejected": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 360,
+        "adversarial_accepted": 240,
+        "valid_total": 200,
+        "valid_accepted": 200,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 60.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V3_full_ceg": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 600,
+        "adversarial_accepted": 0,
+        "valid_total": 200,
+        "valid_accepted": 200,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 100.0,
+        "valid_acceptance_rate_pct": 100.0
+      }
+    },
+    "stress": {
+      "V0_citation_presence": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 600,
+        "valid_total": 200,
+        "valid_accepted": 200,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V1_study_pool_numeric": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 10,
+        "adversarial_accepted": 590,
+        "valid_total": 200,
+        "valid_accepted": 153,
+        "valid_rejected": 47,
+        "adversarial_rejection_rate_pct": 1.67,
+        "valid_acceptance_rate_pct": 76.5
+      },
+      "V2_prose_pooled_permitted": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 420,
+        "adversarial_accepted": 180,
+        "valid_total": 200,
+        "valid_accepted": 150,
+        "valid_rejected": 50,
+        "adversarial_rejection_rate_pct": 70.0,
+        "valid_acceptance_rate_pct": 75.0
+      },
+      "V2s_prose_pooled_rejected": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 480,
+        "adversarial_accepted": 120,
+        "valid_total": 200,
+        "valid_accepted": 100,
+        "valid_rejected": 100,
+        "adversarial_rejection_rate_pct": 80.0,
+        "valid_acceptance_rate_pct": 50.0
+      },
+      "V3_full_ceg": {
+        "adversarial_total": 600,
+        "adversarial_rejected": 600,
+        "adversarial_accepted": 0,
+        "valid_total": 200,
+        "valid_accepted": 100,
+        "valid_rejected": 100,
+        "adversarial_rejection_rate_pct": 100.0,
+        "valid_acceptance_rate_pct": 50.0
+      }
+    },
+    "residual": {
+      "V0_citation_presence": {
+        "adversarial_total": 240,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 240,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0
+      },
+      "V1_study_pool_numeric": {
+        "adversarial_total": 240,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 240,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0
+      },
+      "V2_prose_pooled_permitted": {
+        "adversarial_total": 240,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 240,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0
+      },
+      "V2s_prose_pooled_rejected": {
+        "adversarial_total": 240,
+        "adversarial_rejected": 20,
+        "adversarial_accepted": 220,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 8.33
+      },
+      "V3_full_ceg": {
+        "adversarial_total": 240,
+        "adversarial_rejected": 20,
+        "adversarial_accepted": 220,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 8.33
+      }
+    },
+    "redteam": {
+      "V0_citation_presence": {
+        "adversarial_total": 43,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 43,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0
+      },
+      "V1_study_pool_numeric": {
+        "adversarial_total": 43,
+        "adversarial_rejected": 1,
+        "adversarial_accepted": 42,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 2.33
+      },
+      "V2_prose_pooled_permitted": {
+        "adversarial_total": 43,
+        "adversarial_rejected": 40,
+        "adversarial_accepted": 3,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 93.02
+      },
+      "V2s_prose_pooled_rejected": {
+        "adversarial_total": 43,
+        "adversarial_rejected": 43,
+        "adversarial_accepted": 0,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 100.0
+      },
+      "V3_full_ceg": {
+        "adversarial_total": 43,
+        "adversarial_rejected": 43,
+        "adversarial_accepted": 0,
+        "valid_total": 0,
+        "valid_accepted": 0,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 100.0
+      }
+    },
+    "gauntlet": {
+      "V0_citation_presence": {
+        "adversarial_total": 38,
+        "adversarial_rejected": 0,
+        "adversarial_accepted": 38,
+        "valid_total": 10,
+        "valid_accepted": 10,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 0.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V1_study_pool_numeric": {
+        "adversarial_total": 38,
+        "adversarial_rejected": 7,
+        "adversarial_accepted": 31,
+        "valid_total": 10,
+        "valid_accepted": 10,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 18.42,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V2_prose_pooled_permitted": {
+        "adversarial_total": 38,
+        "adversarial_rejected": 38,
+        "adversarial_accepted": 0,
+        "valid_total": 10,
+        "valid_accepted": 10,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 100.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V2s_prose_pooled_rejected": {
+        "adversarial_total": 38,
+        "adversarial_rejected": 38,
+        "adversarial_accepted": 0,
+        "valid_total": 10,
+        "valid_accepted": 10,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 100.0,
+        "valid_acceptance_rate_pct": 100.0
+      },
+      "V3_full_ceg": {
+        "adversarial_total": 38,
+        "adversarial_rejected": 38,
+        "adversarial_accepted": 0,
+        "valid_total": 10,
+        "valid_accepted": 10,
+        "valid_rejected": 0,
+        "adversarial_rejection_rate_pct": 100.0,
+        "valid_acceptance_rate_pct": 100.0
+      }
+    }
+  },
+  "per_stratum_breakdown": {
+    "P1_valid_direct_promotion": {
+      "suite": "core",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "direct": 50
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "direct"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "direct"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "direct"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "direct"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "direct"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "P2_valid_bounded_bridge": {
+      "suite": "core",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "bridge": 50
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "bridge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "bridge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "bridge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "bridge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "bridge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "P3_valid_multituple_scoping": {
+      "suite": "core",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "respectively": 50
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "P4_valid_counterevidence_boundary": {
+      "suite": "core",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "counter": 50
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "counter"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "counter"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "counter"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "counter"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "counter"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "F1_fabricated_numeric_literal": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "fabricated": 60
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "fabricated"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fabricated"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fabricated"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fabricated"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fabricated"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "F2_intrastudy_cross_outcome_bleed": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "bleed": 60
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "bleed"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "bleed"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "bleed"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "bleed"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "bleed"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "F3_lexical_and_unicode_evasion": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "invisible:U+00AD": 5,
+        "invisible:U+200B": 5,
+        "invisible:U+200D": 5,
+        "invisible:U+202E": 5,
+        "invisible:U+2060": 5,
+        "invisible:U+FEFF": 5,
+        "lexical:five-fold": 5,
+        "lexical:forty percent": 5,
+        "lexical:seventy percent": 5,
+        "lexical:tripled": 5,
+        "lexical:¾": 5,
+        "lexical:⅓": 5
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "invisible:U+00AD",
+            "invisible:U+200B",
+            "invisible:U+200D",
+            "invisible:U+202E",
+            "invisible:U+2060",
+            "invisible:U+FEFF",
+            "lexical:five-fold",
+            "lexical:forty percent",
+            "lexical:seventy percent",
+            "lexical:tripled",
+            "lexical:¾",
+            "lexical:⅓"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 30,
+          "rejected": 30,
+          "accepted_templates": [
+            "lexical:five-fold",
+            "lexical:forty percent",
+            "lexical:seventy percent",
+            "lexical:tripled",
+            "lexical:¾",
+            "lexical:⅓"
+          ],
+          "rejected_templates": [
+            "invisible:U+00AD",
+            "invisible:U+200B",
+            "invisible:U+200D",
+            "invisible:U+202E",
+            "invisible:U+2060",
+            "invisible:U+FEFF"
+          ],
+          "rejection_rate_pct": 50.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "invisible:U+00AD",
+            "invisible:U+200B",
+            "invisible:U+200D",
+            "invisible:U+202E",
+            "invisible:U+2060",
+            "invisible:U+FEFF",
+            "lexical:five-fold",
+            "lexical:forty percent",
+            "lexical:seventy percent",
+            "lexical:tripled",
+            "lexical:¾",
+            "lexical:⅓"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "invisible:U+00AD",
+            "invisible:U+200B",
+            "invisible:U+200D",
+            "invisible:U+202E",
+            "invisible:U+2060",
+            "invisible:U+FEFF",
+            "lexical:five-fold",
+            "lexical:forty percent",
+            "lexical:seventy percent",
+            "lexical:tripled",
+            "lexical:¾",
+            "lexical:⅓"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "invisible:U+00AD",
+            "invisible:U+200B",
+            "invisible:U+200D",
+            "invisible:U+202E",
+            "invisible:U+2060",
+            "invisible:U+FEFF",
+            "lexical:five-fold",
+            "lexical:forty percent",
+            "lexical:seventy percent",
+            "lexical:tripled",
+            "lexical:¾",
+            "lexical:⅓"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 12
+    },
+    "F4_multituple_clause_swap": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "connector:;": 5,
+        "connector:and": 10,
+        "connector:in contrast to": 5,
+        "connector:versus": 10,
+        "connector:whereas": 5,
+        "connector:while": 10,
+        "respectively": 15
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "connector:;",
+            "connector:and",
+            "connector:in contrast to",
+            "connector:versus",
+            "connector:whereas",
+            "connector:while",
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "connector:;",
+            "connector:and",
+            "connector:in contrast to",
+            "connector:versus",
+            "connector:whereas",
+            "connector:while",
+            "respectively"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "connector:;",
+            "connector:and",
+            "connector:in contrast to",
+            "connector:versus",
+            "connector:whereas",
+            "connector:while",
+            "respectively"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "connector:;",
+            "connector:and",
+            "connector:in contrast to",
+            "connector:versus",
+            "connector:whereas",
+            "connector:while",
+            "respectively"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "connector:;",
+            "connector:and",
+            "connector:in contrast to",
+            "connector:versus",
+            "connector:whereas",
+            "connector:while",
+            "respectively"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 7
+    },
+    "F5_arm_swap_and_polarity_reversal": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "arm_swap": 20,
+        "from_to": 20,
+        "verb": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "arm_swap",
+            "from_to",
+            "verb"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "arm_swap",
+            "from_to",
+            "verb"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arm_swap",
+            "from_to",
+            "verb"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arm_swap",
+            "from_to",
+            "verb"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arm_swap",
+            "from_to",
+            "verb"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F6_pooled_misbinding_in_prose_and_proposition": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "pooled_both": 60
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "pooled_both"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "pooled_both"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "pooled_both"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "pooled_both"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "pooled_both"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 1
+    },
+    "F7_scale_conflation_and_multiarm_truncation": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "arm_truncation": 30,
+        "scale_conflation": 30
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "arm_truncation",
+            "scale_conflation"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "arm_truncation",
+            "scale_conflation"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "arm_truncation",
+            "scale_conflation"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "arm_truncation",
+            "scale_conflation"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arm_truncation",
+            "scale_conflation"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 2
+    },
+    "F8_context_poset_transfer_overclaim": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "inadmissible_upgrade": 30,
+        "unbridged_promotion": 30
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "inadmissible_upgrade",
+            "unbridged_promotion"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "inadmissible_upgrade",
+            "unbridged_promotion"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "inadmissible_upgrade",
+            "unbridged_promotion"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "inadmissible_upgrade",
+            "unbridged_promotion"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "inadmissible_upgrade",
+            "unbridged_promotion"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 2
+    },
+    "F9_undigitized_or_unverified_promotion": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "undigitized": 30,
+        "unverified": 30
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "undigitized",
+            "unverified"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "undigitized",
+            "unverified"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "undigitized",
+            "unverified"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "undigitized",
+            "unverified"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "undigitized",
+            "unverified"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 2
+    },
+    "F10_support_counter_overlap_and_ledger_tamper": {
+      "suite": "core",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "overlap": 30,
+        "settled_drift": 30
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "overlap",
+            "settled_drift"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "overlap",
+            "settled_drift"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "overlap",
+            "settled_drift"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "overlap",
+            "settled_drift"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "overlap",
+            "settled_drift"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 2
+    },
+    "F11_pooled_prose_misbinding_true_propositions": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "leading_pooled_true_propositions": 20,
+        "trailing_pooled_no_proposition": 20,
+        "trailing_pooled_true_propositions": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "leading_pooled_true_propositions",
+            "trailing_pooled_no_proposition",
+            "trailing_pooled_true_propositions"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "leading_pooled_true_propositions",
+            "trailing_pooled_no_proposition",
+            "trailing_pooled_true_propositions"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "leading_pooled_true_propositions",
+            "trailing_pooled_no_proposition",
+            "trailing_pooled_true_propositions"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "leading_pooled_true_propositions",
+            "trailing_pooled_no_proposition",
+            "trailing_pooled_true_propositions"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "leading_pooled_true_propositions",
+            "trailing_pooled_no_proposition",
+            "trailing_pooled_true_propositions"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F12_typed_coverage_and_comparator_gaps": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "comparator_quantity_misbound": 20,
+        "promoted_tuple_uncovered": 20,
+        "sample_size_omitted": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparator_quantity_misbound",
+            "promoted_tuple_uncovered",
+            "sample_size_omitted"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparator_quantity_misbound",
+            "promoted_tuple_uncovered",
+            "sample_size_omitted"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparator_quantity_misbound",
+            "promoted_tuple_uncovered",
+            "sample_size_omitted"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparator_quantity_misbound",
+            "promoted_tuple_uncovered",
+            "sample_size_omitted"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparator_quantity_misbound",
+            "promoted_tuple_uncovered",
+            "sample_size_omitted"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F13_orphan_clause_bleed": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "compared_with_orphan": 20,
+        "semicolon_orphan": 20,
+        "versus_orphan": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "compared_with_orphan",
+            "semicolon_orphan",
+            "versus_orphan"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "compared_with_orphan",
+            "semicolon_orphan",
+            "versus_orphan"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "compared_with_orphan",
+            "semicolon_orphan",
+            "versus_orphan"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "compared_with_orphan",
+            "semicolon_orphan",
+            "versus_orphan"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "compared_with_orphan",
+            "semicolon_orphan",
+            "versus_orphan"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F14_respectively_misalignment": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "comparators_swapped_in_pairs": 20,
+        "leading_shared_numeral": 20,
+        "polarity_inside_list": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparators_swapped_in_pairs",
+            "leading_shared_numeral",
+            "polarity_inside_list"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparators_swapped_in_pairs",
+            "leading_shared_numeral",
+            "polarity_inside_list"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparators_swapped_in_pairs",
+            "leading_shared_numeral",
+            "polarity_inside_list"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparators_swapped_in_pairs",
+            "leading_shared_numeral",
+            "polarity_inside_list"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparators_swapped_in_pairs",
+            "leading_shared_numeral",
+            "polarity_inside_list"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F15_unit_scale_swap": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "days_to_weeks": 15,
+        "mL_to_L": 15,
+        "ng_to_mg_per_mL": 15,
+        "ug_to_mg_per_lung": 15
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "days_to_weeks",
+            "mL_to_L",
+            "ng_to_mg_per_mL",
+            "ug_to_mg_per_lung"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "days_to_weeks",
+            "mL_to_L",
+            "ng_to_mg_per_mL",
+            "ug_to_mg_per_lung"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "days_to_weeks",
+            "mL_to_L",
+            "ng_to_mg_per_mL",
+            "ug_to_mg_per_lung"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "days_to_weeks",
+            "mL_to_L",
+            "ng_to_mg_per_mL",
+            "ug_to_mg_per_lung"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "days_to_weeks",
+            "mL_to_L",
+            "ng_to_mg_per_mL",
+            "ug_to_mg_per_lung"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 4
+    },
+    "F16_numeral_role_confusion": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "endpoint_name_digit_as_value": 20,
+        "p_value_as_value": 20,
+        "sample_size_as_value": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit_as_value",
+            "p_value_as_value",
+            "sample_size_as_value"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit_as_value",
+            "p_value_as_value",
+            "sample_size_as_value"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "endpoint_name_digit_as_value",
+            "p_value_as_value",
+            "sample_size_as_value"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "endpoint_name_digit_as_value",
+            "p_value_as_value",
+            "sample_size_as_value"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "endpoint_name_digit_as_value",
+            "p_value_as_value",
+            "sample_size_as_value"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F17_tokenizer_evasion": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "leading_dot_decimal": 10,
+        "multiplicative_adverb": 10,
+        "numeral_glued_to_uppercase_token": 10,
+        "superscript_digits": 10,
+        "teen_number_word": 10,
+        "untabulated_vulgar_fraction": 10
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "leading_dot_decimal",
+            "multiplicative_adverb",
+            "numeral_glued_to_uppercase_token",
+            "superscript_digits",
+            "teen_number_word",
+            "untabulated_vulgar_fraction"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 10,
+          "accepted_templates": [
+            "leading_dot_decimal",
+            "multiplicative_adverb",
+            "superscript_digits",
+            "teen_number_word",
+            "untabulated_vulgar_fraction"
+          ],
+          "rejected_templates": [
+            "numeral_glued_to_uppercase_token"
+          ],
+          "rejection_rate_pct": 16.67
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "leading_dot_decimal",
+            "multiplicative_adverb",
+            "numeral_glued_to_uppercase_token",
+            "superscript_digits",
+            "teen_number_word",
+            "untabulated_vulgar_fraction"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "leading_dot_decimal",
+            "multiplicative_adverb",
+            "numeral_glued_to_uppercase_token",
+            "superscript_digits",
+            "teen_number_word",
+            "untabulated_vulgar_fraction"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "leading_dot_decimal",
+            "multiplicative_adverb",
+            "numeral_glued_to_uppercase_token",
+            "superscript_digits",
+            "teen_number_word",
+            "untabulated_vulgar_fraction"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 6
+    },
+    "F18_open_class_polarity_inversion": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "comparative_adjective": 15,
+        "irregular_verb": 15,
+        "negated_participle": 15,
+        "nominalization": 15
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparative_adjective",
+            "irregular_verb",
+            "negated_participle",
+            "nominalization"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparative_adjective",
+            "irregular_verb",
+            "negated_participle",
+            "nominalization"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparative_adjective",
+            "irregular_verb",
+            "negated_participle",
+            "nominalization"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparative_adjective",
+            "irregular_verb",
+            "negated_participle",
+            "nominalization"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparative_adjective",
+            "irregular_verb",
+            "negated_participle",
+            "nominalization"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 4
+    },
+    "F20_mixed_polarity_cues": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "absent_reduction": 20,
+        "negation_after_cue": 20,
+        "rather_than": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "absent_reduction",
+            "negation_after_cue",
+            "rather_than"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "absent_reduction",
+            "negation_after_cue",
+            "rather_than"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "absent_reduction",
+            "negation_after_cue",
+            "rather_than"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "absent_reduction",
+            "negation_after_cue",
+            "rather_than"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "absent_reduction",
+            "negation_after_cue",
+            "rather_than"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "F19_ledger_and_binding_tamper": {
+      "suite": "stress",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "atom_drift": 12,
+        "cross_study_attribution": 12,
+        "noop_event": 12,
+        "pointer_negative_index": 12,
+        "pointer_noncanonical": 12
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "atom_drift",
+            "cross_study_attribution",
+            "noop_event",
+            "pointer_negative_index",
+            "pointer_noncanonical"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "atom_drift",
+            "cross_study_attribution",
+            "noop_event",
+            "pointer_negative_index",
+            "pointer_noncanonical"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "atom_drift",
+            "cross_study_attribution",
+            "noop_event",
+            "pointer_negative_index",
+            "pointer_noncanonical"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "atom_drift",
+            "cross_study_attribution",
+            "noop_event",
+            "pointer_negative_index",
+            "pointer_noncanonical"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 60,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "atom_drift",
+            "cross_study_attribution",
+            "noop_event",
+            "pointer_negative_index",
+            "pointer_noncanonical"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 5
+    },
+    "P5_valid_pooled_citation": {
+      "suite": "stress",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "pooled_true_O1": 25,
+        "pooled_true_O2": 25
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "pooled_true_O1",
+            "pooled_true_O2"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "pooled_true_O1",
+            "pooled_true_O2"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "pooled_true_O1",
+            "pooled_true_O2"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 50,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "pooled_true_O1",
+            "pooled_true_O2"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 50,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "pooled_true_O1",
+            "pooled_true_O2"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 2
+    },
+    "P6_valid_natural_syntax_supported": {
+      "suite": "stress",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "citation_last_with_versus": 7,
+        "comparator_fronted_to_from": 8,
+        "en_dash_minus": 7,
+        "respectively_leading_context_numeral": 7,
+        "respectively_pairs": 7,
+        "trailing_benign_negation": 7,
+        "trial_design_idiom": 7
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "citation_last_with_versus",
+            "comparator_fronted_to_from",
+            "en_dash_minus",
+            "respectively_leading_context_numeral",
+            "respectively_pairs",
+            "trailing_benign_negation",
+            "trial_design_idiom"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 43,
+          "rejected": 7,
+          "accepted_templates": [
+            "citation_last_with_versus",
+            "comparator_fronted_to_from",
+            "respectively_leading_context_numeral",
+            "respectively_pairs",
+            "trailing_benign_negation",
+            "trial_design_idiom"
+          ],
+          "rejected_templates": [
+            "en_dash_minus"
+          ],
+          "rejection_rate_pct": 14.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "citation_last_with_versus",
+            "comparator_fronted_to_from",
+            "en_dash_minus",
+            "respectively_leading_context_numeral",
+            "respectively_pairs",
+            "trailing_benign_negation",
+            "trial_design_idiom"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "citation_last_with_versus",
+            "comparator_fronted_to_from",
+            "en_dash_minus",
+            "respectively_leading_context_numeral",
+            "respectively_pairs",
+            "trailing_benign_negation",
+            "trial_design_idiom"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "citation_last_with_versus",
+            "comparator_fronted_to_from",
+            "en_dash_minus",
+            "respectively_leading_context_numeral",
+            "respectively_pairs",
+            "trailing_benign_negation",
+            "trial_design_idiom"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 7
+    },
+    "P7_valid_natural_syntax_unsupported": {
+      "suite": "stress",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "contextual_numeral_not_in_atom": 10,
+        "derived_difference": 10,
+        "dispersion_not_in_atom": 10,
+        "magnitude_of_negative_change": 10,
+        "negation_scoped_to_other_noun": 10
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "contextual_numeral_not_in_atom",
+            "derived_difference",
+            "dispersion_not_in_atom",
+            "magnitude_of_negative_change",
+            "negation_scoped_to_other_noun"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 10,
+          "rejected": 40,
+          "accepted_templates": [
+            "negation_scoped_to_other_noun"
+          ],
+          "rejected_templates": [
+            "contextual_numeral_not_in_atom",
+            "derived_difference",
+            "dispersion_not_in_atom",
+            "magnitude_of_negative_change"
+          ],
+          "rejection_rate_pct": 80.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 50,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "contextual_numeral_not_in_atom",
+            "derived_difference",
+            "dispersion_not_in_atom",
+            "magnitude_of_negative_change",
+            "negation_scoped_to_other_noun"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 50,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "contextual_numeral_not_in_atom",
+            "derived_difference",
+            "dispersion_not_in_atom",
+            "magnitude_of_negative_change",
+            "negation_scoped_to_other_noun"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 50,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "contextual_numeral_not_in_atom",
+            "derived_difference",
+            "dispersion_not_in_atom",
+            "magnitude_of_negative_change",
+            "negation_scoped_to_other_noun"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 5
+    },
+    "P8_valid_canonical_rendering": {
+      "suite": "stress",
+      "is_adversarial": false,
+      "total_cases": 50,
+      "templates": {
+        "render:censored_observation:O2:M": 6,
+        "render:point_level:O1:C": 7,
+        "render:point_level:O1:M": 6,
+        "render:point_level:O1:P": 6,
+        "render:point_level:O2:C": 7,
+        "render:point_level:O2:P": 6,
+        "render:point_level:O3:C": 6,
+        "render:relative_change:O1:L": 6
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "render:censored_observation:O2:M",
+            "render:point_level:O1:C",
+            "render:point_level:O1:M",
+            "render:point_level:O1:P",
+            "render:point_level:O2:C",
+            "render:point_level:O2:P",
+            "render:point_level:O3:C",
+            "render:relative_change:O1:L"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "render:censored_observation:O2:M",
+            "render:point_level:O1:C",
+            "render:point_level:O1:M",
+            "render:point_level:O1:P",
+            "render:point_level:O2:C",
+            "render:point_level:O2:P",
+            "render:point_level:O3:C",
+            "render:relative_change:O1:L"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "render:censored_observation:O2:M",
+            "render:point_level:O1:C",
+            "render:point_level:O1:M",
+            "render:point_level:O1:P",
+            "render:point_level:O2:C",
+            "render:point_level:O2:P",
+            "render:point_level:O3:C",
+            "render:relative_change:O1:L"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "render:censored_observation:O2:M",
+            "render:point_level:O1:C",
+            "render:point_level:O1:M",
+            "render:point_level:O1:P",
+            "render:point_level:O2:C",
+            "render:point_level:O2:P",
+            "render:point_level:O3:C",
+            "render:relative_change:O1:L"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 50,
+          "rejected": 0,
+          "accepted_templates": [
+            "render:censored_observation:O2:M",
+            "render:point_level:O1:C",
+            "render:point_level:O1:M",
+            "render:point_level:O1:P",
+            "render:point_level:O2:C",
+            "render:point_level:O2:P",
+            "render:point_level:O3:C",
+            "render:relative_change:O1:L"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "R1_endpoint_noun_misnaming": {
+      "suite": "residual",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "and_split_binds_to_second_tuple": 20,
+        "sibling_noun": 20,
+        "single_tuple_wrong_noun": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "and_split_binds_to_second_tuple",
+            "sibling_noun",
+            "single_tuple_wrong_noun"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "and_split_binds_to_second_tuple",
+            "sibling_noun",
+            "single_tuple_wrong_noun"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "and_split_binds_to_second_tuple",
+            "sibling_noun",
+            "single_tuple_wrong_noun"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 40,
+          "rejected": 20,
+          "accepted_templates": [
+            "sibling_noun",
+            "single_tuple_wrong_noun"
+          ],
+          "rejected_templates": [
+            "and_split_binds_to_second_tuple"
+          ],
+          "rejection_rate_pct": 33.33
+        },
+        "V3_full_ceg": {
+          "accepted": 40,
+          "rejected": 20,
+          "accepted_templates": [
+            "sibling_noun",
+            "single_tuple_wrong_noun"
+          ],
+          "rejected_templates": [
+            "and_split_binds_to_second_tuple"
+          ],
+          "rejection_rate_pct": 33.33
+        }
+      },
+      "distinct_templates": 3
+    },
+    "R2_unitless_role_confusion": {
+      "suite": "residual",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "endpoint_name_digit": 20,
+        "p_value": 20,
+        "sample_size": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit",
+            "p_value",
+            "sample_size"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit",
+            "p_value",
+            "sample_size"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit",
+            "p_value",
+            "sample_size"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit",
+            "p_value",
+            "sample_size"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "endpoint_name_digit",
+            "p_value",
+            "sample_size"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "R3_qualitative_overclaim": {
+      "suite": "residual",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "abolished": 20,
+        "curative": 20,
+        "worsened_with_true_numbers": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "abolished",
+            "curative",
+            "worsened_with_true_numbers"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "abolished",
+            "curative",
+            "worsened_with_true_numbers"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "abolished",
+            "curative",
+            "worsened_with_true_numbers"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "abolished",
+            "curative",
+            "worsened_with_true_numbers"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "abolished",
+            "curative",
+            "worsened_with_true_numbers"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "R4_implicit_negation_of_true_direction": {
+      "suite": "residual",
+      "is_adversarial": true,
+      "total_cases": 60,
+      "templates": {
+        "contrary_to": 20,
+        "far_from": 20,
+        "illusory": 20
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "contrary_to",
+            "far_from",
+            "illusory"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "contrary_to",
+            "far_from",
+            "illusory"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "contrary_to",
+            "far_from",
+            "illusory"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "contrary_to",
+            "far_from",
+            "illusory"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 60,
+          "rejected": 0,
+          "accepted_templates": [
+            "contrary_to",
+            "far_from",
+            "illusory"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "T11_pooled_citation_forms": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 3,
+      "templates": {
+        "see_citation": 1,
+        "separate_parentheses": 1,
+        "square_brackets": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 3,
+          "rejected": 0,
+          "accepted_templates": [
+            "see_citation",
+            "separate_parentheses",
+            "square_brackets"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 3,
+          "rejected": 0,
+          "accepted_templates": [
+            "see_citation",
+            "separate_parentheses",
+            "square_brackets"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 3,
+          "rejected": 0,
+          "accepted_templates": [
+            "see_citation",
+            "separate_parentheses",
+            "square_brackets"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 3,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "see_citation",
+            "separate_parentheses",
+            "square_brackets"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 3,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "see_citation",
+            "separate_parentheses",
+            "square_brackets"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 3
+    },
+    "T14_list_variations": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 5,
+      "templates": {
+        "arms_named_values_reversed": 1,
+        "comparator_values_given_to_treated": 1,
+        "from_to_reversed_in_list": 1,
+        "inverted_verb_after_list": 1,
+        "pairs_internally_reversed": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 5,
+          "rejected": 0,
+          "accepted_templates": [
+            "arms_named_values_reversed",
+            "comparator_values_given_to_treated",
+            "from_to_reversed_in_list",
+            "inverted_verb_after_list",
+            "pairs_internally_reversed"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 5,
+          "rejected": 0,
+          "accepted_templates": [
+            "arms_named_values_reversed",
+            "comparator_values_given_to_treated",
+            "from_to_reversed_in_list",
+            "inverted_verb_after_list",
+            "pairs_internally_reversed"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 5,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arms_named_values_reversed",
+            "comparator_values_given_to_treated",
+            "from_to_reversed_in_list",
+            "inverted_verb_after_list",
+            "pairs_internally_reversed"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 5,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arms_named_values_reversed",
+            "comparator_values_given_to_treated",
+            "from_to_reversed_in_list",
+            "inverted_verb_after_list",
+            "pairs_internally_reversed"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 5,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "arms_named_values_reversed",
+            "comparator_values_given_to_treated",
+            "from_to_reversed_in_list",
+            "inverted_verb_after_list",
+            "pairs_internally_reversed"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 5
+    },
+    "T15_unit_variations": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 8,
+      "templates": {
+        "kg_per_lung": 1,
+        "litres": 1,
+        "lower_case_l": 1,
+        "mcg_per_mL": 1,
+        "months_abbreviated": 1,
+        "ng_per_uL": 1,
+        "thin_space_before_unit": 1,
+        "unit_in_parentheses": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "kg_per_lung",
+            "litres",
+            "lower_case_l",
+            "mcg_per_mL",
+            "months_abbreviated",
+            "ng_per_uL",
+            "thin_space_before_unit",
+            "unit_in_parentheses"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "kg_per_lung",
+            "litres",
+            "lower_case_l",
+            "mcg_per_mL",
+            "months_abbreviated",
+            "ng_per_uL",
+            "thin_space_before_unit",
+            "unit_in_parentheses"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "kg_per_lung",
+            "litres",
+            "lower_case_l",
+            "mcg_per_mL",
+            "months_abbreviated",
+            "ng_per_uL",
+            "thin_space_before_unit",
+            "unit_in_parentheses"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "kg_per_lung",
+            "litres",
+            "lower_case_l",
+            "mcg_per_mL",
+            "months_abbreviated",
+            "ng_per_uL",
+            "thin_space_before_unit",
+            "unit_in_parentheses"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "kg_per_lung",
+            "litres",
+            "lower_case_l",
+            "mcg_per_mL",
+            "months_abbreviated",
+            "ng_per_uL",
+            "thin_space_before_unit",
+            "unit_in_parentheses"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "T16_role_variations": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 7,
+      "templates": {
+        "p_value_as_fold": 1,
+        "p_value_with_other_unit": 1,
+        "per_cent": 1,
+        "sample_size_as_compound_word": 1,
+        "sample_size_as_word": 1,
+        "thin_space_percent": 1,
+        "unit_in_parentheses": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 7,
+          "rejected": 0,
+          "accepted_templates": [
+            "p_value_as_fold",
+            "p_value_with_other_unit",
+            "per_cent",
+            "sample_size_as_compound_word",
+            "sample_size_as_word",
+            "thin_space_percent",
+            "unit_in_parentheses"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 7,
+          "rejected": 0,
+          "accepted_templates": [
+            "p_value_as_fold",
+            "p_value_with_other_unit",
+            "per_cent",
+            "sample_size_as_compound_word",
+            "sample_size_as_word",
+            "thin_space_percent",
+            "unit_in_parentheses"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 7,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "p_value_as_fold",
+            "p_value_with_other_unit",
+            "per_cent",
+            "sample_size_as_compound_word",
+            "sample_size_as_word",
+            "thin_space_percent",
+            "unit_in_parentheses"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 7,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "p_value_as_fold",
+            "p_value_with_other_unit",
+            "per_cent",
+            "sample_size_as_compound_word",
+            "sample_size_as_word",
+            "thin_space_percent",
+            "unit_in_parentheses"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 7,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "p_value_as_fold",
+            "p_value_with_other_unit",
+            "per_cent",
+            "sample_size_as_compound_word",
+            "sample_size_as_word",
+            "thin_space_percent",
+            "unit_in_parentheses"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 7
+    },
+    "T17_tokenizer_variations": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 8,
+      "templates": {
+        "exponent_suffix": 1,
+        "fused_fold_word": 1,
+        "glued_integer_no_unit": 1,
+        "k_suffix": 1,
+        "million": 1,
+        "multiplier_prefix": 1,
+        "non_breaking_hyphen_minus": 1,
+        "ordinal_fraction": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "exponent_suffix",
+            "fused_fold_word",
+            "glued_integer_no_unit",
+            "k_suffix",
+            "million",
+            "multiplier_prefix",
+            "non_breaking_hyphen_minus",
+            "ordinal_fraction"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "exponent_suffix",
+            "fused_fold_word",
+            "glued_integer_no_unit",
+            "k_suffix",
+            "million",
+            "multiplier_prefix",
+            "non_breaking_hyphen_minus",
+            "ordinal_fraction"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "exponent_suffix",
+            "fused_fold_word",
+            "glued_integer_no_unit",
+            "k_suffix",
+            "million",
+            "multiplier_prefix",
+            "non_breaking_hyphen_minus",
+            "ordinal_fraction"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "exponent_suffix",
+            "fused_fold_word",
+            "glued_integer_no_unit",
+            "k_suffix",
+            "million",
+            "multiplier_prefix",
+            "non_breaking_hyphen_minus",
+            "ordinal_fraction"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "exponent_suffix",
+            "fused_fold_word",
+            "glued_integer_no_unit",
+            "k_suffix",
+            "million",
+            "multiplier_prefix",
+            "non_breaking_hyphen_minus",
+            "ordinal_fraction"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "T18_polarity_variations": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 6,
+      "templates": {
+        "comparative_arms_exchanged": 1,
+        "comparator_as_subject": 1,
+        "cue_reassigned_to_comparator": 1,
+        "negation_three_words_away": 1,
+        "negation_with_comma": 1,
+        "non_prefix": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 6,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparative_arms_exchanged",
+            "comparator_as_subject",
+            "cue_reassigned_to_comparator",
+            "negation_three_words_away",
+            "negation_with_comma",
+            "non_prefix"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 6,
+          "rejected": 0,
+          "accepted_templates": [
+            "comparative_arms_exchanged",
+            "comparator_as_subject",
+            "cue_reassigned_to_comparator",
+            "negation_three_words_away",
+            "negation_with_comma",
+            "non_prefix"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparative_arms_exchanged",
+            "comparator_as_subject",
+            "cue_reassigned_to_comparator",
+            "negation_three_words_away",
+            "negation_with_comma",
+            "non_prefix"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparative_arms_exchanged",
+            "comparator_as_subject",
+            "cue_reassigned_to_comparator",
+            "negation_three_words_away",
+            "negation_with_comma",
+            "non_prefix"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "comparative_arms_exchanged",
+            "comparator_as_subject",
+            "cue_reassigned_to_comparator",
+            "negation_three_words_away",
+            "negation_with_comma",
+            "non_prefix"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 6
+    },
+    "T5_arm_and_order_variations": {
+      "suite": "redteam",
+      "is_adversarial": true,
+      "total_cases": 6,
+      "templates": {
+        "canonical_rendering_values_exchanged": 1,
+        "comparator_value_given_to_focal_arm": 1,
+        "from_to_swap_decimal_commas": 1,
+        "from_to_swap_with_intervening_decimal": 1,
+        "unregistered_arm_paraphrase": 1,
+        "unrelated_from_to": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 6,
+          "rejected": 0,
+          "accepted_templates": [
+            "canonical_rendering_values_exchanged",
+            "comparator_value_given_to_focal_arm",
+            "from_to_swap_decimal_commas",
+            "from_to_swap_with_intervening_decimal",
+            "unregistered_arm_paraphrase",
+            "unrelated_from_to"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 5,
+          "rejected": 1,
+          "accepted_templates": [
+            "canonical_rendering_values_exchanged",
+            "comparator_value_given_to_focal_arm",
+            "from_to_swap_with_intervening_decimal",
+            "unregistered_arm_paraphrase",
+            "unrelated_from_to"
+          ],
+          "rejected_templates": [
+            "from_to_swap_decimal_commas"
+          ],
+          "rejection_rate_pct": 16.67
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "canonical_rendering_values_exchanged",
+            "comparator_value_given_to_focal_arm",
+            "from_to_swap_decimal_commas",
+            "from_to_swap_with_intervening_decimal",
+            "unregistered_arm_paraphrase",
+            "unrelated_from_to"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "canonical_rendering_values_exchanged",
+            "comparator_value_given_to_focal_arm",
+            "from_to_swap_decimal_commas",
+            "from_to_swap_with_intervening_decimal",
+            "unregistered_arm_paraphrase",
+            "unrelated_from_to"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "canonical_rendering_values_exchanged",
+            "comparator_value_given_to_focal_arm",
+            "from_to_swap_decimal_commas",
+            "from_to_swap_with_intervening_decimal",
+            "unregistered_arm_paraphrase",
+            "unrelated_from_to"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 6
+    },
+    "G1_per_clause_k_cycle_and_theft": {
+      "suite": "gauntlet",
+      "is_adversarial": true,
+      "total_cases": 8,
+      "templates": {
+        "although_without_comma_swap": 1,
+        "comma_appositive_comparative_arm_swap": 1,
+        "duplicate_cross_clause_value_theft": 1,
+        "even_though_without_comma_theft": 1,
+        "four_tuple_k_cycle": 1,
+        "one_way_cross_clause_theft": 1,
+        "though_without_comma_swap": 1,
+        "three_tuple_k_cycle": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_without_comma_swap",
+            "comma_appositive_comparative_arm_swap",
+            "duplicate_cross_clause_value_theft",
+            "even_though_without_comma_theft",
+            "four_tuple_k_cycle",
+            "one_way_cross_clause_theft",
+            "though_without_comma_swap",
+            "three_tuple_k_cycle"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_without_comma_swap",
+            "comma_appositive_comparative_arm_swap",
+            "duplicate_cross_clause_value_theft",
+            "even_though_without_comma_theft",
+            "four_tuple_k_cycle",
+            "one_way_cross_clause_theft",
+            "though_without_comma_swap",
+            "three_tuple_k_cycle"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "although_without_comma_swap",
+            "comma_appositive_comparative_arm_swap",
+            "duplicate_cross_clause_value_theft",
+            "even_though_without_comma_theft",
+            "four_tuple_k_cycle",
+            "one_way_cross_clause_theft",
+            "though_without_comma_swap",
+            "three_tuple_k_cycle"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "although_without_comma_swap",
+            "comma_appositive_comparative_arm_swap",
+            "duplicate_cross_clause_value_theft",
+            "even_though_without_comma_theft",
+            "four_tuple_k_cycle",
+            "one_way_cross_clause_theft",
+            "though_without_comma_swap",
+            "three_tuple_k_cycle"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "although_without_comma_swap",
+            "comma_appositive_comparative_arm_swap",
+            "duplicate_cross_clause_value_theft",
+            "even_though_without_comma_theft",
+            "four_tuple_k_cycle",
+            "one_way_cross_clause_theft",
+            "though_without_comma_swap",
+            "three_tuple_k_cycle"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "G2_unicode_marks_and_homoglyphs": {
+      "suite": "gauntlet",
+      "is_adversarial": true,
+      "total_cases": 8,
+      "templates": {
+        "combining_acute_u0301_digit_split": 1,
+        "combining_mark_on_ascii_identifier": 1,
+        "cyrillic_mixed_script_homoglyph": 1,
+        "enclosing_circle_u20dd_digit_split": 1,
+        "figure_space_u2007_digit_splitter": 1,
+        "mathematical_bold_digit_homoglyph": 1,
+        "nbsp_u00a0_digit_splitter": 1,
+        "variation_selector_ufe0f_digit_splitter": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "combining_acute_u0301_digit_split",
+            "combining_mark_on_ascii_identifier",
+            "cyrillic_mixed_script_homoglyph",
+            "enclosing_circle_u20dd_digit_split",
+            "figure_space_u2007_digit_splitter",
+            "mathematical_bold_digit_homoglyph",
+            "nbsp_u00a0_digit_splitter",
+            "variation_selector_ufe0f_digit_splitter"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 3,
+          "rejected": 5,
+          "accepted_templates": [
+            "combining_mark_on_ascii_identifier",
+            "cyrillic_mixed_script_homoglyph",
+            "mathematical_bold_digit_homoglyph"
+          ],
+          "rejected_templates": [
+            "combining_acute_u0301_digit_split",
+            "enclosing_circle_u20dd_digit_split",
+            "figure_space_u2007_digit_splitter",
+            "nbsp_u00a0_digit_splitter",
+            "variation_selector_ufe0f_digit_splitter"
+          ],
+          "rejection_rate_pct": 62.5
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "combining_acute_u0301_digit_split",
+            "combining_mark_on_ascii_identifier",
+            "cyrillic_mixed_script_homoglyph",
+            "enclosing_circle_u20dd_digit_split",
+            "figure_space_u2007_digit_splitter",
+            "mathematical_bold_digit_homoglyph",
+            "nbsp_u00a0_digit_splitter",
+            "variation_selector_ufe0f_digit_splitter"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "combining_acute_u0301_digit_split",
+            "combining_mark_on_ascii_identifier",
+            "cyrillic_mixed_script_homoglyph",
+            "enclosing_circle_u20dd_digit_split",
+            "figure_space_u2007_digit_splitter",
+            "mathematical_bold_digit_homoglyph",
+            "nbsp_u00a0_digit_splitter",
+            "variation_selector_ufe0f_digit_splitter"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "combining_acute_u0301_digit_split",
+            "combining_mark_on_ascii_identifier",
+            "cyrillic_mixed_script_homoglyph",
+            "enclosing_circle_u20dd_digit_split",
+            "figure_space_u2007_digit_splitter",
+            "mathematical_bold_digit_homoglyph",
+            "nbsp_u00a0_digit_splitter",
+            "variation_selector_ufe0f_digit_splitter"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "G3_si_case_and_label_unit_collisions": {
+      "suite": "gauntlet",
+      "is_adversarial": true,
+      "total_cases": 8,
+      "templates": {
+        "fig_28d_panel_collision": 1,
+        "fig_7h_panel_collision": 1,
+        "reagent_actinomycin_D_unit_spoof": 1,
+        "si_case_mM_vs_mm": 1,
+        "si_case_nM_vs_nm": 1,
+        "si_case_pM_vs_pm": 1,
+        "si_case_uM_vs_um": 1,
+        "table_2d_and_3D_tag_collision": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "fig_28d_panel_collision",
+            "fig_7h_panel_collision",
+            "reagent_actinomycin_D_unit_spoof",
+            "si_case_mM_vs_mm",
+            "si_case_nM_vs_nm",
+            "si_case_pM_vs_pm",
+            "si_case_uM_vs_um",
+            "table_2d_and_3D_tag_collision"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 6,
+          "rejected": 2,
+          "accepted_templates": [
+            "fig_28d_panel_collision",
+            "reagent_actinomycin_D_unit_spoof",
+            "si_case_mM_vs_mm",
+            "si_case_nM_vs_nm",
+            "si_case_pM_vs_pm",
+            "si_case_uM_vs_um"
+          ],
+          "rejected_templates": [
+            "fig_7h_panel_collision",
+            "table_2d_and_3D_tag_collision"
+          ],
+          "rejection_rate_pct": 25.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fig_28d_panel_collision",
+            "fig_7h_panel_collision",
+            "reagent_actinomycin_D_unit_spoof",
+            "si_case_mM_vs_mm",
+            "si_case_nM_vs_nm",
+            "si_case_pM_vs_pm",
+            "si_case_uM_vs_um",
+            "table_2d_and_3D_tag_collision"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fig_28d_panel_collision",
+            "fig_7h_panel_collision",
+            "reagent_actinomycin_D_unit_spoof",
+            "si_case_mM_vs_mm",
+            "si_case_nM_vs_nm",
+            "si_case_pM_vs_pm",
+            "si_case_uM_vs_um",
+            "table_2d_and_3D_tag_collision"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "fig_28d_panel_collision",
+            "fig_7h_panel_collision",
+            "reagent_actinomycin_D_unit_spoof",
+            "si_case_mM_vs_mm",
+            "si_case_nM_vs_nm",
+            "si_case_pM_vs_pm",
+            "si_case_uM_vs_um",
+            "table_2d_and_3D_tag_collision"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "G4_negated_bounds_and_percent_boundary": {
+      "suite": "gauntlet",
+      "is_adversarial": true,
+      "total_cases": 8,
+      "templates": {
+        "percent_before_period_role_swap": 1,
+        "residual_bare_not_point_value": 1,
+        "stacked_double_negation_bound": 1,
+        "symbolic_never_gt_on_gt_censored": 1,
+        "symbolic_not_le_on_point": 1,
+        "symbolic_not_lt_on_true_lt": 1,
+        "verbal_never_less_than_on_lt": 1,
+        "verbal_not_fewer_than_on_lt": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "percent_before_period_role_swap",
+            "residual_bare_not_point_value",
+            "stacked_double_negation_bound",
+            "symbolic_never_gt_on_gt_censored",
+            "symbolic_not_le_on_point",
+            "symbolic_not_lt_on_true_lt",
+            "verbal_never_less_than_on_lt",
+            "verbal_not_fewer_than_on_lt"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 8,
+          "rejected": 0,
+          "accepted_templates": [
+            "percent_before_period_role_swap",
+            "residual_bare_not_point_value",
+            "stacked_double_negation_bound",
+            "symbolic_never_gt_on_gt_censored",
+            "symbolic_not_le_on_point",
+            "symbolic_not_lt_on_true_lt",
+            "verbal_never_less_than_on_lt",
+            "verbal_not_fewer_than_on_lt"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "percent_before_period_role_swap",
+            "residual_bare_not_point_value",
+            "stacked_double_negation_bound",
+            "symbolic_never_gt_on_gt_censored",
+            "symbolic_not_le_on_point",
+            "symbolic_not_lt_on_true_lt",
+            "verbal_never_less_than_on_lt",
+            "verbal_not_fewer_than_on_lt"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "percent_before_period_role_swap",
+            "residual_bare_not_point_value",
+            "stacked_double_negation_bound",
+            "symbolic_never_gt_on_gt_censored",
+            "symbolic_not_le_on_point",
+            "symbolic_not_lt_on_true_lt",
+            "verbal_never_less_than_on_lt",
+            "verbal_not_fewer_than_on_lt"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 8,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "percent_before_period_role_swap",
+            "residual_bare_not_point_value",
+            "stacked_double_negation_bound",
+            "symbolic_never_gt_on_gt_censored",
+            "symbolic_not_le_on_point",
+            "symbolic_not_lt_on_true_lt",
+            "verbal_never_less_than_on_lt",
+            "verbal_not_fewer_than_on_lt"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 8
+    },
+    "G5_conservative_multi_arm_binding": {
+      "suite": "gauntlet",
+      "is_adversarial": true,
+      "total_cases": 6,
+      "templates": {
+        "clause_reset_absent_reduction": 1,
+        "comparator_subject_single_value_comma": 1,
+        "decoy_parenthetical_versus": 1,
+        "parenthetical_arm_sidenote": 1,
+        "symmetric_and_two_arms": 1,
+        "three_arm_pairwise_clause": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 6,
+          "rejected": 0,
+          "accepted_templates": [
+            "clause_reset_absent_reduction",
+            "comparator_subject_single_value_comma",
+            "decoy_parenthetical_versus",
+            "parenthetical_arm_sidenote",
+            "symmetric_and_two_arms",
+            "three_arm_pairwise_clause"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 6,
+          "rejected": 0,
+          "accepted_templates": [
+            "clause_reset_absent_reduction",
+            "comparator_subject_single_value_comma",
+            "decoy_parenthetical_versus",
+            "parenthetical_arm_sidenote",
+            "symmetric_and_two_arms",
+            "three_arm_pairwise_clause"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "clause_reset_absent_reduction",
+            "comparator_subject_single_value_comma",
+            "decoy_parenthetical_versus",
+            "parenthetical_arm_sidenote",
+            "symmetric_and_two_arms",
+            "three_arm_pairwise_clause"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "clause_reset_absent_reduction",
+            "comparator_subject_single_value_comma",
+            "decoy_parenthetical_versus",
+            "parenthetical_arm_sidenote",
+            "symmetric_and_two_arms",
+            "three_arm_pairwise_clause"
+          ],
+          "rejection_rate_pct": 100.0
+        },
+        "V3_full_ceg": {
+          "accepted": 0,
+          "rejected": 6,
+          "accepted_templates": [],
+          "rejected_templates": [
+            "clause_reset_absent_reduction",
+            "comparator_subject_single_value_comma",
+            "decoy_parenthetical_versus",
+            "parenthetical_arm_sidenote",
+            "symmetric_and_two_arms",
+            "three_arm_pairwise_clause"
+          ],
+          "rejection_rate_pct": 100.0
+        }
+      },
+      "distinct_templates": 6
+    },
+    "G0_valid_gauntlet_controls": {
+      "suite": "gauntlet",
+      "is_adversarial": false,
+      "total_cases": 10,
+      "templates": {
+        "although_valid_contrast": 1,
+        "case_sensitive_uM_valid": 1,
+        "case_sensitive_um_valid": 1,
+        "colon_pmid_and_doi_valid_tuples": 1,
+        "percent_before_period_and_paren": 1,
+        "spaced_d_and_h_valid_units": 1,
+        "symbolic_never_gt_valid_le": 1,
+        "symbolic_not_lt_valid_ge": 1,
+        "three_clause_valid_grounding": 1,
+        "verbal_not_fewer_than_valid_ge": 1
+      },
+      "by_verifier": {
+        "V0_citation_presence": {
+          "accepted": 10,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_valid_contrast",
+            "case_sensitive_uM_valid",
+            "case_sensitive_um_valid",
+            "colon_pmid_and_doi_valid_tuples",
+            "percent_before_period_and_paren",
+            "spaced_d_and_h_valid_units",
+            "symbolic_never_gt_valid_le",
+            "symbolic_not_lt_valid_ge",
+            "three_clause_valid_grounding",
+            "verbal_not_fewer_than_valid_ge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V1_study_pool_numeric": {
+          "accepted": 10,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_valid_contrast",
+            "case_sensitive_uM_valid",
+            "case_sensitive_um_valid",
+            "colon_pmid_and_doi_valid_tuples",
+            "percent_before_period_and_paren",
+            "spaced_d_and_h_valid_units",
+            "symbolic_never_gt_valid_le",
+            "symbolic_not_lt_valid_ge",
+            "three_clause_valid_grounding",
+            "verbal_not_fewer_than_valid_ge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2_prose_pooled_permitted": {
+          "accepted": 10,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_valid_contrast",
+            "case_sensitive_uM_valid",
+            "case_sensitive_um_valid",
+            "colon_pmid_and_doi_valid_tuples",
+            "percent_before_period_and_paren",
+            "spaced_d_and_h_valid_units",
+            "symbolic_never_gt_valid_le",
+            "symbolic_not_lt_valid_ge",
+            "three_clause_valid_grounding",
+            "verbal_not_fewer_than_valid_ge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V2s_prose_pooled_rejected": {
+          "accepted": 10,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_valid_contrast",
+            "case_sensitive_uM_valid",
+            "case_sensitive_um_valid",
+            "colon_pmid_and_doi_valid_tuples",
+            "percent_before_period_and_paren",
+            "spaced_d_and_h_valid_units",
+            "symbolic_never_gt_valid_le",
+            "symbolic_not_lt_valid_ge",
+            "three_clause_valid_grounding",
+            "verbal_not_fewer_than_valid_ge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        },
+        "V3_full_ceg": {
+          "accepted": 10,
+          "rejected": 0,
+          "accepted_templates": [
+            "although_valid_contrast",
+            "case_sensitive_uM_valid",
+            "case_sensitive_um_valid",
+            "colon_pmid_and_doi_valid_tuples",
+            "percent_before_period_and_paren",
+            "spaced_d_and_h_valid_units",
+            "symbolic_never_gt_valid_le",
+            "symbolic_not_lt_valid_ge",
+            "three_clause_valid_grounding",
+            "verbal_not_fewer_than_valid_ge"
+          ],
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
+        }
+      },
+      "distinct_templates": 10
+    }
+  },
+  "self_tests": {
+    "transfer_classifier_vs_definition": {
+      "drug_development": {
+        "contexts": 162,
+        "ordered_pairs": 26244,
+        "class_counts": {
+          "DIRECT_MATCH": 3240,
+          "BOUNDED_BRIDGE": 6462,
+          "INADMISSIBLE_TRANSFER": 16542
+        },
+        "disagreements_with_definition": 0,
+        "direct_match_iff_target_below_source_violations": 0
+      },
+      "sport_science": {
+        "contexts": 10,
+        "ordered_pairs": 100,
+        "class_counts": {
+          "DIRECT_MATCH": 42,
+          "BOUNDED_BRIDGE": 42,
+          "INADMISSIBLE_TRANSFER": 16
+        },
+        "disagreements_with_definition": 0,
+        "direct_match_iff_target_below_source_violations": 0
+      }
+    },
+    "scalar_ranking_search": {
+      "axis": "model_system",
+      "elements": 6,
+      "incomparable_unordered_pairs": 6,
+      "rank_assignments_tried": 46656,
+      "faithful_rank_assignments": 0,
+      "minimum_misclassified_ordered_pairs": 6
+    },
+    "typed_single_coordinate_mutations": {
+      "atoms": 19,
+      "true_propositions_accepted": 19,
+      "single_coordinate_mutants": 133,
+      "mutants_rejected": 133,
+      "mutants_rejected_by_coordinate": {
+        "endpoint": 19,
+        "focal_arms": 19,
+        "comparator_arms": 19,
+        "focal_quantity": 19,
+        "comparator_quantity": 19,
+        "statistic": 19,
+        "sample_size": 19
+      },
+      "reordered_arm_sets_tried": 2,
+      "reordered_arm_sets_accepted": 2,
+      "float_sample_sizes_tried": 19,
+      "float_sample_sizes_rejected": 19
+    },
+    "ledger_tampering": {
+      "drug_development": {
+        "events": 3,
+        "replay_unbound_changes_tried": 7,
+        "replay_unbound_changes_accepted_by_replay": 7,
+        "replay_unbound_changes_detected_by_ledger_digest": 7,
+        "tampers_tried": 152,
+        "tampers_accepted": 0,
+        "tampers_tried_by_kind": {
+          "aliased_container_edit": 1,
+          "event_deleted": 3,
+          "event_duplicated": 3,
+          "initial_leaf_altered": 58,
+          "new_value_altered": 3,
+          "old_value_altered": 3,
+          "pointer_empty_leading_token": 3,
+          "pointer_leading_zero": 3,
+          "pointer_negative_index": 3,
+          "pointer_redirected_to_sibling_field": 3,
+          "post_digest_altered": 3,
+          "pre_digest_altered": 3,
+          "same_study_transposition": 1,
+          "settled_leaf_altered": 59,
+          "study_attribution_altered": 3
+        },
+        "tampers_accepted_by_kind": {},
+        "commuting_transpositions_tried": 1,
+        "commuting_transpositions_accepted": 1
+      },
+      "sport_science": {
+        "events": 1,
+        "replay_unbound_changes_tried": 3,
+        "replay_unbound_changes_accepted_by_replay": 3,
+        "replay_unbound_changes_detected_by_ledger_digest": 3,
+        "tampers_tried": 30,
+        "tampers_accepted": 0,
+        "tampers_tried_by_kind": {
+          "aliased_container_edit": 1,
+          "event_deleted": 1,
+          "event_duplicated": 1,
+          "initial_leaf_altered": 9,
+          "new_value_altered": 1,
+          "old_value_altered": 1,
+          "pointer_empty_leading_token": 1,
+          "pointer_leading_zero": 1,
+          "pointer_negative_index": 1,
+          "pointer_redirected_to_sibling_field": 1,
+          "post_digest_altered": 1,
+          "pre_digest_altered": 1,
+          "settled_leaf_altered": 9,
+          "study_attribution_altered": 1
+        },
+        "tampers_accepted_by_kind": {},
+        "commuting_transpositions_tried": 0,
+        "commuting_transpositions_accepted": 0
+      }
+    },
+    "canonical_rendering_round_trip": {
+      "atoms_rendered": 235,
+      "renderings_accepted_by_strict_lint": 235,
+      "hostile_name_atoms_rendered": 7,
+      "hostile_name_renderings_accepted": 7
+    },
+    "dual_mode_and_non_prose_surface_lock": {
+      "record_adversarial_cases_tested": 1161,
+      "mode_a_rejected": 1161,
+      "mode_a_stale_plus_semantic_verified": 1161,
+      "mode_b_self_attesting_rejected": 1161,
+      "mode_b_self_attesting_accepted": 0,
+      "mode_b_semantic_only_verified": 1161,
+      "valid_v3_attested_records_tested": 310,
+      "valid_v3_attested_records_accepted": 310,
+      "non_prose_metadata_tampers_tried": 60,
+      "non_prose_metadata_tampers_rejected": 60,
+      "active_prose_exemptions_verified": 4
+    },
+    "structure_only_and_colon_ids": {
+      "bundles": {
+        "drug_development": {
+          "structural_tampers_tried": 15,
+          "structural_tampers_rejected_without_digests": 15,
+          "layer2_metadata_tampers_tried": 5,
+          "layer2_metadata_tampers_accepted_by_layer1": 5,
+          "layer2_metadata_tampers_rejected_by_layer2": 5
+        },
+        "sport_science": {
+          "structural_tampers_tried": 11,
+          "structural_tampers_rejected_without_digests": 11,
+          "layer2_metadata_tampers_tried": 5,
+          "layer2_metadata_tampers_accepted_by_layer1": 5,
+          "layer2_metadata_tampers_rejected_by_layer2": 5
+        }
+      },
+      "colon_tuple_vectors_tested": 4,
+      "colon_tuple_vectors_passed": 4,
+      "arm_binding_vectors_tested": 5,
+      "arm_binding_vectors_passed": 5,
+      "negated_bound_vectors_tested": 8,
+      "negated_bound_vectors_passed": 8
+    },
+    "source_pinned_pyc_and_hygiene": {
+      "poisoned_pyc_bypassed_without_minus_B": true,
+      "module_cached_attr_is_none": true,
+      "loader_tamper_probes_tried": 2,
+      "loader_tamper_probes_rejected": 2,
+      "nonfinite_json_constants_tried": 3,
+      "nonfinite_json_constants_rejected": 3,
+      "hygiene_adversarial_cases_tried": 13,
+      "hygiene_adversarial_cases_rejected": 13
+    }
+  }
+}

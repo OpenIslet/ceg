@@ -1,0 +1,80 @@
+{
+  "findings": {
+    "R1_0098:O8": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC6518073",
+      "pmid": "27787618"
+    },
+    "R1_0116:O1": {
+      "found_in_pmc_full_text": false,
+      "found_in_pubmed_abstract": true,
+      "pmc_full_text_available": false,
+      "pmcid": null,
+      "pmid": "29679103"
+    },
+    "R1_0141:O9": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC6858874",
+      "pmid": "31676859"
+    },
+    "R1_0202:O7": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC9214515",
+      "pmid": "35666870"
+    },
+    "R1_0214:O12": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC9481918",
+      "pmid": "36055241"
+    },
+    "R1_0214:O4": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC9481918",
+      "pmid": "36055241"
+    },
+    "R1_0215:O27": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC9473574",
+      "pmid": "36103539"
+    },
+    "R1_0215:O7": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC9473574",
+      "pmid": "36103539"
+    },
+    "R1_0340:O2": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC12594714",
+      "pmid": "41020949"
+    },
+    "R1_0376:O15": {
+      "found_in_pmc_full_text": true,
+      "found_in_pubmed_abstract": false,
+      "pmc_full_text_available": true,
+      "pmcid": "PMC13357543",
+      "pmid": "42120510"
+    }
+  },
+  "found_in_pmc_full_text": 9,
+  "found_in_pubmed_abstract_only": 1,
+  "method": "NCBI E-utilities efetch (db=pubmed abstract XML; db=pmc full-text XML). Tags removed, NFKC, lower case, dashes and the multiplication sign folded to ASCII, runs of other characters to one space; the quote must then occur as a substring.",
+  "quotes_checked": 10,
+  "quotes_found": 10,
+  "what_this_does_not_show": "Only the quoted sentence is located. Arms, direction, sample size and the absence of a contradicting statement elsewhere in the paper are not checked, and no PDF is read."
+}
