@@ -16,8 +16,8 @@ Five suites:
             to detect. They document the boundary of surface-prose checking.
   redteam   T5, T11, T14..T18 adversarial (43 sentences, one case each):
             variations an independent reviewer wrote against release 2.0.
-  gauntlet  G1..G5 adversarial (190 cases across 38 templates) and G0 valid
-            (50 cases across 10 templates): 6 domain-agnostic failure classes
+  gauntlet  G1..G5 adversarial (38 cases, one per template) and G0 valid
+            (10 cases, one per template): 6 domain-agnostic failure classes
             from the V2->V3 audit and parallel gauntlet (k-cycles, cross-clause
             thefts, contrastive subordinators, comma-appositive swaps, Mn/Me
             combining splitters, case-sensitive SI units, label/unit collisions,
@@ -63,36 +63,39 @@ from typing import Any, Callable
 
 from ceg_reference import (
     ACTIVE_PROSE_KEYS,
-    IDENTIFIER_MASK_RE,
-    REFERENCE_VERSION,
-    TYPED_COORDINATES,
+    atom_numeric_pool,
+    bind_contrast_arms_conservatively,
+    build_endpoint_phrases,
+    build_entity_lexicon,
+    compute_ceg_section_digests,
     ContextEvidenceGraph,
     ContextLatticeSpec,
     ContextSignature,
     EvidenceAtom,
-    MultiArmContrast,
-    ProspectiveFalsifierGate,
-    ProvenancePin,
-    QuantitySpec,
-    ReversiblePatchEvent,
-    SynthesisClaimRecord,
-    TUPLE_RE,
-    TypedProposition,
-    atom_numeric_pool,
-    bind_contrast_arms_conservatively,
-    compute_ceg_section_digests,
+    extract_mentions,
+    IDENTIFIER_MASK_RE,
     ledger_sha256,
     load_json_single_read,
     load_source_pinned_module,
+    MultiArmContrast,
     non_prose_surface_sha256,
     normalize_numeric_literal,
     parse_prose_quantity_bound,
     populate_claim_attestation,
     proposition_from_atom,
+    ProspectiveFalsifierGate,
+    ProvenancePin,
+    QuantitySpec,
     record_to_envelope,
+    REFERENCE_VERSION,
     render_atom_sentence,
+    ReversiblePatchEvent,
     sha256_canonical,
     split_outcome_tuple,
+    SynthesisClaimRecord,
+    TUPLE_RE,
+    TYPED_COORDINATES,
+    TypedProposition,
     verify_atoms_bound_to_corpus,
     verify_bijective_patch_replay,
     verify_ceg_package,
@@ -103,7 +106,7 @@ from ceg_reference import (
 )
 from domain_vignettes import build_drug_development_vignette, build_sport_exercise_vignette
 
-BENCHMARK_VERSION = "ceg-synthetic-benchmark-3.0"
+BENCHMARK_VERSION = "ceg-synthetic-benchmark-3.2"
 
 ASCII_NUM_RE = re.compile(r"(?<![A-Za-z0-9.])[-+]?\d+(?:\.\d+)?")
 MASK_ID_RE = IDENTIFIER_MASK_RE
@@ -833,7 +836,8 @@ def _stress_cases() -> list[BenchmarkCase]:
             sent = f"In {sp}:O1 PRO-C3 was {p1f} ng/mL versus {p2c} ng/mL in vehicle slices, whereas in {sp}:O2 slice viability was {p2f}%."
             tmpl = "versus_orphan"
         elif m == 1:
-            sent = f"In {sp}:O1 PRO-C3 was {p1f} ng/mL in treated slices; the vehicle level was {p2c} ng/mL; in {sp}:O2 slice viability was {p2f}%."
+            # The first clause is a complete, true contrast; only the uncited middle fragment is false (release 3.2).
+            sent = f"In {sp}:O1 PRO-C3 was {p1f} ng/mL in treated slices versus {p1c} ng/mL in vehicle slices; the baseline level was {p2c} ng/mL; in {sp}:O2 slice viability was {p2f}%."
             tmpl = "semicolon_orphan"
         else:
             sent = f"In {sp}:O1 PRO-C3 was {p1f} ng/mL compared with {p2f} ng/mL in vehicle slices, while in {sp}:O2 slice viability was {p2c}%."
@@ -892,7 +896,7 @@ def _stress_cases() -> list[BenchmarkCase]:
         f17 = (
             (f"In {sp}:O1 secreted PRO-C3 fell to ELISA-{51 + i} ng/mL.", "numeral_glued_to_uppercase_token"),
             (f"In {sp}:O1 secreted PRO-C3 fell by fifteen percent relative to vehicle slices.", "teen_number_word"),
-            (f"In {sp}:O1 secreted PRO-C3 in treated slices was twice the vehicle level.", "multiplicative_adverb"),
+            (f"In {sp}:O1 secreted PRO-C3 in treated slices was twice as high compared with vehicle slices.", "multiplicative_adverb"),
             (f"In {sp}:O1 secreted PRO-C3 fell to ⅛ of the vehicle level.", "untabulated_vulgar_fraction"),
             (f"In {sp}:O1 secreted PRO-C3 fell to ¹² ng/mL.", "superscript_digits"),
             (f"In {sp}:O1 secreted PRO-C3 fell to .5 ng/mL.", "leading_dot_decimal"),
@@ -1390,20 +1394,20 @@ def _gauntlet_cases() -> list[BenchmarkCase]:
         ),
         (
             "G3",
-            "fig_28d_panel_collision",
-            f"In {sm}:O2 survival exceeded {surv_v} (Fig. {surv_v} d).",
+            "panel_d_label_unit_collision",
+            f"In {sm}:O2 survival exceeded {surv_v} weeks (panel d).",
             mur,
         ),
         (
             "G3",
-            "fig_7h_panel_collision",
-            f"In {sp}:O11 target residence half-life was 24 min versus 8 min (Figure 7 h).",
+            "panel_h_label_unit_collision",
+            f"In {sp}:O11 target residence half-life was 24 min versus 8 min (panel h).",
             {},
         ),
         (
             "G3",
-            "table_2d_and_3D_tag_collision",
-            f"In {sm}:O2 3D histology survival exceeded {surv_v} h (Table 2d).",
+            "table_D_and_panel_d_label_collision",
+            f"In {sm}:O2 survival exceeded {surv_v} h (Table D, panel d).",
             mur,
         ),
         (
@@ -1471,7 +1475,7 @@ def _gauntlet_cases() -> list[BenchmarkCase]:
         (
             "G5",
             "parenthetical_arm_sidenote",
-            f"In {sp}:O1 treated slices (see also vehicle slices) measured {p1f} ng/mL.",
+            f"In {sp}:O1 treated slices (see also vehicle slices) measured {p1c} ng/mL.",
             {},
         ),
         (
@@ -1495,7 +1499,7 @@ def _gauntlet_cases() -> list[BenchmarkCase]:
         (
             "G5",
             "clause_reset_absent_reduction",
-            f"In {sp}:O1 vehicle slices were unchanged, and treated slices showed no reduction in PRO-C3 ({p1f} ng/mL versus {p1c} ng/mL).",
+            f"In {sp}:O1 vehicle slices were unchanged, and treated slices showed no reduction in PRO-C3 at {p1f} ng/mL versus {p1c} ng/mL.",
             {},
         ),
     ]
@@ -1747,6 +1751,246 @@ def selftest_typed_mutations() -> dict[str, Any]:
     }
 
 
+# The rule that names each adversarial stratum's defect (release 3.2). A rejected case is "on
+# target" when at least one of its violation codes is listed here. An entry keyed by
+# (stratum, template) refines its stratum; a key ending in ":" matches a template prefix.
+EXPECTED_CODES_BY_STRATUM: dict[str, tuple[str, ...]] = {
+    "F1_fabricated_numeric_literal": ("I3_TOK_UNGROUNDED_VALUE",),
+    "F2_intrastudy_cross_outcome_bleed": ("I3_TOK_UNGROUNDED_VALUE",),
+    "F4_multituple_clause_swap": ("I3_CLAUSE_CROSS_OUTCOME_SWAP", "I3_CLAUSE_RESPECTIVELY_SWAP"),
+    "F6_pooled_misbinding_in_prose_and_proposition": ("I3_CLAUSE_AMBIGUOUS_POOLED_CITATION",),
+    "F9_undigitized_or_unverified_promotion": ("I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE",),
+    "F11_pooled_prose_misbinding_true_propositions": ("I3_CLAUSE_AMBIGUOUS_POOLED_CITATION",),
+    "F13_orphan_clause_bleed": ("I3_CLAUSE_CROSS_OUTCOME_SWAP",),
+    "F15_unit_scale_swap": ("I3_CLAUSE_UNIT_MISMATCH",),
+    "F16_numeral_role_confusion": ("I3_TOK_ROLE_CONFUSION",),
+    "F17_tokenizer_evasion": ("I3_TOK_UNGROUNDED_VALUE", "I3_TOK_NONCANONICAL_NUMERAL"),
+    "F18_open_class_polarity_inversion": ("I3_CLAUSE_DIRECTION_REVERSAL", "I3_CLAUSE_NEGATED_DIRECTION"),
+    "F20_mixed_polarity_cues": ("I3_CLAUSE_DIRECTION_REVERSAL", "I3_CLAUSE_NEGATED_DIRECTION"),
+    "T5_arm_and_order_variations": ("I3_CLAUSE_ARM_VALUE_SWAP", "I3_CLAUSE_FROM_TO_SWAP", "I3_CLAUSE_UNLABELED_VALUE_ORDER"),
+    "T11_pooled_citation_forms": ("I3_CLAUSE_AMBIGUOUS_POOLED_CITATION",),
+    "T14_list_variations": (
+        "I3_CLAUSE_ARM_VALUE_SWAP",
+        "I3_CLAUSE_DIRECTION_REVERSAL",
+        "I3_CLAUSE_FROM_TO_SWAP",
+        "I3_CLAUSE_UNLABELED_VALUE_ORDER",
+        "I3_CLAUSE_RESPECTIVELY_SWAP",
+    ),
+    "T15_unit_variations": ("I3_CLAUSE_UNIT_MISMATCH", "I3_CLAUSE_UNREAD_UNIT"),
+    "T16_role_variations": ("I3_TOK_ROLE_CONFUSION", "I3_CLAUSE_UNIT_MISMATCH"),
+    "T17_tokenizer_variations": ("I3_TOK_UNGROUNDED_VALUE", "I3_TOK_NONCANONICAL_NUMERAL", "I3_CLAUSE_UNREAD_UNIT"),
+    "T18_polarity_variations": ("I3_CLAUSE_DIRECTION_REVERSAL", "I3_CLAUSE_NEGATED_DIRECTION"),
+    "G1_per_clause_k_cycle_and_theft": ("I3_CLAUSE_CROSS_OUTCOME_SWAP", "I3_CLAUSE_ARM_VALUE_SWAP"),
+    "G2_unicode_marks_and_homoglyphs": ("I3_TOK_FORBIDDEN_UNICODE", "I3_TOK_CONFUSABLE_HOMOGLYPH"),
+    "G3_si_case_and_label_unit_collisions": ("I3_CLAUSE_UNIT_MISMATCH",),
+    "G4_negated_bounds_and_percent_boundary": ("I3_CLAUSE_INEQUALITY_MISMATCH",),
+    # G5 holds conservative refusals: the verifier declines to bind two arms without an explicit
+    # contrast, so the corrected sentence in the same frame is refused as well.
+    "G5_conservative_multi_arm_binding": (
+        "I3_CLAUSE_NON_CONTRAST_MULTI_ARM",
+        "I3_CLAUSE_MULTI_ARM_AMBIGUITY",
+        "I3_CLAUSE_ARM_VALUE_SWAP",
+        "I3_CLAUSE_NEGATED_DIRECTION",
+    ),
+}
+EXPECTED_CODES_BY_TEMPLATE: dict[tuple[str, str], tuple[str, ...]] = {
+    ("F3_lexical_and_unicode_evasion", "lexical:"): ("I3_TOK_UNGROUNDED_VALUE",),
+    ("F3_lexical_and_unicode_evasion", "invisible:"): ("I3_TOK_FORBIDDEN_UNICODE",),
+    ("F5_arm_swap_and_polarity_reversal", "arm_swap"): ("I3_CLAUSE_ARM_VALUE_SWAP",),
+    ("F5_arm_swap_and_polarity_reversal", "from_to"): ("I3_CLAUSE_FROM_TO_SWAP",),
+    ("F5_arm_swap_and_polarity_reversal", "verb"): ("I3_CLAUSE_DIRECTION_REVERSAL",),
+    ("F7_scale_conflation_and_multiarm_truncation", "scale_conflation"): ("I3_TYPED_QUANTITY_MISMATCH",),
+    ("F7_scale_conflation_and_multiarm_truncation", "arm_truncation"): ("I1_ATOM_VALIDATION_ERROR",),
+    ("F8_context_poset_transfer_overclaim", "inadmissible_upgrade"): ("I4_INADMISSIBLE_CONTEXT_TRANSFER",),
+    ("F8_context_poset_transfer_overclaim", "unbridged_promotion"): ("I4_ILLEGAL_QUANTITATIVE_PROMOTION_ACROSS_CONTEXT_GAP",),
+    ("F10_support_counter_overlap_and_ledger_tamper", "overlap"): ("I6_SUPPORT_COUNTEREVIDENCE_OVERLAP",),
+    ("F10_support_counter_overlap_and_ledger_tamper", "settled_drift"): ("I2_FORWARD_SETTLED_DIGEST_MISMATCH",),
+    ("F12_typed_coverage_and_comparator_gaps", "promoted_tuple_uncovered"): ("I3_TYPED_PROMOTION_COVERAGE_GAP",),
+    ("F12_typed_coverage_and_comparator_gaps", "sample_size_omitted"): ("I3_TYPED_SAMPLE_SIZE_MISMATCH",),
+    ("F12_typed_coverage_and_comparator_gaps", "comparator_quantity_misbound"): ("I3_TYPED_COMPARATOR_QUANTITY_MISMATCH",),
+    ("F14_respectively_misalignment", "leading_shared_numeral"): ("I3_CLAUSE_RESPECTIVELY_SWAP",),
+    ("F14_respectively_misalignment", "comparators_swapped_in_pairs"): ("I3_CLAUSE_RESPECTIVELY_SWAP", "I3_CLAUSE_UNLABELED_VALUE_ORDER"),
+    ("F14_respectively_misalignment", "polarity_inside_list"): ("I3_CLAUSE_DIRECTION_REVERSAL",),
+    ("F19_ledger_and_binding_tamper", "pointer_negative_index"): ("I2_INVALID_ARRAY_INDEX",),
+    ("F19_ledger_and_binding_tamper", "pointer_noncanonical"): ("I2_POINTER_OUTSIDE_DECLARED_STUDY",),
+    ("F19_ledger_and_binding_tamper", "cross_study_attribution"): ("I2_POINTER_OUTSIDE_DECLARED_STUDY",),
+    ("F19_ledger_and_binding_tamper", "atom_drift"): ("I1_ATOM_CORPUS_FIELD_MISMATCH",),
+    ("F19_ledger_and_binding_tamper", "noop_event"): ("I2_NOOP_EVENT",),
+    ("G4_negated_bounds_and_percent_boundary", "percent_before_period_role_swap"): ("I3_TOK_ROLE_CONFUSION",),
+}
+# Frozen red-team sentences that are refused before their named defect is evaluated. They are
+# kept unchanged, because they were written against release 2.0, and are reported, not counted
+# as evidence for the unit rules.
+KNOWN_OFF_TARGET_TEMPLATES: dict[tuple[str, str], str] = {
+    ("T15_unit_variations", "thin_space_before_unit"): "refused for the thin space U+2009 (I3_TOK_FORBIDDEN_UNICODE); the wrong unit is not evaluated",
+    ("T16_role_variations", "thin_space_percent"): "refused for the thin space U+2009 (I3_TOK_FORBIDDEN_UNICODE); the numeral's role is not evaluated",
+}
+
+
+def _violation_code(violation: str) -> str:
+    return violation.split(":")[0].split(" ")[0]
+
+
+def _expected_codes(case: BenchmarkCase) -> tuple[str, ...] | None:
+    for (stratum, template), codes in EXPECTED_CODES_BY_TEMPLATE.items():
+        if case.stratum == stratum and (case.template == template or (template.endswith(":") and case.template.startswith(template))):
+            return codes
+    return EXPECTED_CODES_BY_STRATUM.get(case.stratum)
+
+
+def _all_v3_codes(case: BenchmarkCase) -> set[str]:
+    """Every violation code the full verifier raises on a case: replay, binding, graph integrity and the record."""
+    codes: set[str] = set()
+    if case.initial_corpus is not None and case.settled_corpus is not None and case.patch_events is not None:
+        try:
+            verify_bijective_patch_replay(case.initial_corpus, case.settled_corpus, case.patch_events)
+        except ValueError as exc:
+            codes.add(_violation_code(str(exc)))
+        if case.bind_atoms_to_corpus:
+            codes |= {_violation_code(v) for v in verify_atoms_bound_to_corpus(case.graph, case.settled_corpus)}
+    codes |= {_violation_code(v) for v in case.graph.verify_graph_integrity()}
+    codes |= {_violation_code(v) for v in case.graph.verify_synthesis_record(case.record).violations}
+    return codes
+
+
+def selftest_expected_violation_codes() -> dict[str, Any]:
+    """Every rejected adversarial case outside the residual suite must be rejected by the rule that names its defect."""
+    cases = [c for c in generate_benchmark_cases(include_gauntlet=True) if c.is_adversarial and c.suite != "residual"]
+    on_target = with_additional_codes = 0
+    off_target: dict[str, dict[str, Any]] = {}
+    for c in cases:
+        expected = _expected_codes(c)
+        _require(expected is not None, f"no expected violation code declared for {c.stratum}/{c.template}")
+        codes = _all_v3_codes(c)
+        _require(bool(codes), f"adversarial case {c.case_id} raised no violation")
+        if codes & set(expected or ()):
+            on_target += 1
+            with_additional_codes += int(bool(codes - set(expected or ())))
+        else:
+            row = off_target.setdefault(f"{c.stratum}/{c.template}", {"cases": 0, "codes": set()})
+            row["cases"] += 1
+            row["codes"] |= codes
+    known = {f"{s}/{t}" for s, t in KNOWN_OFF_TARGET_TEMPLATES}
+    _require(set(off_target) == known, f"off-target rejections differ from the declared list: {sorted(set(off_target) ^ known)}")
+    return {
+        "adversarial_cases_checked": len(cases),
+        "rejected_by_the_rule_naming_the_defect": on_target,
+        "of_which_also_raising_another_code": with_additional_codes,
+        "rejected_before_the_named_defect_is_evaluated": sum(r["cases"] for r in off_target.values()),
+        "off_target_templates": {
+            k: {"cases": r["cases"], "codes": sorted(r["codes"]), "note": KNOWN_OFF_TARGET_TEMPLATES[tuple(k.split("/", 1))]}  # type: ignore[index]
+            for k, r in sorted(off_target.items())
+        },
+    }
+
+
+_NUMERAL_HEAD_RE = re.compile(r"[-\u2212\u2013]?[0-9]+(?:[.,][0-9]+)*")
+
+
+def selftest_tamper_and_reattest() -> dict[str, Any]:
+    """Start from accepted valid records, change one thing, attach a fresh valid attestation, and require refusal.
+
+    The dual-mode test attaches an attestation to records that are already false. This test
+    goes the other way: each record starts valid and accepted, a single semantic change is made,
+    and the self-attesting adversary recomputes the attestation. Every tampered record must be
+    refused on a code of the expected family, with no stale-attestation error to lean on.
+    """
+    cases = generate_benchmark_cases(include_gauntlet=True)
+    valid_v3 = [c for c in cases if not c.is_adversarial and c.initial_corpus is None and evaluate_v3_full_ceg(c)]
+    tried: dict[str, int] = {}
+    refused_on_expected: dict[str, int] = {}
+
+    def run(kind: str, c: BenchmarkCase, rec: SynthesisClaimRecord, expected_prefix: str) -> None:
+        rec_b = populate_claim_attestation(rec, c.graph.atoms, c.graph.arm_aliases)
+        rep = c.graph.verify_synthesis_record(rec_b, check_attestation_digest=True)
+        tried[kind] = tried.get(kind, 0) + 1
+        if (
+            not rep.passed_all_invariants
+            and not any("I6_STALE_CLAIM_ATTESTATION" in v for v in rep.violations)
+            and any(v.startswith(expected_prefix) for v in rep.violations)
+        ):
+            refused_on_expected[kind] = refused_on_expected.get(kind, 0) + 1
+
+    for c in valid_v3:
+        rec = c.record
+        anchors = tuple(rec.supporting_tuples) + tuple(rec.counterevidence_tuples)
+        lexicon = build_entity_lexicon(c.graph.atoms, c.graph.arm_aliases) | build_endpoint_phrases(c.graph.atoms)
+        values: set[str] = set()
+        for t in anchors:
+            atom = c.graph.atoms[t]
+            for q in (atom.focal_quantity, atom.comparator_quantity):
+                if q is not None:
+                    values |= {normalize_numeric_literal(x) for x in (q.value, q.lower, q.upper) if x is not None}
+
+        # 1. One value in the prose replaced by a number no cited atom holds.
+        done = False
+        for idx, sent in enumerate(rec.prose_sentences):
+            for m in extract_mentions(sent, lexicon):
+                head = _NUMERAL_HEAD_RE.match(sent[m.start:m.end])
+                if m.value in values and head:
+                    forged = sent[:m.start] + head.group(0) + "7" + sent[m.start + head.end():]
+                    prose = tuple(forged if j == idx else s for j, s in enumerate(rec.prose_sentences))
+                    run("prose_value_fabricated", c, dataclasses.replace(rec, prose_sentences=prose), "I3_")
+                    done = True
+                    break
+            if done:
+                break
+        _require(done, f"no value mention to tamper in {c.case_id}")
+
+        # 2. An anchor redirected to a tuple that does not exist.
+        if rec.supporting_tuples:
+            forged_t = (rec.supporting_tuples[0] + "9",) + tuple(rec.supporting_tuples[1:])
+            run("anchor_redirected_to_unknown_tuple", c, dataclasses.replace(rec, supporting_tuples=forged_t), "I1_")
+        else:
+            forged_t = (rec.counterevidence_tuples[0] + "9",) + tuple(rec.counterevidence_tuples[1:])
+            run("anchor_redirected_to_unknown_tuple", c, dataclasses.replace(rec, counterevidence_tuples=forged_t), "I1_")
+
+        # 3. One typed proposition given a different quantity.
+        if rec.typed_propositions:
+            first = rec.typed_propositions[0]
+            atom0 = c.graph.atoms[first.outcome_tuple]
+            mutated = dataclasses.replace(first, claimed_quantity=_mutate_quantity(first.claimed_quantity, atom0.focal_quantity))
+            run(
+                "typed_quantity_mutated",
+                c,
+                dataclasses.replace(rec, typed_propositions=(mutated,) + tuple(rec.typed_propositions[1:])),
+                "I3_TYPED_",
+            )
+
+        # 4. A supporting tuple also listed as counterevidence.
+        if rec.supporting_tuples and rec.supporting_tuples[0] not in rec.counterevidence_tuples:
+            run(
+                "support_also_listed_as_counterevidence",
+                c,
+                dataclasses.replace(rec, counterevidence_tuples=tuple(rec.counterevidence_tuples) + (rec.supporting_tuples[0],)),
+                "I6_SUPPORT_COUNTEREVIDENCE_OVERLAP",
+            )
+
+        # 5. The target context moved outside the declared lattice.
+        axes = dict(rec.target_context.axes)
+        first_axis = sorted(axes)[0]
+        axes[first_axis] = "UNDECLARED_LEVEL"
+        run("target_context_outside_lattice", c, dataclasses.replace(rec, target_context=ContextSignature(axes)), "I4_TARGET_CONTEXT_INVALID")
+
+        # 6. Promotion requested by a record that carries no typed proposition.
+        if not rec.typed_propositions and rec.requests_direct_quantitative_promotion is False:
+            run(
+                "promotion_requested_without_typed_layer",
+                c,
+                dataclasses.replace(rec, requests_direct_quantitative_promotion=True),
+                "I3_TYPED_MISSING_FOR_QUANTITATIVE_PROMOTION",
+            )
+
+    _require(tried == refused_on_expected, f"a re-attested tamper was accepted or refused on another code: {tried} vs {refused_on_expected}")
+    return {
+        "valid_records_used": len(valid_v3),
+        "tampered_records_tried": sum(tried.values()),
+        "refused_on_expected_code_family": sum(refused_on_expected.values()),
+        "tried_by_kind": dict(sorted(tried.items())),
+        "refused_by_kind": dict(sorted(refused_on_expected.items())),
+    }
+
+
 def _leaf_pointers(node: Any, prefix: str = "") -> list[str]:
     if isinstance(node, dict):
         return [p for k, v in node.items() for p in _leaf_pointers(v, f"{prefix}/{k.replace('~', '~0').replace('/', '~1')}")]
@@ -1755,12 +1999,27 @@ def _leaf_pointers(node: Any, prefix: str = "") -> list[str]:
     return [prefix]
 
 
-def _replay_accepts(d0: dict[str, Any], dm: dict[str, Any], events: list[ReversiblePatchEvent]) -> bool:
+def _replay_accepts(
+    d0: dict[str, Any], dm: dict[str, Any], events: list[ReversiblePatchEvent], *, check_step_digests: bool = True
+) -> bool:
     try:
-        verify_bijective_patch_replay(d0, dm, events)
+        verify_bijective_patch_replay(d0, dm, events, check_step_digests=check_step_digests)
         return True
     except ValueError:
         return False
+
+
+def _state_before_event(d0: dict[str, Any], events: list[ReversiblePatchEvent], k: int) -> dict[str, Any]:
+    """The corpus as it stands just before event k, obtained by applying events 0..k-1 to a copy of D_0."""
+    work = copy.deepcopy(d0)
+    for ev in events[:k]:
+        node: Any = work
+        tokens = [t.replace("~1", "/").replace("~0", "~") for t in ev.json_pointer[1:].split("/")]
+        for tok in tokens[:-1]:
+            node = node[int(tok)] if isinstance(node, list) else node[tok]
+        last: Any = int(tokens[-1]) if isinstance(node, list) else tokens[-1]
+        node[last] = copy.deepcopy(ev.new_value)
+    return work
 
 
 def selftest_ledger_tampering() -> dict[str, Any]:
@@ -1793,6 +2052,27 @@ def selftest_ledger_tampering() -> dict[str, Any]:
             attempt("pre_digest_altered", d0, dm, events[:k] + [dataclasses.replace(ev, study_sha256_before="0" * 64)] + events[k + 1:])
             attempt("post_digest_altered", d0, dm, events[:k] + [dataclasses.replace(ev, study_sha256_after="0" * 64)] + events[k + 1:])
             attempt("event_duplicated", d0, dm, events[:k + 1] + [ev] + events[k + 1:])
+            # The same duplicate under a fresh identifier: the duplicate-identifier check cannot catch it, replay must.
+            renamed_copy = dataclasses.replace(ev, event_id=ev.event_id + "-AGAIN")
+            attempt("event_duplicated_with_fresh_id", d0, dm, events[:k + 1] + [renamed_copy] + events[k + 1:])
+            # Proposition 1(iii)(d): the event redirected to a sibling member of the same study that
+            # holds the same old value, with step digests checked and with them switched off.
+            state = _state_before_event(d0, events, k)
+            study_prefix = "/".join(parts[:3]) + "/"
+            for sibling in _leaf_pointers(state):
+                if not sibling.startswith(study_prefix + "outcomes/") or sibling == ev.json_pointer:
+                    continue
+                node_s: Any = state
+                tokens_s = [t.replace("~1", "/").replace("~0", "~") for t in sibling[1:].split("/")]
+                for tok in tokens_s:
+                    node_s = node_s[int(tok)] if isinstance(node_s, list) else node_s[tok]
+                if type(node_s) is not type(ev.old_value) or node_s != ev.old_value:
+                    continue
+                redirected = events[:k] + [dataclasses.replace(ev, json_pointer=sibling)] + events[k + 1:]
+                attempt("pointer_redirected_same_old_value", d0, dm, redirected)
+                tried["pointer_redirected_same_old_value_no_step_digests"] = tried.get("pointer_redirected_same_old_value_no_step_digests", 0) + 1
+                if _replay_accepts(d0, dm, redirected, check_step_digests=False):
+                    accepted["pointer_redirected_same_old_value_no_step_digests"] = accepted.get("pointer_redirected_same_old_value_no_step_digests", 0) + 1
             other = next(s for s in d0["studies"] if s["study_id"] != ev.study_id)
             attempt("study_attribution_altered", d0, dm, events[:k] + [dataclasses.replace(ev, study_id=other["study_id"])] + events[k + 1:])
 
@@ -1823,17 +2103,6 @@ def selftest_ledger_tampering() -> dict[str, Any]:
             last = int(tokens[-1]) if isinstance(node, list) else tokens[-1]
             node[last] = "TAMPERED" if node[last] != "TAMPERED" else "TAMPERED2"
             attempt("initial_leaf_altered", tampered, dm, events)
-
-        # A corpus whose studies share one Python container: an edit guarded by the first study must not reach the second.
-        shared = [{"outcome_id": "O1", "focal_value": "1.0"}]
-        aliased = {"studies": [{"study_id": "A", "outcomes": shared}, {"study_id": "B", "outcomes": shared}]}
-        aliased_after = copy.deepcopy(aliased)
-        h_before = sha256_canonical(aliased_after["studies"][0])
-        aliased_after["studies"][0]["outcomes"][0]["focal_value"] = "2.0"
-        attempt("aliased_container_edit", aliased, aliased_after, [ReversiblePatchEvent(
-            "E-ALIAS", "A", "/studies/0/outcomes/0/focal_value", "1.0", "2.0", "edit through a shared container",
-            h_before, sha256_canonical(aliased_after["studies"][0]),
-        )])
 
         # Changes that replay accepts by design. The ledger digest must differ for each.
         base_digest = ledger_sha256(events)
@@ -1866,6 +2135,19 @@ def selftest_ledger_tampering() -> dict[str, Any]:
             "commuting_transpositions_tried": commuting_tried,
             "commuting_transpositions_accepted": commuting_accepted,
         }
+
+    # A corpus whose studies share one Python container: an edit guarded by the first study must not
+    # reach the second. This is one constructed corpus, independent of the vignettes, so it is run once.
+    shared = [{"outcome_id": "O1", "focal_value": "1.0"}]
+    aliased = {"studies": [{"study_id": "A", "outcomes": shared}, {"study_id": "B", "outcomes": shared}]}
+    aliased_after = copy.deepcopy(aliased)
+    h_before = sha256_canonical(aliased_after["studies"][0])
+    aliased_after["studies"][0]["outcomes"][0]["focal_value"] = "2.0"
+    alias_accepted = _replay_accepts(aliased, aliased_after, [ReversiblePatchEvent(
+        "E-ALIAS", "A", "/studies/0/outcomes/0/focal_value", "1.0", "2.0", "edit through a shared container",
+        h_before, sha256_canonical(aliased_after["studies"][0]),
+    )])
+    out["shared_container_probe"] = {"tampers_tried": 1, "tampers_accepted": int(alias_accepted)}
     return out
 
 
@@ -2540,6 +2822,7 @@ def run_benchmark(write_json: bool = True) -> dict[str, Any]:
         for s in suites
     }
 
+    all_sentences = [s for c in cases for s in c.record.prose_sentences]
     results = {
         "benchmark_version": BENCHMARK_VERSION,
         "reference_version": REFERENCE_VERSION,
@@ -2548,6 +2831,12 @@ def run_benchmark(write_json: bool = True) -> dict[str, Any]:
         "valid_cases": sum(1 for c in cases if not c.is_adversarial),
         "distinct_templates": sum(v["distinct_templates"] for v in per_stratum.values()),
         "suites": suite_counts,
+        # Cases are sentence or record frames re-instantiated with other identifiers and numerals.
+        "prose_sentence_frames": {
+            "prose_sentences": len(all_sentences),
+            "distinct_sentences": len(set(all_sentences)),
+            "distinct_after_replacing_every_numeral": len({re.sub(r"[0-9]+(?:\.[0-9]+)?", "#", s) for s in all_sentences}),
+        },
         "worked_vignette_verification": vignettes,
         "overall_summary": overall,
         "per_stratum_breakdown": per_stratum,
@@ -2558,6 +2847,8 @@ def run_benchmark(write_json: bool = True) -> dict[str, Any]:
             "ledger_tampering": selftest_ledger_tampering(),
             "canonical_rendering_round_trip": selftest_canonical_rendering(),
             "dual_mode_and_non_prose_surface_lock": selftest_dual_mode_and_non_prose_lock(),
+            "expected_violation_codes": selftest_expected_violation_codes(),
+            "tamper_and_reattest": selftest_tamper_and_reattest(),
             "structure_only_and_colon_ids": selftest_structure_only_and_colon_ids(),
             "source_pinned_pyc_and_hygiene": selftest_source_pinned_pyc_and_hygiene(),
         },

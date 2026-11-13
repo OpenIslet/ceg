@@ -390,9 +390,9 @@
     "bijective_replay_verified": true,
     "distinct_patched_studies": 3,
     "events_replayed": 3,
-    "initial_sha256": "5c38c177c0b72348d69e02cc4cb5083643080fda3ddcd6f6084ea57c0f394bea",
-    "ledger_sha256": "ad2631df1ff8e2f5f4fd9cff5bb31d555688526bc4b12f57cffb62f3662271ee",
-    "settled_sha256": "fd1e9336453a77ff3dd8a9bc10b171dc94594e1d43f78c9705b58487f9523c70",
+    "initial_sha256": "96de790a10c8595fdea32d22316236d94e5e0c7d42c1a733e4f9dcde968c3c07",
+    "ledger_sha256": "89590700aedc7501a8da04ee6552ceb3e56e9e4c12c8a44332285c6766a1e25e",
+    "settled_sha256": "01abcbd0090500b2fc4e778b5a63552b955b62531c82017a680855809064512b",
     "step_digests_checked": true
   },
   "probes": {
@@ -523,8 +523,8 @@
       "unresolved_axes": []
     }
   },
-  "reference_release": "3.1",
-  "run_digest": "408a0a770a3875afa69195e67f1d8edfb4d055dd0b359234f0b071a7a1c6d062",
+  "reference_release": "3.2",
+  "run_digest": "c80ed4cd4de4da53a1b7f5c5b42039e7f7fd4bd4439b1a2a22304df9119938a1",
   "studies": 8,
   "target_context": {
     "engraftment_microenvironment": "vascularized_marginal_mass_graft",

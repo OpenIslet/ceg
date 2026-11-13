@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reference implementation of Context-Evidence Graphs (CEGs), version 3.1.
+"""Reference implementation of Context-Evidence Graphs (CEGs), version 3.2.
 
 Zero-dependency Python 3 (3.9+) implementation of the structures and checks
 defined in the accompanying manuscript:
@@ -39,7 +39,7 @@ import types
 from typing import Any, Literal, Mapping, Sequence
 import unicodedata
 
-REFERENCE_VERSION = "3.1"
+REFERENCE_VERSION = "3.2"
 
 
 # ---------------------------------------------------------------------------
@@ -144,6 +144,16 @@ def _reject_nonfinite_json_constant(token: str) -> Any:
     raise ValueError(f"NON_FINITE_JSON_CONSTANT: {token!r}")
 
 
+def _reject_duplicate_json_members(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """`object_pairs_hook` that refuses an object with a repeated member name (RFC 8259 leaves it undefined)."""
+    out: dict[str, Any] = {}
+    for k, v in pairs:
+        if k in out:
+            raise ValueError(f"CANONICAL_JSON_DUPLICATE_KEY: {k!r}")
+        out[k] = v
+    return out
+
+
 def _resolve_contained_path(root_dir: str | Path, rel_path: str | Path) -> Path:
     """Resolve `rel_path` strictly inside `root_dir`, rejecting absolute, `..` or symlink traversal."""
     root = Path(root_dir)
@@ -172,7 +182,7 @@ def load_json_single_read(
     expected_sha256: str | None = None,
     root_dir: str | Path | None = None,
 ) -> tuple[Any, str, int]:
-    """Read a UTF-8 JSON file once (`read_bytes -> sha256 -> json.loads`), rejecting NaN/Infinity."""
+    """Read a UTF-8 JSON file once (`read_bytes -> sha256 -> json.loads`), rejecting NaN/Infinity and repeated member names."""
     target = _resolve_contained_path(root_dir, path) if root_dir is not None else Path(path)
     if root_dir is None and target.is_symlink():
         raise ValueError(f"HYGIENE_PATH_OR_SYMLINK_TRAVERSAL: symlink target {str(target)!r}")
@@ -186,7 +196,11 @@ def load_json_single_read(
         text = raw_bytes.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise ValueError(f"INVALID_UTF8_JSON_BYTES: {target.name!r}") from exc
-    parsed = json.loads(text, parse_constant=_reject_nonfinite_json_constant)
+    parsed = json.loads(
+        text,
+        parse_constant=_reject_nonfinite_json_constant,
+        object_pairs_hook=_reject_duplicate_json_members,
+    )
     return parsed, actual_sha256, len(raw_bytes)
 
 
@@ -384,6 +398,25 @@ def ledger_sha256(events: Sequence[ReversiblePatchEvent]) -> str:
     )
 
 
+def _first_forbidden_unicode_path(node: Any, path: str = "") -> str | None:
+    """JSON-pointer-like path of the first string or member name holding a forbidden code point."""
+    if isinstance(node, str):
+        return path or "/" if contains_forbidden_unicode(node) else None
+    if isinstance(node, Mapping):
+        for k in node:
+            if isinstance(k, str) and contains_forbidden_unicode(k):
+                return f"{path}/<member name>"
+            found = _first_forbidden_unicode_path(node[k], f"{path}/{k}")
+            if found is not None:
+                return found
+    elif isinstance(node, (list, tuple)):
+        for i, item in enumerate(node):
+            found = _first_forbidden_unicode_path(item, f"{path}/{i}")
+            if found is not None:
+                return found
+    return None
+
+
 def _study_positions(corpus: Mapping[str, Any]) -> dict[str, int]:
     studies = corpus.get("studies") if isinstance(corpus, Mapping) else None
     if not isinstance(studies, list):
@@ -409,6 +442,10 @@ def _check_event_scope(ev: ReversiblePatchEvent, study_pos: int) -> None:
         )
     if tokens[2:] == ["study_id"]:
         raise ValueError(f"I2_STUDY_ID_IMMUTABLE: {ev.event_id}")
+    # An edit inside `outcomes` addresses one member of one outcome record (release 3.2):
+    # a single event can no longer replace the outcomes array or a whole outcome record.
+    if tokens[2] == "outcomes" and len(tokens) < 5:
+        raise ValueError(f"I2_POINTER_NOT_AT_OUTCOME_FIELD: {ev.event_id} points at {ev.json_pointer!r}")
 
 
 def verify_bijective_patch_replay(
@@ -425,26 +462,34 @@ def verify_bijective_patch_replay(
     replayed corpora against `settled_corpus` and `initial_corpus`; with
     `check_step_digests=True` (default), per-step study SHA-256 guards are
     checked as an independent cryptographic layer. In both modes the event
-    identifier, study identifier, pointer and rationale must be free of
-    forbidden Unicode.
+    identifier, study identifier, pointer and rationale must be non-empty
+    strings free of forbidden Unicode, and an edit inside `outcomes` must address
+    one member of one outcome record. Replay proves the path between the two
+    corpora; it does not inspect what their strings say. The settled corpus is
+    screened for forbidden code points where atoms are bound to it
+    (`verify_atoms_bound_to_corpus`), so a raw corpus may hold such a code point
+    and a recorded edit may remove it.
     Raises ValueError with an I2_* code on the first violation.
     """
     seen_ids: set[str] = set()
-    for ev in events:
-        if ev.event_id in seen_ids:
-            raise ValueError(f"I2_DUPLICATE_EVENT_ID: {ev.event_id}")
-        seen_ids.add(ev.event_id)
-        if _json_equal(ev.old_value, ev.new_value):
-            raise ValueError(f"I2_NOOP_EVENT: {ev.event_id}")
-        # Ledger strings are screened like every other structured string (release 3.1).
+    for idx, ev in enumerate(events):
+        # Ledger strings must be non-empty strings (release 3.2) and are screened like
+        # every other structured string (release 3.1).
         for label, text in (
             ("event_id", ev.event_id),
             ("study_id", ev.study_id),
             ("json_pointer", ev.json_pointer),
             ("rationale", ev.rationale),
         ):
-            if isinstance(text, str) and contains_forbidden_unicode(text):
+            if not isinstance(text, str) or not text.strip():
+                raise ValueError(f"I2_INVALID_LEDGER_STRING: event {idx} ({label}) must be a non-empty string")
+            if contains_forbidden_unicode(text):
                 raise ValueError(f"I2_FORBIDDEN_UNICODE_IN_LEDGER_STRING: {ev.event_id!r} ({label})")
+        if ev.event_id in seen_ids:
+            raise ValueError(f"I2_DUPLICATE_EVENT_ID: {ev.event_id}")
+        seen_ids.add(ev.event_id)
+        if _json_equal(ev.old_value, ev.new_value):
+            raise ValueError(f"I2_NOOP_EVENT: {ev.event_id}")
 
     work = _json_clone(initial_corpus)
     pos = _study_positions(work)
@@ -556,6 +601,8 @@ class ContextLatticeSpec:
     bridge_floor: Mapping[str, str] = field(default_factory=dict)
 
     def validate(self) -> None:
+        if not isinstance(self.axis_posets, Mapping) or not self.axis_posets:
+            raise ValueError("I4_LATTICE_REQUIRES_AT_LEAST_ONE_AXIS")
         for name, poset in self.axis_posets.items():
             if poset.name != name:
                 raise ValueError(f"I4_AXIS_NAME_MISMATCH: {name!r} vs {poset.name!r}")
@@ -567,6 +614,10 @@ class ContextLatticeSpec:
                 raise ValueError(f"I4_BRIDGE_FLOOR_UNKNOWN_ELEMENT ({axis}): {floor!r}")
 
     def check_signature(self, sig: ContextSignature) -> None:
+        if not isinstance(sig, ContextSignature) or not isinstance(sig.axes, Mapping):
+            raise ValueError(f"I4_CONTEXT_SIGNATURE_MALFORMED: {type(sig).__name__}")
+        if any(not isinstance(k, str) or not isinstance(v, str) for k, v in sig.axes.items()):
+            raise ValueError("I4_CONTEXT_SIGNATURE_MALFORMED: axis names and values must be strings")
         if set(sig.axes) != set(self.axis_posets):
             raise ValueError("I4_CONTEXT_SIGNATURE_AXIS_MISMATCH")
         for axis, val in sig.axes.items():
@@ -631,6 +682,13 @@ ChangeDirection = Literal["increase", "decrease", "neutral"]
 
 
 _DECIMAL_LITERAL_RE = re.compile(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?")
+_NEGATIVE_ZERO_RE = re.compile(r"-0(?:\.0+)?")
+# Structured identifiers: ASCII letters, digits and the separators used by tuple, arm and DOI identifiers.
+_IDENTIFIER_RE = re.compile(r"[A-Za-z0-9_.:/()+-]+")
+
+
+def _is_identifier(value: Any) -> bool:
+    return isinstance(value, str) and bool(_IDENTIFIER_RE.fullmatch(value))
 RELATION_OPS = ("=", "≈", "<", "<=", ">", ">=")
 STATISTIC_KINDS = (
     "mean",
@@ -653,6 +711,9 @@ def _parse_decimal_strict(val: str) -> Decimal:
     """Plain ASCII decimal literal: optional minus, digits, optional fraction. No exponent, sign or padding."""
     if not isinstance(val, str) or not _DECIMAL_LITERAL_RE.fullmatch(val):
         raise ValueError(f"NON_NUMERIC_QUANTITY_LITERAL: {val!r}")
+    if _NEGATIVE_ZERO_RE.fullmatch(val):
+        # Zero has one spelling per precision: "-0" and "-0.0" would differ from "0" and "0.0" in every digest.
+        raise ValueError(f"NEGATIVE_ZERO_QUANTITY_LITERAL: {val!r}")
     try:
         return Decimal(val)
     except InvalidOperation as exc:  # unreachable for a literal that matched
@@ -674,6 +735,14 @@ class QuantitySpec:
     missing_reason: str | None = None
 
     def validate(self) -> None:
+        for fname in ("kind", "relation", "value", "lower", "upper", "unit", "unit_dimension", "change_direction", "missing_reason"):
+            fval = getattr(self, fname)
+            if fval is not None and not isinstance(fval, str):
+                raise ValueError(f"MALFORMED_QUANTITY_FIELD ({fname}): expected a string or None, got {type(fval).__name__}")
+        for fname in ("unit_dimension", "missing_reason"):
+            ftext = getattr(self, fname) or ""
+            if contains_forbidden_unicode(ftext) or contains_confusable_homoglyphs(ftext):
+                raise ValueError(f"FORBIDDEN_OR_CONFUSABLE_CODE_POINT_IN_{fname.upper()}")
         if self.kind == "point_level":
             if (
                 self.relation not in ("=", "≈")
@@ -696,7 +765,9 @@ class QuantitySpec:
                 raise ValueError(f"RELATIVE_CHANGE_FORBIDDEN_CROSS_VARIANT_FIELD: {self}")
             if self.unit_dimension is not None and not self.unit_dimension.strip():
                 raise ValueError(f"EMPTY_UNIT_DIMENSION: {self}")
-            _parse_decimal_strict(self.value)
+            if _parse_decimal_strict(self.value) < 0 and self.change_direction in ("increase", "decrease"):
+                # The direction carries the sign; a negative magnitude beside it would state the sign twice.
+                raise ValueError(f"RELATIVE_CHANGE_MAGNITUDE_MUST_BE_NON_NEGATIVE: {self}")
         elif self.kind == "interval_bound":
             if (
                 self.lower is None
@@ -748,6 +819,9 @@ class MultiArmContrast:
     contrast_kind: Literal["single_arm", "pairwise", "multi_arm_joint"]
 
     def validate(self, study_variable_ids: set[str], raw_mentioned_arms: Sequence[str]) -> None:
+        for label, arms in (("focal_arms", self.focal_arms), ("comparator_arms", self.comparator_arms)):
+            if not isinstance(arms, (tuple, list)) or any(not _is_identifier(a) for a in arms):
+                raise ValueError(f"MALFORMED_CONTRAST_ARMS ({label}): expected a sequence of identifiers")
         all_bound = list(self.focal_arms) + list(self.comparator_arms)
         if not self.focal_arms:
             raise ValueError("CONTRAST_REQUIRES_AT_LEAST_ONE_FOCAL_ARM")
@@ -815,6 +889,29 @@ class EvidenceAtom:
     provenance: ProvenancePin
 
     def validate(self, study_variable_ids: set[str], raw_mentioned_arms: Sequence[str]) -> None:
+        # Field types first (release 3.2): a malformed atom is reported, never raised as a TypeError.
+        for fname in ("atom_id", "outcome_tuple", "study_id"):
+            if not _is_identifier(getattr(self, fname)):
+                raise ValueError(f"INVALID_IDENTIFIER_SYNTAX ({fname}): {getattr(self, fname)!r}")
+        for fname, ftype in (
+            ("endpoint", str),
+            ("context", ContextSignature),
+            ("contrast", MultiArmContrast),
+            ("focal_quantity", QuantitySpec),
+            ("provenance", ProvenancePin),
+        ):
+            if not isinstance(getattr(self, fname), ftype):
+                raise ValueError(f"MALFORMED_ATOM_FIELD ({fname}): expected {ftype.__name__}")
+        if self.comparator_quantity is not None and not isinstance(self.comparator_quantity, QuantitySpec):
+            raise ValueError("MALFORMED_ATOM_FIELD (comparator_quantity): expected QuantitySpec or None")
+        if self.p_value_or_interval is not None and (
+            not isinstance(self.p_value_or_interval, str) or not self.p_value_or_interval.strip()
+        ):
+            raise ValueError("P_VALUE_OR_INTERVAL_MUST_BE_A_NON_EMPTY_STRING_OR_NONE")
+        for fname in ("document_id", "section_pointer", "verbatim_quote"):
+            ftext = getattr(self.provenance, fname)
+            if not isinstance(ftext, str) or not ftext.strip():
+                raise ValueError(f"PROVENANCE_STRING_MUST_BE_NON_EMPTY ({fname})")
         if self.atom_id != f"ATOM:{self.outcome_tuple}":
             raise ValueError(f"ATOM_ID_MISMATCH: {self.atom_id} vs {self.outcome_tuple}")
         tuple_study_id, _ = split_outcome_tuple(self.outcome_tuple)
@@ -824,8 +921,8 @@ class EvidenceAtom:
             raise ValueError(f"UNKNOWN_STATISTIC_KIND: {self.statistic_kind!r}")
         if self.polarity not in ATOM_POLARITIES:
             raise ValueError(f"UNKNOWN_ATOM_POLARITY: {self.polarity!r}")
-        if self.sample_size is not None and (type(self.sample_size) is not int or self.sample_size < 0):
-            raise ValueError(f"SAMPLE_SIZE_MUST_BE_A_NON_NEGATIVE_INTEGER: {self.sample_size!r}")
+        if self.sample_size is not None and (type(self.sample_size) is not int or self.sample_size < 1):
+            raise ValueError(f"SAMPLE_SIZE_MUST_BE_A_POSITIVE_INTEGER: {self.sample_size!r}")
         if type(self.provenance.requires_figure_digitization) is not bool:
             raise ValueError(
                 f"PROVENANCE_BOOLEAN_MUST_BE_BOOL (requires_figure_digitization): {self.provenance.requires_figure_digitization!r}"
@@ -888,6 +985,19 @@ class EvidenceAtom:
             or (self.comparator_quantity is not None and self.comparator_quantity.kind == "point_level")
         ):
             raise ValueError(f"UNDIGITIZED_FIGURE_CANNOT_EMIT_EXACT_POINT_ATOM: {self.atom_id}")
+        if self.provenance.requires_figure_digitization:
+            # The same exact point written another way (release 3.2): a zero-width interval or an exact relative change.
+            for q in (self.focal_quantity, self.comparator_quantity):
+                if q is None:
+                    continue
+                if q.kind == "interval_bound" and _parse_decimal_strict(q.lower or "") == _parse_decimal_strict(q.upper or ""):
+                    raise ValueError(f"UNDIGITIZED_FIGURE_CANNOT_EMIT_EXACT_POINT_ATOM: {self.atom_id} (zero-width interval)")
+                if q.kind == "relative_change" and q.relation == "=":
+                    raise ValueError(f"UNDIGITIZED_FIGURE_CANNOT_EMIT_EXACT_POINT_ATOM: {self.atom_id} (exact relative change)")
+        fq_, cq_ = self.focal_quantity, self.comparator_quantity
+        if cq_ is not None and fq_.kind != "missing_numeric" and cq_.kind != "missing_numeric":
+            if fq_.unit_dimension != cq_.unit_dimension or canonical_unit(fq_.unit) != canonical_unit(cq_.unit):
+                raise ValueError(f"COMPARATOR_UNIT_OR_DIMENSION_DIFFERS_FROM_FOCAL: {self.atom_id}")
 
 
 # ---------------------------------------------------------------------------
@@ -1531,7 +1641,15 @@ _FOCAL_DENIAL_RE = re.compile(
     r"(?:(?:in|on|for|with|among)\s+)?(?:the\s+)?",
     re.IGNORECASE,
 )
-_CLAUSE_RESET_RE = re.compile(r"[;:]|\b(?:and|but|yet)\s+(?:the\s+)?[a-z0-9_-]+\s+$", re.IGNORECASE)
+# A direction cue is read as describing the comparator arm only when that arm is its adjacent
+# subject. Any punctuation mark or connective between the arm and the cue starts a new clause,
+# and so does a gap of more than four words (release 3.2; release 3.1 recognised only ";", ":"
+# and "and/but/yet <one word>" directly before the cue). This is a bounded surface rule, not a parser.
+_CLAUSE_RESET_RE = re.compile(
+    r"[;:,]|\b(?:and|but|yet|so|while|whereas|although|though|because|since|instead|however|then|when|where)\b"
+    r"|^\s*(?:\S+\s+){4,}\S+\s*$",
+    re.IGNORECASE,
+)
 _ATTRIBUTION_RE = re.compile(r"\s*(?:in|on|for|with|among|of)\s+(?:the\s+)?", re.IGNORECASE)
 _FROM_TO_WORD_RE = re.compile(r"\b(from|to)\b", re.IGNORECASE)
 # An arm named only as the reference of a comparison ("compared with vehicle slices") is not the subject.
@@ -1713,9 +1831,16 @@ def _split_at_depth0(text: str, offset: int, depth: list[int], pattern: re.Patte
 
 
 def _is_citation_only_segment(text: str) -> bool:
-    """True when `text` carries only outcome anchors and citation connectives."""
+    """True when `text` carries only outcome anchors and citation connectives.
+
+    The word "respectively" counts as a connective here (release 3.2). Without that, appending
+    the word to a trailing citation list, or putting it in front of a leading one, turned the
+    list into a clause of its own, so each cited tuple got a scope of one and the pooled
+    refusal was avoided.
+    """
     stripped = TUPLE_RE.sub(" ", text)
     stripped = _CITATION_INTRODUCER_RE.sub(" ", stripped)
+    stripped = re.sub(r"\brespectively\b", " ", stripped, flags=re.IGNORECASE)
     return not any(ch.isalnum() for ch in stripped)
 
 
@@ -2277,6 +2402,39 @@ def _endpoint_tokens(endpoint: str) -> set[str]:
     }
 
 
+_LIST_JOIN_RE = re.compile(r"\s*(?:,|and|,\s*and)\s*", re.IGNORECASE)
+
+
+def _is_respectively_list_form(
+    sentence: str,
+    cited: Sequence[str],
+    pools_by_tuple: Mapping[str, AtomPools],
+    lexicon: frozenset[str],
+) -> bool:
+    """True for `<T1>, <T2> and <T3> ... v1, v2 and v3, respectively` and nothing looser.
+
+    Each cited identifier occurs once; the identifiers are adjacent, joined only by
+    commas and "and"; the word "respectively" occurs once; and every numeral that is
+    a value of a cited atom lies after the identifier list and before that word.
+    """
+    words = list(re.finditer(r"\brespectively\b", sentence, re.IGNORECASE))
+    idents = list(TUPLE_RE.finditer(sentence))
+    if len(words) != 1 or len(idents) != len(cited):
+        return False
+    for left, right in zip(idents, idents[1:]):
+        if not _LIST_JOIN_RE.fullmatch(sentence[left.end():right.start()]):
+            return False
+    list_end, word_start = idents[-1].end(), words[0].start()
+    if word_start < list_end:
+        return False
+    all_values = set().union(*(pools_by_tuple[t].value_numbers for t in cited))
+    return all(
+        list_end <= m.start and m.end <= word_start
+        for m in extract_mentions(sentence, lexicon)
+        if m.value in all_values
+    )
+
+
 def _verify_respectively(
     sentence: str,
     cited: Sequence[str],
@@ -2295,6 +2453,19 @@ def _verify_respectively(
             continue
         if all(classify_mention(m, pools_by_tuple[t]) is not None for t in cited):
             errs.append(f"I3_TOK_UNGROUNDED_VALUE ({list(cited)}): {m.value!r} is not licensed by any cited atom")
+    # Endpoint names written out in the sentence must follow the order of their tuples.
+    # Only exact endpoint names are recognised; a paraphrased or invented noun is not (residual class R1).
+    low_sentence = sentence.lower()
+    name_pos = {
+        t: low_sentence.find(atoms_by_tuple[t].endpoint.strip().lower())
+        for t in cited
+        if atoms_by_tuple[t].endpoint.strip()
+    }
+    named = [name_pos[t] for t in cited if name_pos.get(t, -1) >= 0]
+    if len(named) >= 2 and named != sorted(named):
+        errs.append(
+            f"I3_CLAUSE_RESPECTIVELY_ENDPOINT_ORDER ({list(cited)}): endpoint names are listed in a different order from their tuples"
+        )
     k = len(cited)
     if not candidates:
         return errs
@@ -2389,7 +2560,11 @@ def verify_prose_sentence(
     cited = list(dict.fromkeys(cited_all))
     pools_by_tuple = {t: atom_role_pools(atoms_by_tuple[t], aliases, lexicon) for t in cited}
 
-    if len(cited) >= 2 and re.search(r"\brespectively\b", sentence, re.IGNORECASE):
+    # One multi-tuple form is bound by position rather than refused (release 3.2 narrows it):
+    # the cited identifiers themselves form the coordinated subject list, every value follows
+    # that list, and the word "respectively" follows the last value. A sentence that merely
+    # contains the word, or that names its tuples after the values, is scoped like any other.
+    if len(cited) >= 2 and _is_respectively_list_form(sentence, cited, pools_by_tuple, prose_lexicon):
         return _verify_respectively(sentence, cited, atoms_by_tuple, pools_by_tuple, aliases, prose_lexicon)
 
     if len(cited) == 1:
@@ -2503,6 +2678,22 @@ def verify_typed_proposition_homomorphism(
     atoms_by_tuple: Mapping[str, EvidenceAtom],
 ) -> list[str]:
     """I3_typed: the proposition must equal its atom on all seven coordinates."""
+    malformed: list[str] = []
+    if not isinstance(prop, TypedProposition):
+        return [f"I3_TYPED_MALFORMED_FIELD: expected TypedProposition, got {type(prop).__name__}"]
+    for fname in ("proposition_id", "outcome_tuple", "claimed_endpoint", "claimed_statistic"):
+        if not isinstance(getattr(prop, fname), str):
+            malformed.append(fname)
+    for fname in ("claimed_focal_arms", "claimed_comparator_arms"):
+        arms = getattr(prop, fname)
+        if not isinstance(arms, (tuple, list)) or any(not isinstance(a, str) for a in arms):
+            malformed.append(fname)
+    if not isinstance(prop.claimed_quantity, QuantitySpec):
+        malformed.append("claimed_quantity")
+    if prop.claimed_comparator_quantity is not None and not isinstance(prop.claimed_comparator_quantity, QuantitySpec):
+        malformed.append("claimed_comparator_quantity")
+    if malformed:
+        return [f"I3_TYPED_MALFORMED_FIELD ({prop.proposition_id!r}): {malformed}"]
     if prop.outcome_tuple not in atoms_by_tuple:
         return [f"I1_UNKNOWN_ATOM_FOR_PROPOSITION ({prop.proposition_id}): {prop.outcome_tuple}"]
     atom = atoms_by_tuple[prop.outcome_tuple]
@@ -2591,6 +2782,12 @@ class ProspectiveFalsifierGate:
     def validate(self, declared_axes: Mapping[str, Any]) -> None:
         if not isinstance(self.gate_id, str) or not self.gate_id.strip():
             raise ValueError("ProspectiveFalsifierGate requires non-empty gate_id")
+        if not _is_identifier(self.gate_id) and not contains_forbidden_unicode(self.gate_id):
+            raise ValueError(f"ProspectiveFalsifierGate gate_id is not an identifier: {self.gate_id!r}")
+        if not isinstance(self.unresolved_context_axes, (tuple, list)) or any(
+            not isinstance(ax, str) for ax in self.unresolved_context_axes
+        ):
+            raise ValueError("ProspectiveFalsifierGate requires unresolved_context_axes as a sequence of axis names")
         if not isinstance(self.primary_readout_and_unit, str) or not self.primary_readout_and_unit.strip():
             raise ValueError("ProspectiveFalsifierGate requires non-empty primary_readout_and_unit")
         if not isinstance(self.quantitative_pass_threshold, str) or not self.quantitative_pass_threshold.strip():
@@ -2599,7 +2796,8 @@ class ProspectiveFalsifierGate:
             not isinstance(self.head_to_head_arms, tuple)
             or len(self.head_to_head_arms) != 2
             or not all(isinstance(a, str) and a.strip() for a in self.head_to_head_arms)
-            or self.head_to_head_arms[0] == self.head_to_head_arms[1]
+            # Compared after trimming and ASCII case folding (release 3.2): "Arm A" and "arm a " are one arm.
+            or normalize_endpoint_name(self.head_to_head_arms[0].strip()) == normalize_endpoint_name(self.head_to_head_arms[1].strip())
         ):
             raise ValueError(f"ProspectiveFalsifierGate requires two distinct non-empty head_to_head_arms: {self.head_to_head_arms!r}")
         if len(set(self.unresolved_context_axes)) != len(self.unresolved_context_axes):
@@ -2617,6 +2815,9 @@ class ProspectiveFalsifierGate:
             bad_uni = contains_forbidden_unicode(val)
             if bad_uni:
                 raise ValueError(f"Forbidden Unicode in gate {field_name}: {bad_uni}")
+            bad_glyph = contains_confusable_homoglyphs(val)
+            if bad_glyph:
+                raise ValueError(f"Confusable homoglyph in gate {field_name}: {bad_glyph}")
 
 
 ACTIVE_PROSE_KEYS: frozenset[str] = frozenset({"prose_sentences"})
@@ -2783,6 +2984,35 @@ def populate_claim_attestation(
     )
 
 
+def _malformed_record_fields(rec: Any) -> list[str]:
+    """Names of record fields whose type the verifier cannot read; empty when the record is well typed."""
+    if not isinstance(rec, SynthesisClaimRecord):
+        return [f"record is {type(rec).__name__}, not SynthesisClaimRecord"]
+    bad: list[str] = []
+    if not isinstance(rec.record_id, str):
+        bad.append("record_id")
+    if not isinstance(rec.target_context, ContextSignature) or not isinstance(rec.target_context.axes, Mapping):
+        bad.append("target_context")
+    for fname in ("supporting_tuples", "counterevidence_tuples", "prose_sentences"):
+        seq = getattr(rec, fname)
+        if not isinstance(seq, (tuple, list)) or any(not isinstance(x, str) for x in seq):
+            bad.append(fname)
+    props = rec.typed_propositions
+    if not isinstance(props, (tuple, list)) or any(not isinstance(pr, TypedProposition) for pr in props):
+        bad.append("typed_propositions")
+    elif any(not isinstance(pr.proposition_id, str) for pr in props):
+        bad.append("typed_propositions[].proposition_id")
+    if rec.prospective_gate is not None and not isinstance(rec.prospective_gate, ProspectiveFalsifierGate):
+        bad.append("prospective_gate")
+    if rec.attestation_sha256 is not None and not isinstance(rec.attestation_sha256, str):
+        bad.append("attestation_sha256")
+    try:
+        hash(rec.polarity)
+    except TypeError:
+        bad.append("polarity")
+    return bad
+
+
 @dataclass
 class CEGVerificationReport:
     """Result of verifying one SynthesisClaimRecord against a graph."""
@@ -2818,7 +3048,10 @@ class ContextEvidenceGraph:
                 self.lattice.check_signature(sig)
             except ValueError as exc:
                 errs.append(f"I1_INVALID_STUDY_CONTEXT ({sid}): {exc}")
-        for tup, atom in sorted(self.atoms.items()):
+        for tup, atom in sorted(self.atoms.items(), key=lambda kv: str(kv[0])):
+            if not isinstance(atom, EvidenceAtom):
+                errs.append(f"I1_ATOM_VALIDATION_ERROR ({tup}): MALFORMED_ATOM ({type(atom).__name__})")
+                continue
             if tup != atom.outcome_tuple:
                 errs.append(f"I1_ATOM_KEY_MISMATCH: {tup} -> {atom.outcome_tuple}")
                 continue
@@ -2837,9 +3070,45 @@ class ContextEvidenceGraph:
                 )
             except ValueError as exc:
                 errs.append(f"I1_ATOM_VALIDATION_ERROR ({tup}): {exc}")
+            except (TypeError, AttributeError) as exc:
+                errs.append(f"I1_ATOM_VALIDATION_ERROR ({tup}): MALFORMED_ATOM ({type(exc).__name__})")
         return errs
 
     def verify_synthesis_record(
+        self,
+        rec: SynthesisClaimRecord,
+        *,
+        pooled_numeral_policy: PooledPolicy = "reject",
+        check_attestation_digest: bool = True,
+    ) -> CEGVerificationReport:
+        """Verify one synthesis record; a malformed record is rejected with a code, never raised.
+
+        Field types are checked first (release 3.2). A record whose fields have the
+        wrong type is rejected as `I1_MALFORMED_RECORD_FIELD`; any type error met
+        later is likewise turned into a rejection.
+        """
+        malformed = _malformed_record_fields(rec)
+        rid = getattr(rec, "record_id", None)
+        rid_text = rid if isinstance(rid, str) else repr(rid)
+        if not malformed:
+            try:
+                return self._verify_well_typed_record(
+                    rec,
+                    pooled_numeral_policy=pooled_numeral_policy,
+                    check_attestation_digest=check_attestation_digest,
+                )
+            except (TypeError, AttributeError) as exc:
+                malformed = [f"unreadable content ({type(exc).__name__})"]
+        return CEGVerificationReport(
+            record_id=rid_text,
+            passed_all_invariants=False,
+            transfer_classes={},
+            unresolved_axes_union=(),
+            promotion_decision="REJECT_INADMISSIBLE_OR_INVALID",
+            violations=[f"I1_MALFORMED_RECORD_FIELD ({rid_text}): {malformed}"],
+        )
+
+    def _verify_well_typed_record(
         self,
         rec: SynthesisClaimRecord,
         *,
@@ -2870,11 +3139,19 @@ class ContextEvidenceGraph:
         if rec.polarity not in EPISTEMIC_ROLES:
             violations.append(f"I1_UNKNOWN_EPISTEMIC_ROLE: {rec.polarity!r}")
         # Record and proposition identifiers are screened for forbidden code points (release 3.1).
+        # Identifiers are identifiers, not free text (release 3.2): a sentence cannot ride in a record or proposition id.
         if contains_forbidden_unicode(rec.record_id):
             violations.append(f"I1_FORBIDDEN_UNICODE_IN_RECORD_ID: {rec.record_id!r}")
+        elif not _is_identifier(rec.record_id):
+            violations.append(f"I1_INVALID_IDENTIFIER_SYNTAX (record_id): {rec.record_id!r}")
         for prop in rec.typed_propositions:
             if contains_forbidden_unicode(prop.proposition_id):
                 violations.append(f"I1_FORBIDDEN_UNICODE_IN_PROPOSITION_ID: {prop.proposition_id!r}")
+            elif not _is_identifier(prop.proposition_id):
+                violations.append(f"I1_INVALID_IDENTIFIER_SYNTAX (proposition_id): {prop.proposition_id!r}")
+        for label, tuples in (("supporting_tuples", rec.supporting_tuples), ("counterevidence_tuples", rec.counterevidence_tuples)):
+            if len(set(tuples)) != len(tuples):
+                violations.append(f"I1_DUPLICATE_ANCHOR_TUPLE ({label})")
 
         # I6: non-vacuity, polarity-role compatibility, and support/counter-evidence disjointness
         if not rec.supporting_tuples and not rec.counterevidence_tuples:
@@ -2976,16 +3253,11 @@ class ContextEvidenceGraph:
                 )
             if any_unverified_or_undigitized:
                 violations.append("I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE")
-            # A quantitative promotion needs a quantity: at least one supporting atom must hold a number.
-            if transfer_map and not any(
-                self.atoms[t].focal_quantity.kind != "missing_numeric"
-                or (
-                    self.atoms[t].comparator_quantity is not None
-                    and self.atoms[t].comparator_quantity.kind != "missing_numeric"
-                )
-                for t in transfer_map
-            ):
-                violations.append("I5_ILLEGAL_QUANTITATIVE_PROMOTION_OF_MISSING_NUMERIC")
+            # A quantitative promotion needs a quantity on every supporting atom's focal slot (release 3.2).
+            # Release 3.1 asked only that one supporting atom hold a number in either slot.
+            missing_focal = [t for t in transfer_map if self.atoms[t].focal_quantity.kind == "missing_numeric"]
+            if missing_focal:
+                violations.append(f"I5_ILLEGAL_QUANTITATIVE_PROMOTION_OF_MISSING_NUMERIC: {missing_focal}")
 
         if rec.polarity in ("SUPPORTS", "CANDIDATE_UPGRADE") and any(
             v == "INADMISSIBLE_TRANSFER" for v in transfer_map.values()
@@ -3028,7 +3300,9 @@ class ContextEvidenceGraph:
 # Atom-to-corpus binding (I1): atoms must agree with the settled corpus D_m
 # ---------------------------------------------------------------------------
 
-_RELATION_PREFIX_RE = re.compile(r"^(>=|<=|>|<|≈|=)?\s*(.+)$")
+# An optional inequality or approximation prefix, then the literal, with nothing skipped:
+# no whitespace is tolerated and "=" is never embedded (it is the default relation).
+_RELATION_PREFIX_RE = re.compile(r"(>=|<=|>|<|≈)?(.*)", re.DOTALL)
 _ALLOWED_CORPUS_OUTCOME_KEYS = frozenset(
     {
         "outcome_id",
@@ -3066,8 +3340,121 @@ _ALLOWED_CORPUS_OUTCOME_KEYS = frozenset(
         "comparator_arms",
         "focal_arms",
         "sample_size",
+        "context",
+        "contrast_kind",
+        "polarity",
+        "p_value_or_interval",
+        "comparator_unit_dimension",
+        "comparator_change_direction",
+        "comparator_missing_reason",
     }
 )
+# Every corpus outcome record must carry every atom field (release 3.2). A field
+# that does not apply is written as an explicit null. Each entry lists the
+# canonical key first, then any accepted alias.
+_REQUIRED_CORPUS_OUTCOME_FIELDS: tuple[tuple[str, ...], ...] = (
+    ("endpoint",),
+    ("context",),
+    ("contrast_kind",),
+    ("focal_arms",),
+    ("comparator_arms",),
+    ("quantity_kind", "kind"),
+    ("relation",),
+    ("focal_value", "value"),
+    ("focal_lower", "lower"),
+    ("focal_upper", "upper"),
+    ("unit",),
+    ("unit_dimension",),
+    ("change_direction",),
+    ("missing_reason",),
+    ("comparator_kind",),
+    ("comparator_relation",),
+    ("comparator_value", "comparator"),
+    ("comparator_lower",),
+    ("comparator_upper",),
+    ("comparator_unit",),
+    ("comparator_unit_dimension",),
+    ("comparator_change_direction",),
+    ("comparator_missing_reason",),
+    ("statistic_kind", "statistic"),
+    ("sample_size",),
+    ("p_value_or_interval",),
+    ("polarity",),
+    ("document_id", "source_id"),
+    ("section_pointer", "page_or_table_pin"),
+    ("verbatim_quote", "verbatim_span"),
+    ("requires_figure_digitization",),
+    ("primary_pdf_verified",),
+)
+
+
+def corpus_outcome_from_atom(atom: EvidenceAtom) -> dict[str, Any]:
+    """The complete corpus outcome record that binds to `atom`: every field, nulls explicit."""
+    fq, cq = atom.focal_quantity, atom.comparator_quantity
+    return {
+        "outcome_id": split_outcome_tuple(atom.outcome_tuple)[1],
+        "endpoint": atom.endpoint,
+        "context": dict(atom.context.axes),
+        "contrast_kind": atom.contrast.contrast_kind,
+        "focal_arms": list(atom.contrast.focal_arms),
+        "comparator_arms": list(atom.contrast.comparator_arms),
+        "quantity_kind": fq.kind,
+        "relation": fq.relation,
+        "focal_value": fq.value,
+        "focal_lower": fq.lower,
+        "focal_upper": fq.upper,
+        "unit": fq.unit,
+        "unit_dimension": fq.unit_dimension,
+        "change_direction": fq.change_direction,
+        "missing_reason": fq.missing_reason,
+        "comparator_kind": cq.kind if cq is not None else None,
+        "comparator_relation": cq.relation if cq is not None else None,
+        "comparator_value": cq.value if cq is not None else None,
+        "comparator_lower": cq.lower if cq is not None else None,
+        "comparator_upper": cq.upper if cq is not None else None,
+        "comparator_unit": cq.unit if cq is not None else None,
+        "comparator_unit_dimension": cq.unit_dimension if cq is not None else None,
+        "comparator_change_direction": cq.change_direction if cq is not None else None,
+        "comparator_missing_reason": cq.missing_reason if cq is not None else None,
+        "statistic_kind": atom.statistic_kind,
+        "sample_size": atom.sample_size,
+        "p_value_or_interval": atom.p_value_or_interval,
+        "polarity": atom.polarity,
+        "document_id": atom.provenance.document_id,
+        "section_pointer": atom.provenance.section_pointer,
+        "verbatim_quote": atom.provenance.verbatim_quote,
+        "requires_figure_digitization": atom.provenance.requires_figure_digitization,
+        "primary_pdf_verified": atom.provenance.primary_pdf_verified,
+    }
+
+
+def settled_corpus_from_graph(
+    graph: "ContextEvidenceGraph",
+    corpus_id: str,
+    study_metadata: Mapping[str, Mapping[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """A complete settled corpus for `graph`: one study entry per study, one full record per atom.
+
+    Studies and outcomes are written in sorted order. `study_metadata` may add
+    further study-level members (a title, a registry number); `study_id`,
+    `context` and `outcomes` are reserved.
+    """
+    meta = study_metadata or {}
+    by_study: dict[str, list[dict[str, Any]]] = {sid: [] for sid in graph.studies}
+    for tup in sorted(graph.atoms):
+        atom = graph.atoms[tup]
+        by_study.setdefault(atom.study_id, []).append(corpus_outcome_from_atom(atom))
+    studies: list[dict[str, Any]] = []
+    for sid in sorted(by_study):
+        entry: dict[str, Any] = {"study_id": sid}
+        for k, v in dict(meta.get(sid, {})).items():
+            if k in ("study_id", "context", "outcomes"):
+                raise ValueError(f"RESERVED_CORPUS_STUDY_KEY: {k!r}")
+            entry[k] = v
+        entry["context"] = dict(graph.studies[sid].axes) if sid in graph.studies else None
+        entry["outcomes"] = by_study[sid]
+        studies.append(entry)
+    return {"corpus_id": corpus_id, "studies": studies}
 
 
 def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Mapping[str, Any]) -> list[str]:
@@ -3077,13 +3464,32 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
     verified against to D_m. Every corpus outcome needs a unique atom and every
     atom a unique corpus outcome; every field carried by the corpus outcome record
     must be recognized and equal the atom's field without type coercion.
+
+    Release 3.2 makes the binding complete. Every corpus outcome record must carry
+    every atom field (`_REQUIRED_CORPUS_OUTCOME_FIELDS`, nulls explicit), including
+    the context signature, the atom polarity, the reported interval or p-value and
+    the comparator's unit dimension, direction and missing reason; every corpus
+    study entry must carry the study's context signature. An atom field that the
+    corpus does not state is therefore an error, not a field left unchecked.
     """
+
+    def same(a: Any, b: Any) -> bool:
+        try:
+            return _json_equal(a, b)
+        except (ValueError, TypeError):
+            return False
+
     errs: list[str] = []
     seen: set[str] = set()
     seen_studies: set[str] = set()
-    studies = settled_corpus.get("studies", [])
+    # The settled corpus is what atoms are bound to and what a reader inspects: none of its
+    # strings or member names may hold a forbidden code point (release 3.2).
+    bad_path = _first_forbidden_unicode_path(settled_corpus)
+    if bad_path is not None:
+        errs.append(f"I1_FORBIDDEN_UNICODE_IN_CORPUS_STRING: {bad_path}")
+    studies = settled_corpus.get("studies", []) if isinstance(settled_corpus, Mapping) else None
     if not isinstance(studies, list):
-        return ["I1_INVALID_CORPUS_STUDIES_CONTAINER"]
+        return errs + ["I1_INVALID_CORPUS_STUDIES_CONTAINER"]
 
     for st in studies:
         if not isinstance(st, Mapping) or not isinstance(st.get("study_id"), str):
@@ -3093,6 +3499,12 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
         if sid in seen_studies:
             errs.append(f"I1_DUPLICATE_CORPUS_STUDY: {sid}")
         seen_studies.add(sid)
+        if "context" not in st:
+            errs.append(f"I1_MISSING_REQUIRED_CORPUS_FIELD ({sid}): ['context']")
+        elif sid in graph.studies and not same(st["context"], dict(graph.studies[sid].axes)):
+            errs.append(
+                f"I1_STUDY_CORPUS_CONTEXT_MISMATCH ({sid}): corpus {st['context']!r} != graph {dict(graph.studies[sid].axes)!r}"
+            )
         outcomes = st.get("outcomes", [])
         if not isinstance(outcomes, list):
             errs.append(f"I1_INVALID_CORPUS_OUTCOMES_CONTAINER: {sid}")
@@ -3100,6 +3512,10 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
         for oc in outcomes:
             if not isinstance(oc, Mapping) or not isinstance(oc.get("outcome_id"), str):
                 errs.append(f"I1_INVALID_CORPUS_OUTCOME_ENTRY ({sid}): {oc!r}")
+                continue
+            if ":" in oc["outcome_id"]:
+                # An outcome identifier never holds a colon, so `<study_id>:<outcome_id>` splits one way only.
+                errs.append(f"I1_COLON_IN_IDENTIFIER ({sid}): outcome_id {oc['outcome_id']!r}")
                 continue
             tup = f"{sid}:{oc['outcome_id']}"
             if tup in seen:
@@ -3110,15 +3526,36 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
             if atom is None:
                 errs.append(f"I1_CORPUS_OUTCOME_WITHOUT_ATOM: {tup}")
                 continue
-            unknown_keys = sorted(set(oc.keys()) - _ALLOWED_CORPUS_OUTCOME_KEYS)
+            if atom.study_id != sid:
+                errs.append(f"I1_ATOM_CORPUS_STUDY_MISMATCH ({tup}): atom study {atom.study_id!r} != corpus study {sid!r}")
+            unknown_keys = sorted(str(k) for k in set(oc.keys()) - _ALLOWED_CORPUS_OUTCOME_KEYS)
             if unknown_keys:
                 errs.append(f"I1_UNRECOGNIZED_CORPUS_OUTCOME_FIELD ({tup}): {unknown_keys}")
+            missing_fields = [g[0] for g in _REQUIRED_CORPUS_OUTCOME_FIELDS if not any(k in oc for k in g)]
+            if missing_fields:
+                errs.append(f"I1_MISSING_REQUIRED_CORPUS_FIELD ({tup}): {missing_fields}")
 
             fq, cq = atom.focal_quantity, atom.comparator_quantity
 
             def differ(field_name: str, corpus_val: Any, atom_val: Any) -> None:
-                if not _json_equal(corpus_val, atom_val):
+                if not same(corpus_val, atom_val):
                     errs.append(f"I1_ATOM_CORPUS_FIELD_MISMATCH ({tup}.{field_name}): corpus {corpus_val!r} != atom {atom_val!r}")
+
+            if "context" in oc:
+                differ("context", oc["context"], dict(atom.context.axes))
+            if "contrast_kind" in oc:
+                differ("contrast_kind", oc["contrast_kind"], atom.contrast.contrast_kind)
+            if "polarity" in oc:
+                differ("polarity", oc["polarity"], atom.polarity)
+            if "p_value_or_interval" in oc:
+                differ("p_value_or_interval", oc["p_value_or_interval"], atom.p_value_or_interval)
+            for ckey, cattr in (
+                ("comparator_unit_dimension", "unit_dimension"),
+                ("comparator_change_direction", "change_direction"),
+                ("comparator_missing_reason", "missing_reason"),
+            ):
+                if ckey in oc:
+                    differ(ckey, oc[ckey], getattr(cq, cattr) if cq is not None else None)
 
             if "endpoint" in oc:
                 differ("endpoint", oc["endpoint"], atom.endpoint)
@@ -3138,12 +3575,12 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
             for key in ("focal_value", "value"):
                 if key in oc:
                     raw_v = oc[key]
-                    if raw_v is None and fq.kind == "missing_numeric":
+                    if raw_v is None and fq.value is None:
                         differ(key, None, fq.value)
                     elif not isinstance(raw_v, str):
                         errs.append(f"I1_ATOM_CORPUS_FIELD_MISMATCH ({tup}.{key}): non-string corpus value {raw_v!r}")
                     else:
-                        m = _RELATION_PREFIX_RE.match(raw_v)
+                        m = _RELATION_PREFIX_RE.fullmatch(raw_v)
                         relation, literal = (m.group(1), m.group(2)) if m else (None, raw_v)
                         differ(key, literal, fq.value)
                         if "relation" not in oc:
@@ -3167,12 +3604,12 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
                     raw_cv = oc[key]
                     if cq is None:
                         differ(key, raw_cv, None)
-                    elif raw_cv is None and cq.kind == "missing_numeric":
+                    elif raw_cv is None and cq.value is None:
                         differ(key, None, cq.value)
                     elif not isinstance(raw_cv, str):
                         errs.append(f"I1_ATOM_CORPUS_FIELD_MISMATCH ({tup}.{key}): non-string corpus value {raw_cv!r}")
                     else:
-                        m = _RELATION_PREFIX_RE.match(raw_cv)
+                        m = _RELATION_PREFIX_RE.fullmatch(raw_cv)
                         relation, literal = (m.group(1), m.group(2)) if m else (None, raw_cv)
                         differ(key, literal, cq.value)
                         if "comparator_relation" not in oc:
@@ -3355,6 +3792,10 @@ def verify_ceg_package(
     every synthesis record — with precomputed section and step digests disabled.
     Layer 2 (`check_top_digests=True`) adds independent cryptographic section,
     per-step study, per-claim attestation, and non-prose metadata digest locks.
+    When `section_digests` is supplied it must hold all five section digests;
+    a partial or empty mapping is refused (`DIGEST_LOCK_INCOMPLETE_KEYSET`).
+    When it is omitted, no section digest is compared, and the result says so
+    in `section_digests_checked`.
     """
     violations: list[str] = []
     violations.extend(graph.verify_graph_integrity())
@@ -3370,7 +3811,13 @@ def verify_ceg_package(
     violations.extend(verify_atoms_bound_to_corpus(graph, settled_corpus))
 
     reports: list[CEGVerificationReport] = []
+    seen_record_ids: set[str] = set()
     for rec in records:
+        rid_raw = getattr(rec, "record_id", None)
+        rid = rid_raw if isinstance(rid_raw, str) else repr(rid_raw)
+        if rid in seen_record_ids:
+            violations.append(f"I1_DUPLICATE_RECORD_ID: {rid}")
+        seen_record_ids.add(rid)
         rep = graph.verify_synthesis_record(
             rec,
             pooled_numeral_policy=pooled_numeral_policy,
@@ -3378,27 +3825,41 @@ def verify_ceg_package(
         )
         reports.append(rep)
         for v in rep.violations:
-            violations.append(f"{rec.record_id}: {v}")
+            violations.append(f"{rid}: {v}")
 
     env_errs: list[str] = []
     if record_envelopes is not None:
-        env_errs = verify_envelopes_bound_to_records(
-            records,
-            record_envelopes,
-            check_attestation_digest=check_top_digests,
-        )
+        try:
+            env_errs = verify_envelopes_bound_to_records(
+                records,
+                record_envelopes,
+                check_attestation_digest=check_top_digests,
+            )
+        except (ValueError, TypeError, AttributeError) as exc:
+            env_errs = [f"I6_INVALID_RECORD_ENVELOPE: unreadable ({type(exc).__name__})"]
         violations.extend(env_errs)
 
     if check_top_digests and section_digests is not None:
-        actual = compute_ceg_section_digests(
-            graph,
-            initial_corpus,
-            settled_corpus,
-            patch_events,
-            records,
-            record_envelopes=record_envelopes if not env_errs else None,
-        )
-        for key, expected_val in sorted(section_digests.items()):
+        try:
+            actual = compute_ceg_section_digests(
+                graph,
+                initial_corpus,
+                settled_corpus,
+                patch_events,
+                records,
+                record_envelopes=record_envelopes if not env_errs else None,
+            )
+        except (ValueError, TypeError, AttributeError) as exc:
+            # A package whose sections cannot be serialized has no digests to compare: refuse it.
+            violations.append(f"DIGEST_LOCK_UNCOMPUTABLE: {type(exc).__name__}")
+            actual = {}
+        if set(section_digests) != set(actual):
+            violations.append(
+                "DIGEST_LOCK_INCOMPLETE_KEYSET: "
+                f"missing {sorted(set(actual) - set(section_digests))}, "
+                f"unknown {sorted(str(k) for k in set(section_digests) - set(actual))}"
+            )
+        for key, expected_val in sorted(section_digests.items(), key=lambda kv: str(kv[0])):
             if actual.get(key) != expected_val:
                 violations.append(
                     f"DIGEST_LOCK_MISMATCH ({key}): expected {expected_val}, got {actual.get(key)}"
@@ -3407,6 +3868,8 @@ def verify_ceg_package(
     return {
         "passed": len(violations) == 0,
         "check_top_digests": check_top_digests,
+        # False when no published section digests were supplied: nothing was compared against them.
+        "section_digests_checked": bool(check_top_digests and section_digests is not None),
         "studies_verified": len(graph.studies),
         "atoms_verified": len(graph.atoms),
         "events_verified": len(patch_events),

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Vector figures for the CEG V3.1 publication PDF.
+"""Vector figures for the CEG V3.2 publication PDF.
 
 Run from this directory:
     PYTHONDONTWRITEBYTECODE=1 python3 -B make_figures.py
 
 Figures 1 and 2 are schematics transcribed node-for-node from the two Mermaid
-blocks of CEG-JOURNAL-MANUSCRIPT-V3.1.md (sections 3.1 and 4.1).  Figure 3 is
+blocks of CEG-JOURNAL-MANUSCRIPT-V3.2.md (sections 3.1 and 4.1).  Figure 3 is
 plotted from ../benchmark_results.json and ../real_text_results.json only; no
 count is typed into this file.  Each figure is written to ./figures/ as PDF
 (embedded in the article), SVG, and a PNG preview.
@@ -127,7 +127,7 @@ def figure1() -> None:
     }
     # element -> (x, y, descriptor from the Mermaid block, transfer class toward
     # clinical_t1d_islet_graft on this axis as returned by
-    # ContextLatticeSpec.evaluate_transfer in ceg_reference.py v3.1; the classes are
+    # ContextLatticeSpec.evaluate_transfer in ceg_reference.py v3.2; the classes are
     # checked against the live lattice by t1d/check_t1d_vignette.py --check)
     nodes = {
         "clinical_t1d_islet_graft": (2.67, 3.20, "deployment target", "DIRECT_MATCH"),
@@ -244,7 +244,7 @@ def figure2() -> None:
             fontsize=SMALL, linespacing=1.15)
     ax.text((xc[1] + xc[2]) / 2, y1 - h1 / 2 - 0.05, "$I_1$ bidirectional\nbinding", ha="center", va="top",
             fontsize=SMALL, linespacing=1.15)
-    node(xc[0], y2, bw, h2, "$I_3^{\\mathrm{tok}}$:\nUTS #39 +\nSI units\n(numbers, units\n& scripts)")  # TOK
+    node(xc[0], y2, bw, h2, "$I_3^{\\mathrm{tok}}$:\nUnicode screen +\nSI units\n(numbers, units\n& scripts)")  # TOK
     node(xc[1], y2, bw, h2, "$I_3^{\\mathrm{clause}}$:\nper-clause scope,\nbounds & arms\n(lint)")       # CLS
     node(xc[2], y2, bw, h2, "$I_3^{\\mathrm{typed}}$:\n7-coordinate\nhomomorphism\n(exact 7-field\nmatch)")  # TYP
     arrow(ax, (xc[0] + bw / 2, y2), (xc[1] - bw / 2, y2))                                          # TOK --> CLS

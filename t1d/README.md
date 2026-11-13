@@ -1,6 +1,6 @@
 # Type 1 Diabetes Worked Example & Snapshot Measurements (`t1d/`)
 
-This folder holds the verification scripts and stored JSON outputs behind Section 5 (Table 1, the 8-study / 10-finding type 1 diabetes worked example) and Section 6.9 (Table 10, measurements of the 1,151-study OpenIslet corpus, 12 November 2026 snapshot) of `../CEG-JOURNAL-MANUSCRIPT-V3.1.md`.
+This folder holds the verification scripts and stored JSON outputs behind Section 5 (Table 1, the 8-study / 10-finding type 1 diabetes worked example) and Section 6.9 (Table 10, measurements of the 1,151-study OpenIslet corpus, 12 November 2026 snapshot) of `../CEG-JOURNAL-MANUSCRIPT-V3.2.md`.
 
 All scripts use only the Python 3 standard library and import `../ceg_reference.py` and `../domain_vignettes.py` unmodified.
 
@@ -21,11 +21,14 @@ A public projection of the settled 1,151-study type 1 diabetes Context–Evidenc
 
 ## Commands
 
-Run the worked example and print Table 1 (offline, no external files needed):
+Run the worked example, print Table 1, and verify manuscript parity (offline, no external files needed):
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 -B ../domain_vignettes.py --domain t1d_islet_replacement
 PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --table
+PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
+PYTHONDONTWRITEBYTECODE=1 python3 -B t1d_corpus_metrics.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
+PYTHONDONTWRITEBYTECODE=1 python3 -B replay_production_ledger.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
 ```
 
 Recompute against a read-only copy of the pinned OpenIslet snapshot archive (`SNAPSHOT_DIR`):

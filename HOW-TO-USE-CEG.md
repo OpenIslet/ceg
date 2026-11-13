@@ -16,7 +16,7 @@ Most literature tools fail in one of two ways:
 CEG separates **exploration** from **saving**:
 
 - **Regime 1 — Explore freely in context:** Load the structured graph into an AI assistant's context window. Ask open-ended questions, compare mechanisms across fields, look for hidden trade-offs, and draft candidate hypotheses without rigid templates blocking creative reasoning.
-- **Regime 2 — Verify strictly at commit:** Whenever a new study extraction, correction or synthesis claim is saved back to the shared graph, pass it through `ceg_reference.py`. Deterministic checks enforce arm structure, unit compatibility, context transfer rules, source pointers and append-only history.
+- **Regime 2 — Verify strictly at commit:** Whenever a new study extraction, correction or synthesis claim is saved back to the shared graph, pass it through `ceg_reference.py`. Deterministic checks enforce arm structure, unit compatibility, context transfer rules, source pointers and reversible edit-log history.
 
 ---
 
@@ -119,8 +119,8 @@ After the model proposes candidate JSON records, run them through `ceg_reference
 
 ## 6. Scaling Up: Lessons from a 1,151-Study Corpus
 
-Section 6.9 of the paper documents how a production Context–Evidence Graph behaves at corpus scale (`1,151` primary studies, `7,659` arms, `14,105` structured outcomes, `4.17 MB` of canonical `RFC 8785` JSON):
+Section 6.9 of the paper documents how a production Context–Evidence Graph behaves at corpus scale (`1,151` primary studies, `7,659` arms, `14,105` structured outcomes; `20.4 MB` of canonical `RFC 8785` JSON across the full settled corpus, with compact single-window views from `3.2` to `9.6 MB`):
 
 - **Fits in long context or modular slices:** Focused subgraphs for a specific mechanism or design question typically span tens to a few hundred kilobytes, fitting comfortably inside a single prompt window with full arm and unit provenance intact.
-- **Corrections never erase history:** When an extraction mistake is caught later, record an append-only `JSONPatch` event (`verify_bijective_patch_replay`) rather than silently overwriting old numbers. Anyone can replay the corpus forward or backward and verify every digest.
+- **Corrections never erase history:** When an extraction mistake is caught later, record a state-guarded reversible `JSONPatch` event (`verify_bijective_patch_replay`) rather than silently overwriting old numbers. Anyone can replay the corpus forward or backward and verify every digest.
 - **Separate public rights from verification:** Keep SHA-256 digests and figure/table pointers on every outcome so public releases can cap or redact non-open-access quotes while remaining auditable against PubMed and DOI sources.

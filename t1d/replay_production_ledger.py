@@ -17,7 +17,7 @@ Two independent replays, then tamper controls, all over the full 1,151-study cor
 Run from this folder (about two minutes):
 
     PYTHONDONTWRITEBYTECODE=1 python3 -B replay_production_ledger.py --recompute OPENISLET_DIR [--write]
-    PYTHONDONTWRITEBYTECODE=1 python3 -B replay_production_ledger.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.1.md
+    PYTHONDONTWRITEBYTECODE=1 python3 -B replay_production_ledger.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
 
 The OpenIslet checkout is read, never written. ceg_reference.py is imported unmodified. The output
 holds no timing and no absolute path, so a rerun reproduces it byte for byte. Standard library only.
@@ -157,7 +157,7 @@ def compute(root: Path) -> dict:
     d4 = json.load(open(root / V4, encoding="utf-8"))["settled_extractions"]
     prod_events = sorted(ledger["events"], key=lambda e: e["event_index"])
     result = {
-        "reference_release": "v3.1",
+        "reference_release": "v3.2",
         "reference_sha256": sha256_file(PKG / "ceg_reference.py"),
         "adapter": "study_id := queue_id; pointers /settled_extractions/<i>/... -> /studies/<i>/...; study digests recomputed (RFC 8785) from the replayed states",
         "production_convention_replay": production_replay(d1, d4, prod_events),

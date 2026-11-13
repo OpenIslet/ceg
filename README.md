@@ -3,7 +3,7 @@
 An open method, reference Python verifier, benchmark suite and worked examples for reading and synthesising scientific studies with large language models without losing experimental context.
 
 - **Plain-English overview:** https://openislet.org/ceg
-- **Typeset paper (PDF):** [`context-evidence-graph.pdf`](context-evidence-graph.pdf) (`CEG-JOURNAL-MANUSCRIPT-V3.1.pdf`)
+- **Typeset paper (PDF):** [`context-evidence-graph.pdf`](context-evidence-graph.pdf) (`CEG-JOURNAL-MANUSCRIPT-V3.2.pdf`, 36 pages)
 - **Practical guide for any field:** [`HOW-TO-USE-CEG.md`](HOW-TO-USE-CEG.md)
 
 ---
@@ -12,7 +12,7 @@ An open method, reference Python verifier, benchmark suite and worked examples f
 
 Studies on the same question often reach different answers because the experimental context differed: cells in a dish versus a living graft, mouse versus human tissue, resting versus inflamed conditions, or different doses and endpoints. Standard retrieval and summarisation pipelines strip those boundary conditions away when compressing papers into short snippets.
 
-A **Context–Evidence Graph (CEG)** keeps every measured result attached to its experimental and control groups, measurement units, partially ordered experimental setting and exact source pointer, while pairing **free exploration in an AI context window** with **deterministic verification before saving to a shared ledger**.
+A **Context–Evidence Graph (CEG)** keeps every measured result attached to its experimental and control groups, measurement units, partially ordered experimental setting and exact source pointer, while pairing **free exploration in an AI context window** with **deterministic verification before saving to a shared graph**.
 
 ---
 
@@ -49,10 +49,10 @@ shasum -a 256 -c SHA256SUMS
 
 | Path | Description |
 | :--- | :--- |
-| [`context-evidence-graph.pdf`](context-evidence-graph.pdf) | Typeset manuscript PDF (identical to `CEG-JOURNAL-MANUSCRIPT-V3.1.pdf`). |
-| [`CEG-JOURNAL-MANUSCRIPT-V3.1.md`](CEG-JOURNAL-MANUSCRIPT-V3.1.md) | Markdown source of *Context–Evidence Graph (CEG): In-Context Multi-Study Scientific Synthesis with Large Language Models*. |
+| [`context-evidence-graph.pdf`](context-evidence-graph.pdf) | Typeset manuscript PDF (`36` pages; identical to `CEG-JOURNAL-MANUSCRIPT-V3.2.pdf`). |
+| [`CEG-JOURNAL-MANUSCRIPT-V3.2.md`](CEG-JOURNAL-MANUSCRIPT-V3.2.md) | Markdown source (`v3.2`) of *Context–Evidence Graph (CEG): In-Context Multi-Study Scientific Synthesis with Large Language Models*. |
 | [`HOW-TO-USE-CEG.md`](HOW-TO-USE-CEG.md) | Step-by-step practical guide, minimal JSON template and AI prompt patterns for building or querying a Context–Evidence Graph in any field. |
-| [`ceg_reference.py`](ceg_reference.py) | Zero-dependency Python 3 reference verifier: invariants `I1`–`I6`, bijective `JSONPatch` ledger replay, partial-order context transfer classifier, `UTS #39` / SI-case / negated-bound prose lint, 7-coordinate typed layer and package verifier. |
+| [`ceg_reference.py`](ceg_reference.py) | Zero-dependency Python 3 reference verifier (`v3.2`): invariants `I1`–`I6`, bijective `JSONPatch` ledger replay, partial-order context transfer classifier, Unicode-screen / SI-case / negated-bound prose lint, 7-coordinate typed layer, non-prose surface locks and two-layer package verifier. |
 | [`domain_vignettes.py`](domain_vignettes.py) | Three worked examples: translational antifibrotic drug development (`NX-410`), exercise physiology (`sport_science`), and type 1 diabetes islet replacement (`t1d_islet_replacement`, built from peer-reviewed studies in the OpenIslet corpus). |
 | [`ceg_synthetic_benchmark.py`](ceg_synthetic_benchmark.py) & [`benchmark_results.json`](benchmark_results.json) | `1,931`-case synthetic benchmark across five test suites (`core`, `stress`, `residual`, `redteam`, `gauntlet`) and five ablation regimes (`V0`–`V3`). |
 | [`ceg_real_text_evaluation.py`](ceg_real_text_evaluation.py) & [`real_text_results.json`](real_text_results.json) | Primary-source evaluation across 12 peer-reviewed PubMed studies (`31` `EvidenceAtom`s, `120` Track A/B items) in idiopathic pulmonary fibrosis, heart failure and thoracic oncology. |

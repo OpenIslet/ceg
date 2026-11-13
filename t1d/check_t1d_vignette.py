@@ -3,7 +3,7 @@
 
 Run from this folder:
 
-    PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.1.md
+    PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
     PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --recompute OPENISLET_DIR [--write]
     PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --quotes OPENISLET_DIR [--write]
     PYTHONDONTWRITEBYTECODE=1 python3 -B check_t1d_vignette.py --table

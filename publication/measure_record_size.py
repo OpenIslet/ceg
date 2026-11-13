@@ -4,7 +4,7 @@
 Run from this folder:
 
     PYTHONDONTWRITEBYTECODE=1 python3 -B measure_record_size.py
-    PYTHONDONTWRITEBYTECODE=1 python3 -B measure_record_size.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.1.md
+    PYTHONDONTWRITEBYTECODE=1 python3 -B measure_record_size.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
 
 The first form writes record_size.json. The second form recomputes the figures and
 verifies that the record-size sentences of section 7.3 of the manuscript state them.

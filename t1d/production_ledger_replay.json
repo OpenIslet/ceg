@@ -101,7 +101,7 @@
     "ledger_sha256": "6a5aee8a7e3df3cf5881badee82a6b33c3f8902ebb23f2810c8b28726c765be3",
     "settled_corpus_sha256": "b4ffc780cda351842e6ad39dc8f3c9ad1fa79480649678e2fc73bdec865a99c0"
   },
-  "reference_release": "v3.1",
+  "reference_release": "v3.2",
   "reference_replay": {
     "layer1": {
       "distinct_patched_studies": 29,
@@ -114,5 +114,5 @@
       "verdict": "ACCEPTED"
     }
   },
-  "reference_sha256": "3e1844e93db2e0487a08d392d4a875db042d0ccfa0832c3de2ff52984fd48479"
+  "reference_sha256": "7b2faba90a1cf5ae630eb67224262131e2804fe53aade317741b83b9e13ad827"
 }

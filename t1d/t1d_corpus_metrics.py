@@ -12,7 +12,7 @@ recomputed (the project's validator is not run here): the dossier-record and num
 its validator, the point/missing split of its cited tuples, and the certification ledger status. Run from this folder:
 
     PYTHONDONTWRITEBYTECODE=1 python3 -B t1d_corpus_metrics.py --recompute OPENISLET_DIR [--write]
-    PYTHONDONTWRITEBYTECODE=1 python3 -B t1d_corpus_metrics.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.1.md
+    PYTHONDONTWRITEBYTECODE=1 python3 -B t1d_corpus_metrics.py --check ../CEG-JOURNAL-MANUSCRIPT-V3.2.md
 
 --recompute recomputes every figure from the OpenIslet checkout and compares it with the stored
 t1d_corpus_metrics.json (--write replaces the stored file). --check needs no OpenIslet checkout: it

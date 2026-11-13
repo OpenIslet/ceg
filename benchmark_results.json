@@ -1,6 +1,6 @@
 {
-  "benchmark_version": "ceg-synthetic-benchmark-3.0",
-  "reference_version": "3.1",
+  "benchmark_version": "ceg-synthetic-benchmark-3.2",
+  "reference_version": "3.2",
   "total_cases": 1931,
   "adversarial_cases": 1521,
   "valid_cases": 410,
@@ -37,6 +37,11 @@
       "distinct_templates": 48
     }
   },
+  "prose_sentence_frames": {
+    "prose_sentences": 1981,
+    "distinct_sentences": 1887,
+    "distinct_after_replacing_every_numeral": 183
+  },
   "worked_vignette_verification": {
     "drug_development": {
       "domain_name": "drug_development",
@@ -46,9 +51,9 @@
       "patch_replay": {
         "events_replayed": 3,
         "distinct_patched_studies": 2,
-        "initial_sha256": "a12490cea51f0c7b247e2ce22d745ce7c18f4812fc99826cb7041f67e96ccae1",
-        "settled_sha256": "93b4de08b9a8949437d60ec57f81413b20fbeb4ee8a121d3c6d3128cd32ef66d",
-        "ledger_sha256": "0b722540787b22281ebcef990e16bb93715369dc0e432ece803566f089a86313",
+        "initial_sha256": "61386416a6db8b1f6cbf0153e65f9b46d47eacc177665747b7426d313ada2540",
+        "settled_sha256": "da8c48a5f13e05006e8ab22feb5ad884845b7a798d0d52fb62fbc194b9bbe635",
+        "ledger_sha256": "5cdc87d3596c5fbee393695d3326f460237dedcbfad38e29a9b52cd8e57b2dac",
         "step_digests_checked": true,
         "bijective_replay_verified": true
       },
@@ -129,9 +134,9 @@
       "patch_replay": {
         "events_replayed": 1,
         "distinct_patched_studies": 1,
-        "initial_sha256": "5f3c17012fbceef40a5ef526edf1d1d1e23873427fbf8b5b95bb03a4e25f42d0",
-        "settled_sha256": "af45e4e1608babaabb5b0a5218310ffd20e71a1bb9a151b8df61b59c4eadd0ee",
-        "ledger_sha256": "33bbfad523288de21a8748d873c9ca2843913524eab1edfa9fa1fd3dcb26a0e6",
+        "initial_sha256": "411073011bbb7d0f29618b198c8dba4645450dfa06e85ceabfa58e681c448e6f",
+        "settled_sha256": "12549dc73135b5fc14400d7a70261f1533cee25cf3e52d0dc43bf11c8a1b6327",
+        "ledger_sha256": "0beffbf4abd8a3b3475db2bef2edd1dedfac108e5818cc71bee9fd6da8023eb3",
         "step_digests_checked": true,
         "bijective_replay_verified": true
       },
@@ -370,12 +375,12 @@
       },
       "V1_study_pool_numeric": {
         "adversarial_total": 38,
-        "adversarial_rejected": 7,
-        "adversarial_accepted": 31,
+        "adversarial_rejected": 5,
+        "adversarial_accepted": 33,
         "valid_total": 10,
         "valid_accepted": 10,
         "valid_rejected": 0,
-        "adversarial_rejection_rate_pct": 18.42,
+        "adversarial_rejection_rate_pct": 13.16,
         "valid_acceptance_rate_pct": 100.0
       },
       "V2_prose_pooled_permitted": {
@@ -3476,62 +3481,61 @@
       "is_adversarial": true,
       "total_cases": 8,
       "templates": {
-        "fig_28d_panel_collision": 1,
-        "fig_7h_panel_collision": 1,
+        "panel_d_label_unit_collision": 1,
+        "panel_h_label_unit_collision": 1,
         "reagent_actinomycin_D_unit_spoof": 1,
         "si_case_mM_vs_mm": 1,
         "si_case_nM_vs_nm": 1,
         "si_case_pM_vs_pm": 1,
         "si_case_uM_vs_um": 1,
-        "table_2d_and_3D_tag_collision": 1
+        "table_D_and_panel_d_label_collision": 1
       },
       "by_verifier": {
         "V0_citation_presence": {
           "accepted": 8,
           "rejected": 0,
           "accepted_templates": [
-            "fig_28d_panel_collision",
-            "fig_7h_panel_collision",
+            "panel_d_label_unit_collision",
+            "panel_h_label_unit_collision",
             "reagent_actinomycin_D_unit_spoof",
             "si_case_mM_vs_mm",
             "si_case_nM_vs_nm",
             "si_case_pM_vs_pm",
             "si_case_uM_vs_um",
-            "table_2d_and_3D_tag_collision"
+            "table_D_and_panel_d_label_collision"
           ],
           "rejected_templates": [],
           "rejection_rate_pct": 0.0
         },
         "V1_study_pool_numeric": {
-          "accepted": 6,
-          "rejected": 2,
+          "accepted": 8,
+          "rejected": 0,
           "accepted_templates": [
-            "fig_28d_panel_collision",
+            "panel_d_label_unit_collision",
+            "panel_h_label_unit_collision",
             "reagent_actinomycin_D_unit_spoof",
             "si_case_mM_vs_mm",
             "si_case_nM_vs_nm",
             "si_case_pM_vs_pm",
-            "si_case_uM_vs_um"
+            "si_case_uM_vs_um",
+            "table_D_and_panel_d_label_collision"
           ],
-          "rejected_templates": [
-            "fig_7h_panel_collision",
-            "table_2d_and_3D_tag_collision"
-          ],
-          "rejection_rate_pct": 25.0
+          "rejected_templates": [],
+          "rejection_rate_pct": 0.0
         },
         "V2_prose_pooled_permitted": {
           "accepted": 0,
           "rejected": 8,
           "accepted_templates": [],
           "rejected_templates": [
-            "fig_28d_panel_collision",
-            "fig_7h_panel_collision",
+            "panel_d_label_unit_collision",
+            "panel_h_label_unit_collision",
             "reagent_actinomycin_D_unit_spoof",
             "si_case_mM_vs_mm",
             "si_case_nM_vs_nm",
             "si_case_pM_vs_pm",
             "si_case_uM_vs_um",
-            "table_2d_and_3D_tag_collision"
+            "table_D_and_panel_d_label_collision"
           ],
           "rejection_rate_pct": 100.0
         },
@@ -3540,14 +3544,14 @@
           "rejected": 8,
           "accepted_templates": [],
           "rejected_templates": [
-            "fig_28d_panel_collision",
-            "fig_7h_panel_collision",
+            "panel_d_label_unit_collision",
+            "panel_h_label_unit_collision",
             "reagent_actinomycin_D_unit_spoof",
             "si_case_mM_vs_mm",
             "si_case_nM_vs_nm",
             "si_case_pM_vs_pm",
             "si_case_uM_vs_um",
-            "table_2d_and_3D_tag_collision"
+            "table_D_and_panel_d_label_collision"
           ],
           "rejection_rate_pct": 100.0
         },
@@ -3556,14 +3560,14 @@
           "rejected": 8,
           "accepted_templates": [],
           "rejected_templates": [
-            "fig_28d_panel_collision",
-            "fig_7h_panel_collision",
+            "panel_d_label_unit_collision",
+            "panel_h_label_unit_collision",
             "reagent_actinomycin_D_unit_spoof",
             "si_case_mM_vs_mm",
             "si_case_nM_vs_nm",
             "si_case_pM_vs_pm",
             "si_case_uM_vs_um",
-            "table_2d_and_3D_tag_collision"
+            "table_D_and_panel_d_label_collision"
           ],
           "rejection_rate_pct": 100.0
         }
@@ -3923,23 +3927,25 @@
         "replay_unbound_changes_tried": 7,
         "replay_unbound_changes_accepted_by_replay": 7,
         "replay_unbound_changes_detected_by_ledger_digest": 7,
-        "tampers_tried": 152,
+        "tampers_tried": 750,
         "tampers_accepted": 0,
         "tampers_tried_by_kind": {
-          "aliased_container_edit": 1,
           "event_deleted": 3,
           "event_duplicated": 3,
-          "initial_leaf_altered": 58,
+          "event_duplicated_with_fresh_id": 3,
+          "initial_leaf_altered": 355,
           "new_value_altered": 3,
           "old_value_altered": 3,
           "pointer_empty_leading_token": 3,
           "pointer_leading_zero": 3,
           "pointer_negative_index": 3,
+          "pointer_redirected_same_old_value": 1,
+          "pointer_redirected_same_old_value_no_step_digests": 1,
           "pointer_redirected_to_sibling_field": 3,
           "post_digest_altered": 3,
           "pre_digest_altered": 3,
           "same_study_transposition": 1,
-          "settled_leaf_altered": 59,
+          "settled_leaf_altered": 356,
           "study_attribution_altered": 3
         },
         "tampers_accepted_by_kind": {},
@@ -3951,13 +3957,13 @@
         "replay_unbound_changes_tried": 3,
         "replay_unbound_changes_accepted_by_replay": 3,
         "replay_unbound_changes_detected_by_ledger_digest": 3,
-        "tampers_tried": 30,
+        "tampers_tried": 162,
         "tampers_accepted": 0,
         "tampers_tried_by_kind": {
-          "aliased_container_edit": 1,
           "event_deleted": 1,
           "event_duplicated": 1,
-          "initial_leaf_altered": 9,
+          "event_duplicated_with_fresh_id": 1,
+          "initial_leaf_altered": 75,
           "new_value_altered": 1,
           "old_value_altered": 1,
           "pointer_empty_leading_token": 1,
@@ -3966,12 +3972,16 @@
           "pointer_redirected_to_sibling_field": 1,
           "post_digest_altered": 1,
           "pre_digest_altered": 1,
-          "settled_leaf_altered": 9,
+          "settled_leaf_altered": 75,
           "study_attribution_altered": 1
         },
         "tampers_accepted_by_kind": {},
         "commuting_transpositions_tried": 0,
         "commuting_transpositions_accepted": 0
+      },
+      "shared_container_probe": {
+        "tampers_tried": 1,
+        "tampers_accepted": 0
       }
     },
     "canonical_rendering_round_trip": {
@@ -3992,6 +4002,49 @@
       "non_prose_metadata_tampers_tried": 60,
       "non_prose_metadata_tampers_rejected": 60,
       "active_prose_exemptions_verified": 4
+    },
+    "expected_violation_codes": {
+      "adversarial_cases_checked": 1281,
+      "rejected_by_the_rule_naming_the_defect": 1279,
+      "of_which_also_raising_another_code": 67,
+      "rejected_before_the_named_defect_is_evaluated": 2,
+      "off_target_templates": {
+        "T15_unit_variations/thin_space_before_unit": {
+          "cases": 1,
+          "codes": [
+            "I3_TOK_FORBIDDEN_UNICODE"
+          ],
+          "note": "refused for the thin space U+2009 (I3_TOK_FORBIDDEN_UNICODE); the wrong unit is not evaluated"
+        },
+        "T16_role_variations/thin_space_percent": {
+          "cases": 1,
+          "codes": [
+            "I3_TOK_FORBIDDEN_UNICODE"
+          ],
+          "note": "refused for the thin space U+2009 (I3_TOK_FORBIDDEN_UNICODE); the numeral's role is not evaluated"
+        }
+      }
+    },
+    "tamper_and_reattest": {
+      "valid_records_used": 310,
+      "tampered_records_tried": 1500,
+      "refused_on_expected_code_family": 1500,
+      "tried_by_kind": {
+        "anchor_redirected_to_unknown_tuple": 310,
+        "promotion_requested_without_typed_layer": 210,
+        "prose_value_fabricated": 310,
+        "support_also_listed_as_counterevidence": 260,
+        "target_context_outside_lattice": 310,
+        "typed_quantity_mutated": 100
+      },
+      "refused_by_kind": {
+        "anchor_redirected_to_unknown_tuple": 310,
+        "promotion_requested_without_typed_layer": 210,
+        "prose_value_fabricated": 310,
+        "support_also_listed_as_counterevidence": 260,
+        "target_context_outside_lattice": 310,
+        "typed_quantity_mutated": 100
+      }
     },
     "structure_only_and_colon_ids": {
       "bundles": {

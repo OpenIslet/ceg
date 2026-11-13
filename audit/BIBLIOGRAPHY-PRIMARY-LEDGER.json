@@ -1,15 +1,18 @@
 {
-  "ledger_version": "3.0",
-  "manuscript": "CEG-JOURNAL-MANUSCRIPT-V3.md",
-  "total_references": 45,
+  "ledger_version": "3.2",
+  "manuscript": "CEG-JOURNAL-MANUSCRIPT-V3.2.md",
+  "total_references": 53,
   "v2_references_audited": 32,
   "v3_new_references_added": 13,
+  "v3_1_new_references_added": 8,
   "summary": {
     "v2_memory_flagged_resolved": [23, 26, 28, 29, 30],
     "v2_role_or_metadata_corrections": [7, 16, 25, 30],
     "v2_missing_identifiers_completed": [1, 2, 3, 7, 8, 9, 12, 13, 14, 16, 17, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
     "real_text_pubmed_studies": [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
-    "unicode_normative_security_standard": [45]
+    "unicode_normative_security_standard": [45],
+    "t1d_worked_example_studies": [46, 47, 48, 49, 50, 51, 52, 53],
+    "v3_2_manuscript_characterization_revised": [1, 2, 3, 5, 6, 10, 27, 31, 32]
   },
   "references": [
     {
@@ -354,14 +357,15 @@
       "ref_num": 27,
       "authors": "Rundgren A, Jordan B, Erdtman S",
       "title": "JSON Canonicalization Scheme (JCS)",
-      "venue": "Internet Engineering Task Force (IETF) RFC 8785",
+      "venue": "RFC 8785 (Independent Submission, Informational); RFC Editor",
       "year": 2020,
       "volume_issue_pages": "2020 Jun",
       "doi": "10.17487/RFC8785",
       "pmid": null,
       "authority_checked": "RFC Editor (https://www.rfc-editor.org/rfc/rfc8785)",
       "v2_status": "verified_added_doi",
-      "v2_to_v3_delta": "Verified all 3 authors, title, and June 2020 date; added DOI 10.17487/RFC8785."
+      "v2_to_v3_delta": "Verified all 3 authors, title, and June 2020 date; added DOI 10.17487/RFC8785.",
+      "v3_2_correction": "RFC 8785 is an Independent Submission with Informational status and is not an IETF standard; the venue was corrected in release 3.2."
     },
     {
       "ref_num": 28,
@@ -596,6 +600,110 @@
       "authority_checked": "Unicode Consortium Approved Stable Standard (https://www.unicode.org/reports/tr39/tr39-34.html)",
       "v2_status": "new_in_v3_unicode_uts39",
       "v2_to_v3_delta": "Added in V3 as the active normative Unicode standard for mixed-script/confusable skeleton detection and identifier restriction, complementing stabilized UTR #36 [30]."
+    },
+    {
+      "ref_num": 46,
+      "authors": "Lamarche LB, Koch C, Khalid S, Khan MZ, Zessis R, Clement ME, et al.",
+      "title": "Complete loss of SLC30A8 in humans improves glucose metabolism and beta cell function",
+      "venue": "Diabetologia",
+      "year": 2025,
+      "volume_issue_pages": "68(12):2754-2766",
+      "doi": "10.1007/s00125-025-06530-3",
+      "pmid": "41020949",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:41020949), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 47,
+      "authors": "Dwivedi OP, Lehtovirta M, Hastoy B, Chandra V, Krentz NAJ, Kleiner S, et al.",
+      "title": "Loss of ZnT8 function protects against diabetes by enhanced insulin secretion",
+      "venue": "Nature Genetics",
+      "year": 2019,
+      "volume_issue_pages": "51(11):1596-1606",
+      "doi": "10.1038/s41588-019-0513-9",
+      "pmid": "31676859",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:31676859), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 48,
+      "authors": "Balke EM, Demeester S, Lee D, Gillard P, Hilbrands R, Van de Velde U, et al.",
+      "title": "SLC30A8 polymorphism and BMI complement HLA-A*24 as risk factors for poor graft function in islet allograft recipients",
+      "venue": "Diabetologia",
+      "year": 2018,
+      "volume_issue_pages": "61(7):1623-1632",
+      "doi": "10.1007/s00125-018-4609-z",
+      "pmid": "29679103",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:29679103), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 49,
+      "authors": "Sintov E, Nikolskiy I, Barrera V, Hyoje-Ryu Kenty J, Atkin AS, Gerace D, et al.",
+      "title": "Whole-genome CRISPR screening identifies genetic manipulations to reduce immune rejection of stem cell-derived islets",
+      "venue": "Stem Cell Reports",
+      "year": 2022,
+      "volume_issue_pages": "17(9):1976-1990",
+      "doi": "10.1016/j.stemcr.2022.08.002",
+      "pmid": "36055241",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:36055241), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 50,
+      "authors": "Szymczak F, Alvelos MI, Marín-Cañas S, Castela Â, Demine S, Colli ML, et al.",
+      "title": "Transcription and splicing regulation by NLRC5 shape the interferon response in human pancreatic β cells",
+      "venue": "Science Advances",
+      "year": 2022,
+      "volume_issue_pages": "8(37):eabn5732",
+      "doi": "10.1126/sciadv.abn5732",
+      "pmid": "36103539",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:36103539), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 51,
+      "authors": "van der Torren CR, Zaldumbide A, Duinkerken G, Brand-Schaaf SH, Peakman M, Stangé G, et al.",
+      "title": "Immunogenicity of human embryonic stem cell-derived beta cells",
+      "venue": "Diabetologia",
+      "year": 2017,
+      "volume_issue_pages": "60(1):126-133",
+      "doi": "10.1007/s00125-016-4125-y",
+      "pmid": "27787618",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:27787618), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 52,
+      "authors": "Golec E, Ekström A, Noga M, Omar-Hmeadi M, Lund PE, Villoutreix BO, et al.",
+      "title": "Alternative splicing encodes functional intracellular CD59 isoforms that mediate insulin secretion and are down-regulated in diabetic islets",
+      "venue": "Proceedings of the National Academy of Sciences of the United States of America",
+      "year": 2022,
+      "volume_issue_pages": "119(24):e2120083119",
+      "doi": "10.1073/pnas.2120083119",
+      "pmid": "35666870",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:35666870), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
+    },
+    {
+      "ref_num": 53,
+      "authors": "Bradley K, Moore C, Ishahak M, Maestas MM, Veronese-Paniagua DA, Millman JR",
+      "title": "Divergent cell-type specific hypoxia responses in human stem cell-derived and primary islets",
+      "venue": "Scientific Reports",
+      "year": 2026,
+      "volume_issue_pages": "16(1):21788",
+      "doi": "10.1038/s41598-026-52074-w",
+      "pmid": "42120510",
+      "authority_checked": "NCBI PubMed E-utilities summary record (PMID:42120510), stored in t1d/pack_references_pubmed.json",
+      "v2_status": "new_in_v3_1_t1d_worked_example",
+      "v2_to_v3_delta": "Added in release 3.1 for the type 1 diabetes worked example of section 5; entered in this ledger in release 3.2, with authors, title, journal, volume, issue, year and DOI compared with the stored PubMed record."
     }
   ]
 }

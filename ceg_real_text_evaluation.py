@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Primary-source real-text evaluation of Context-Evidence Graphs (CEGs).
+"""Real-text evaluation of Context-Evidence Graphs (CEGs) on the abstracts of 12 PubMed studies.
 
 Evaluates the five CEG verification regimes (V0, V1, V2, V2s, V3) on a curated,
 zero-network-at-runtime corpus of 12 peer-reviewed biomedical studies indexed in
@@ -30,7 +30,7 @@ Two complementary tracks are executed:
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 from pathlib import Path
 import re
@@ -60,12 +60,13 @@ from ceg_reference import (
     proposition_from_atom,
     resolve_json_pointer,
     sha256_canonical,
+    settled_corpus_from_graph,
     verify_atoms_bound_to_corpus,
     verify_bijective_patch_replay,
     verify_prose_sentence,
 )
 
-REAL_TEXT_EVAL_VERSION = "3.0"
+REAL_TEXT_EVAL_VERSION = "3.2"
 ASCII_NUM_RE = re.compile(r"(?<![A-Za-z0-9.])[-+]?\d+(?:\.\d+)?")
 MASK_ID_RE = IDENTIFIER_MASK_RE
 
@@ -94,26 +95,38 @@ class GroundedSynthesisCase:
     description: str
     record: SynthesisClaimRecord
     tamper_kind: str | None = None
+    # For an adversarial record: the same record with its false sentence corrected. The harness
+    # requires the repaired twin to be accepted, so the rejection is attributable to the defect.
+    repaired_prose: tuple[str, ...] | None = None
 
 
 # ---------------------------------------------------------------------------
-# 1. Context poset and primary-source 12-study corpus
+# 1. Context poset and 12-study corpus curated from PubMed abstracts
 # ---------------------------------------------------------------------------
 
 def build_clinical_translational_lattice() -> ContextLatticeSpec:
-    """Five-axis product poset spanning preclinical assays, subgroups, and Phase 3 ITT."""
+    """Six-axis product poset spanning preclinical assays, subgroups, interventions and Phase 3 ITT.
+
+    Release 3.2 removes three over-wide orderings of release 3.1. A clinical trial no
+    longer dominates a preclinical tier, the overall population no longer dominates
+    a subgroup or a preclinical model, and an intervention axis keeps the results of
+    two different drugs apart. Each of these three axes has a formal top element
+    (`any_*`) that no study or target uses: it only supplies the common upper bound
+    that makes such a transfer a bounded bridge rather than an inadmissible one.
+    """
     model_axis = ContextAxisPoset(
         name="evidence_tier",
         dominates={
             "engineered_cell_line": frozenset({"engineered_cell_line"}),
-            "translational_model": frozenset({"translational_model", "engineered_cell_line"}),
-            "primary_human_cells": frozenset({"primary_human_cells", "translational_model", "engineered_cell_line"}),
-            "in_vivo_rodent": frozenset({"in_vivo_rodent", "translational_model", "engineered_cell_line"}),
-            "phase2_rct": frozenset(
-                {"phase2_rct", "primary_human_cells", "in_vivo_rodent", "translational_model", "engineered_cell_line"}
-            ),
-            "phase3_rct": frozenset(
+            # `translational_model` is the bridge-floor marker: a tier that dominates it is at or above the floor.
+            "translational_model": frozenset({"translational_model"}),
+            "primary_human_cells": frozenset({"primary_human_cells", "translational_model"}),
+            "in_vivo_rodent": frozenset({"in_vivo_rodent", "translational_model"}),
+            "phase2_rct": frozenset({"phase2_rct", "translational_model"}),
+            "phase3_rct": frozenset({"phase3_rct", "phase2_rct", "translational_model"}),
+            "any_evidence_tier": frozenset(
                 {
+                    "any_evidence_tier",
                     "phase3_rct",
                     "phase2_rct",
                     "primary_human_cells",
@@ -122,6 +135,22 @@ def build_clinical_translational_lattice() -> ContextLatticeSpec:
                     "engineered_cell_line",
                 }
             ),
+        },
+    )
+    interventions = (
+        "nintedanib",
+        "pirfenidone",
+        "bi_1015550",
+        "sacubitril_valsartan",
+        "vericiguat",
+        "pembrolizumab",
+        "osimertinib",
+    )
+    intervention_axis = ContextAxisPoset(
+        name="intervention",
+        dominates={
+            **{name: frozenset({name}) for name in interventions},
+            "any_intervention": frozenset({"any_intervention", *interventions}),
         },
     )
     indication_axis = ContextAxisPoset(
@@ -144,8 +173,10 @@ def build_clinical_translational_lattice() -> ContextLatticeSpec:
             "background_antifibrotic_subgroup": frozenset({"background_antifibrotic_subgroup"}),
             "cns_metastases_subgroup": frozenset({"cns_metastases_subgroup"}),
             "stage_ii_iiia_subgroup": frozenset({"stage_ii_iiia_subgroup"}),
-            "overall_itt": frozenset(
+            "overall_itt": frozenset({"overall_itt"}),
+            "any_population": frozenset(
                 {
+                    "any_population",
                     "overall_itt",
                     "antifibrotic_naive_subgroup",
                     "background_antifibrotic_subgroup",
@@ -178,6 +209,7 @@ def build_clinical_translational_lattice() -> ContextLatticeSpec:
         axis_posets={
             "evidence_tier": model_axis,
             "indication": indication_axis,
+            "intervention": intervention_axis,
             "population_stratum": stratum_axis,
             "followup_horizon": horizon_axis,
             "readout_level": readout_axis,
@@ -282,11 +314,13 @@ def _ctx(
     stratum: str,
     horizon: str,
     readout: str,
+    intervention: str,
 ) -> ContextSignature:
     return ContextSignature(
         {
             "evidence_tier": tier,
             "indication": indication,
+            "intervention": intervention,
             "population_stratum": stratum,
             "followup_horizon": horizon,
             "readout_level": readout,
@@ -329,22 +363,22 @@ def build_real_text_corpus() -> tuple[
     dict[str, Any],
     list[ReversiblePatchEvent],
 ]:
-    """Construct the 12-study, 31-atom primary-source CEG and curation ledger."""
+    """Construct the 12-study, 31-atom CEG curated from PubMed abstracts, and its curation ledger."""
     lattice = build_clinical_translational_lattice()
 
     studies: dict[str, ContextSignature] = {
-        "R101": _ctx("phase3_rct", "ipf", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R102": _ctx("phase3_rct", "ipf", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R103": _ctx("phase2_rct", "ipf", "overall_itt", "short_term_4_to_12w", "clinical_efficacy_or_safety"),
-        "R104": _ctx("primary_human_cells", "ipf", "preclinical_model", "acute_assay", "molecular_potency"),
-        "R201": _ctx("phase3_rct", "hfref", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R202": _ctx("phase3_rct", "hfpef", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R203": _ctx("phase3_rct", "hfref", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R204": _ctx("in_vivo_rodent", "hfref", "preclinical_model", "short_term_4_to_12w", "organ_remodeling_surrogate"),
-        "R301": _ctx("phase3_rct", "nsclc_pd_l1_high_1l", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R302": _ctx("phase3_rct", "nsclc_egfr_t790m_2l", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R303": _ctx("phase3_rct", "nsclc_egfr_adjuvant", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
-        "R304": _ctx("engineered_cell_line", "nsclc_egfr_exon20ins", "preclinical_model", "acute_assay", "molecular_potency"),
+        "R101": _ctx("phase3_rct", "ipf", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "nintedanib"),
+        "R102": _ctx("phase3_rct", "ipf", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "pirfenidone"),
+        "R103": _ctx("phase2_rct", "ipf", "overall_itt", "short_term_4_to_12w", "clinical_efficacy_or_safety", "bi_1015550"),
+        "R104": _ctx("primary_human_cells", "ipf", "preclinical_model", "acute_assay", "molecular_potency", "pirfenidone"),
+        "R201": _ctx("phase3_rct", "hfref", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "sacubitril_valsartan"),
+        "R202": _ctx("phase3_rct", "hfpef", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "sacubitril_valsartan"),
+        "R203": _ctx("phase3_rct", "hfref", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "vericiguat"),
+        "R204": _ctx("in_vivo_rodent", "hfref", "preclinical_model", "short_term_4_to_12w", "organ_remodeling_surrogate", "sacubitril_valsartan"),
+        "R301": _ctx("phase3_rct", "nsclc_pd_l1_high_1l", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "pembrolizumab"),
+        "R302": _ctx("phase3_rct", "nsclc_egfr_t790m_2l", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "osimertinib"),
+        "R303": _ctx("phase3_rct", "nsclc_egfr_adjuvant", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "osimertinib"),
+        "R304": _ctx("engineered_cell_line", "nsclc_egfr_exon20ins", "preclinical_model", "acute_assay", "molecular_potency", "osimertinib"),
     }
 
     study_variables: dict[str, set[str]] = {
@@ -387,10 +421,10 @@ def build_real_text_corpus() -> tuple[
         "VAR:R304:Osimertinib_InVitro": ("osimertinib",),
     }
 
-    c_r103_naive = _ctx("phase2_rct", "ipf", "antifibrotic_naive_subgroup", "short_term_4_to_12w", "clinical_efficacy_or_safety")
-    c_r103_bg = _ctx("phase2_rct", "ipf", "background_antifibrotic_subgroup", "short_term_4_to_12w", "clinical_efficacy_or_safety")
-    c_r302_cns = _ctx("phase3_rct", "nsclc_egfr_t790m_2l", "cns_metastases_subgroup", "chronic_6m_plus", "clinical_efficacy_or_safety")
-    c_r303_st2 = _ctx("phase3_rct", "nsclc_egfr_adjuvant", "stage_ii_iiia_subgroup", "chronic_6m_plus", "clinical_efficacy_or_safety")
+    c_r103_naive = _ctx("phase2_rct", "ipf", "antifibrotic_naive_subgroup", "short_term_4_to_12w", "clinical_efficacy_or_safety", "bi_1015550")
+    c_r103_bg = _ctx("phase2_rct", "ipf", "background_antifibrotic_subgroup", "short_term_4_to_12w", "clinical_efficacy_or_safety", "bi_1015550")
+    c_r302_cns = _ctx("phase3_rct", "nsclc_egfr_t790m_2l", "cns_metastases_subgroup", "chronic_6m_plus", "clinical_efficacy_or_safety", "osimertinib")
+    c_r303_st2 = _ctx("phase3_rct", "nsclc_egfr_adjuvant", "stage_ii_iiia_subgroup", "chronic_6m_plus", "clinical_efficacy_or_safety", "osimertinib")
 
     atoms_list: list[EvidenceAtom] = [
         # --- R101: INPULSIS-1 & INPULSIS-2 (PMID:24836310) ---
@@ -407,7 +441,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=513,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:24836310", "Abstract Results", "-114.7 ml with nintedanib versus -239.9 ml with placebo", False, True),
+            provenance=ProvenancePin("PMID:24836310", "Abstract Results; sample size 513 (309 + 204 treated): ClinicalTrials.gov NCT01335464", "-114.7 ml with nintedanib versus -239.9 ml with placebo", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R101:O2",
@@ -422,7 +456,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=548,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:24836310", "Abstract Results", "-113.6 ml with nintedanib versus -207.3 ml with placebo", False, True),
+            provenance=ProvenancePin("PMID:24836310", "Abstract Results; sample size 548 (329 + 219 treated): ClinicalTrials.gov NCT01335477", "-113.6 ml with nintedanib versus -207.3 ml with placebo", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R101:O3",
@@ -437,7 +471,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=513,
             p_value_or_interval=None,
             polarity="unfavorable",
-            provenance=ProvenancePin("PMID:24836310", "Abstract Results", "rates of 61.5% and 18.6% in the nintedanib and placebo groups", False, True),
+            provenance=ProvenancePin("PMID:24836310", "Abstract Results; sample size 513 (309 + 204 treated): ClinicalTrials.gov NCT01335464", "rates of 61.5% and 18.6% in the nintedanib and placebo groups", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R101:O4",
@@ -452,7 +486,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=638,
             p_value_or_interval=None,
             polarity="neutral_or_mixed",
-            provenance=ProvenancePin("PMID:24836310", "Abstract Conclusions", "led to discontinuation of the study medication in less than 5% of patients", False, True),
+            provenance=ProvenancePin("PMID:24836310", "Abstract Conclusions; sample size 638 (309 + 329 nintedanib-treated): ClinicalTrials.gov NCT01335464 and NCT01335477", "led to discontinuation of the study medication in less than 5% of patients", False, True),
         ),
         # --- R102: ASCEND (PMID:24836312) ---
         EvidenceAtom(
@@ -468,7 +502,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=555,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:24836312", "Abstract Results", "relative reduction of 47.9% in the proportion of patients", False, True),
+            provenance=ProvenancePin("PMID:24836312", "Abstract Results; sample size 555: Abstract Methods", "relative reduction of 47.9% in the proportion of patients", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R102:O2",
@@ -483,7 +517,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=555,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:24836312", "Abstract Results", "relative increase of 132.5% in the proportion of patients with no decline in FVC", False, True),
+            provenance=ProvenancePin("PMID:24836312", "Abstract Results; sample size 555: Abstract Methods", "relative increase of 132.5% in the proportion of patients with no decline in FVC", False, True),
         ),
         # --- R103: BI 1015550 Phase 2 (PMID:35569036) ---
         EvidenceAtom(
@@ -499,7 +533,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=73,
             p_value_or_interval="posterior_prob=0.998",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:35569036", "Abstract Results", "median change in the FVC was 5.7 ml in the BI 1015550 group and -81.7 ml in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:35569036", "Abstract Results; sample size 73 (48 + 25, no background antifibrotic): ClinicalTrials.gov NCT04419506", "the median change in the FVC was 5.7 ml (95% credible interval, -39.1 to 50.5) in the BI 1015550 group and -81.7 ml (95% credible interval, -133.5 to -44.8) in the placebo group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R103:O2",
@@ -514,7 +548,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=74,
             p_value_or_interval="posterior_prob=0.986",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:35569036", "Abstract Results", "median change in the FVC was 2.7 ml in the BI 1015550 group and -59.2 ml in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:35569036", "Abstract Results; sample size 74 (49 + 25, background antifibrotic): ClinicalTrials.gov NCT04419506", "the median change in the FVC was 2.7 ml (95% credible interval, -32.8 to 38.2) in the BI 1015550 group and -59.2 ml (95% credible interval, -111.8 to -17.9) in the placebo group", False, True),
         ),
         # --- R104: Preclinical Pirfenidone MRTF (PMID:36585256) ---
         EvidenceAtom(
@@ -530,7 +564,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=None,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:36585256", "Abstract Results", "half-maximal inhibitory concentration 50-150 uM", False, True),
+            provenance=ProvenancePin("PMID:36585256", "Abstract Results", "half-maximal inhibitory concentration 50-150", False, False),
         ),
         EvidenceAtom(
             atom_id="ATOM:R104:O2",
@@ -545,7 +579,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=None,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:36585256", "Abstract Results", "maximal inhibition >90%", False, True),
+            provenance=ProvenancePin("PMID:36585256", "Abstract Results", "maximal inhibition >90%", False, False),
         ),
         # --- R201: PARADIGM-HF (PMID:25176015) ---
         EvidenceAtom(
@@ -561,7 +595,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=8399,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:25176015", "Abstract Results", "914 patients (21.8%) in the LCZ696 group and 1117 patients (26.5%) in the enalapril group", False, True),
+            provenance=ProvenancePin("PMID:25176015", "Abstract Results; sample size 8399 (4187 + 4212, full analysis set): ClinicalTrials.gov NCT01035255", "914 patients (21.8%) in the LCZ696 group and 1117 patients (26.5%) in the enalapril group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R201:O2",
@@ -576,7 +610,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=8399,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:25176015", "Abstract Results", "711 patients (17.0%) receiving LCZ696 and 835 patients (19.8%) receiving enalapril died", False, True),
+            provenance=ProvenancePin("PMID:25176015", "Abstract Results; sample size 8399 (4187 + 4212, full analysis set): ClinicalTrials.gov NCT01035255", "711 patients (17.0%) receiving LCZ696 and 835 patients (19.8%) receiving enalapril died", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R201:O3",
@@ -591,7 +625,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=8399,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:25176015", "Abstract Results", "558 (13.3%) and 693 (16.5%), respectively, died from cardiovascular causes", False, True),
+            provenance=ProvenancePin("PMID:25176015", "Abstract Results; sample size 8399 (4187 + 4212, full analysis set): ClinicalTrials.gov NCT01035255", "558 (13.3%) and 693 (16.5%), respectively, died from cardiovascular causes", False, True),
         ),
         # --- R202: PARAGON-HF (PMID:31475794) ---
         EvidenceAtom(
@@ -607,7 +641,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=4796,
             p_value_or_interval=None,
             polarity="neutral_or_mixed",
-            provenance=ProvenancePin("PMID:31475794", "Abstract Results", "incidence of death from cardiovascular causes was 8.5% in the sacubitril-valsartan group and 8.9% in the valsartan group", False, True),
+            provenance=ProvenancePin("PMID:31475794", "Abstract Results; sample size 4796 (2407 + 2389, full analysis set): ClinicalTrials.gov NCT01920711", "incidence of death from cardiovascular causes was 8.5% in the sacubitril-valsartan group and 8.9% in the valsartan group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R202:O2",
@@ -622,7 +656,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=4618,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:31475794", "Abstract Results", "NYHA class improved in 15.0% of the patients in the sacubitril-valsartan group and in 12.6% of those in the valsartan group", False, True),
+            provenance=ProvenancePin("PMID:31475794", "Abstract Results; sample size 4618 (2316 + 2302 assessed for NYHA class at 8 months): ClinicalTrials.gov NCT01920711", "NYHA class improved in 15.0% of the patients in the sacubitril-valsartan group and in 12.6% of those in the valsartan group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R202:O3",
@@ -637,7 +671,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=4796,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:31475794", "Abstract Results", "renal function worsened in 1.4% and 2.7%, respectively", False, True),
+            provenance=ProvenancePin("PMID:31475794", "Abstract Results; sample size 4796 (2407 + 2389, full analysis set): ClinicalTrials.gov NCT01920711", "renal function worsened in 1.4% and 2.7%, respectively", False, True),
         ),
         # --- R203: VICTORIA (PMID:32222134) ---
         EvidenceAtom(
@@ -653,7 +687,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=5050,
             p_value_or_interval="P=0.02",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:32222134", "Abstract Results", "897 of 2526 patients (35.5%) in the vericiguat group and in 972 of 2524 patients (38.5%) in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:32222134", "Abstract Results; sample size 5050: Abstract Methods", "897 of 2526 patients (35.5%) in the vericiguat group and in 972 of 2524 patients (38.5%) in the placebo group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R203:O2",
@@ -668,7 +702,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=5050,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:32222134", "Abstract Results", "691 patients (27.4%) in the vericiguat group and 747 patients (29.6%) in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:32222134", "Abstract Results; sample size 5050: Abstract Methods", "691 patients (27.4%) in the vericiguat group and 747 patients (29.6%) in the placebo group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R203:O3",
@@ -683,7 +717,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=5034,
             p_value_or_interval="P=0.12",
             polarity="unfavorable",
-            provenance=ProvenancePin("PMID:32222134", "Abstract Results", "Symptomatic hypotension occurred in 9.1% of the patients in the vericiguat group and in 7.9% of the patients in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:32222134", "Abstract Results; sample size 5034 (2519 + 2515, as treated): ClinicalTrials.gov NCT02861534", "Symptomatic hypotension occurred in 9.1% of the patients in the vericiguat group and in 7.9% of the patients in the placebo group", False, True),
         ),
         # --- R204: Preclinical Rat Post-MI LCZ696 (PMID:25362207) ---
         EvidenceAtom(
@@ -699,7 +733,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=17,
             p_value_or_interval="P<0.05",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:25362207", "Abstract Results", "lower LV end-diastolic diameter (by echocardiography; 9.7+-0.2 versus 10.5+-0.3 mm)", False, True),
+            provenance=ProvenancePin("PMID:25362207", "Abstract Results", "lower LV end-diastolic diameter (by echocardiography; 9.7±0.2 versus 10.5±0.3 mm)", False, False),
         ),
         EvidenceAtom(
             atom_id="ATOM:R204:O2",
@@ -714,7 +748,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=17,
             p_value_or_interval="P<0.05",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:25362207", "Abstract Results", "higher LV ejection fraction (60+-2 versus 47+-5%)", False, True),
+            provenance=ProvenancePin("PMID:25362207", "Abstract Results", "higher LV ejection fraction (60±2 versus 47±5%)", False, False),
         ),
         # --- R301: KEYNOTE-024 (PMID:27718847) ---
         EvidenceAtom(
@@ -730,7 +764,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=305,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27718847", "Abstract Results", "Median progression-free survival was 10.3 months in the pembrolizumab group versus 6.0 months in the chemotherapy group", False, True),
+            provenance=ProvenancePin("PMID:27718847", "Abstract Results; sample size 305: Abstract Methods", "Median progression-free survival was 10.3 months (95% confidence interval [CI], 6.7 to not reached) in the pembrolizumab group versus 6.0 months (95% CI, 4.2 to 6.2) in the chemotherapy group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R301:O2",
@@ -745,7 +779,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=305,
             p_value_or_interval="P=0.005",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27718847", "Abstract Results", "80.2% in the pembrolizumab group versus 72.4% in the chemotherapy group", False, True),
+            provenance=ProvenancePin("PMID:27718847", "Abstract Results; sample size 305: Abstract Methods", "80.2% in the pembrolizumab group versus 72.4% in the chemotherapy group", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R301:O3",
@@ -760,7 +794,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=304,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27718847", "Abstract Results", "grade 3, 4, or 5 treatment-related adverse events (26.6% vs. 53.3%)", False, True),
+            provenance=ProvenancePin("PMID:27718847", "Abstract Results; sample size 304 (154 + 150, as treated): ClinicalTrials.gov NCT02142738", "grade 3, 4, or 5 treatment-related adverse events (26.6% vs. 53.3%)", False, True),
         ),
         # --- R302: AURA3 (PMID:27959700) ---
         EvidenceAtom(
@@ -776,7 +810,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=419,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27959700", "Abstract Results", "10.1 months vs. 4.4 months", False, True),
+            provenance=ProvenancePin("PMID:27959700", "Abstract Results; sample size 419: Abstract Methods", "10.1 months vs. 4.4 months", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R302:O2",
@@ -791,7 +825,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=144,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27959700", "Abstract Results", "Among 144 patients with metastases to the central nervous system (CNS), 8.5 months vs. 4.2 months", False, True),
+            provenance=ProvenancePin("PMID:27959700", "Abstract Results; sample size 144: Abstract Results", "Among 144 patients with metastases to the central nervous system (CNS), the median duration of progression-free survival was longer among patients receiving osimertinib than among those receiving platinum therapy plus pemetrexed (8.5 months vs. 4.2 months; hazard ratio, 0.32; 95% CI, 0.21 to 0.49)", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R302:O3",
@@ -806,7 +840,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=419,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27959700", "Abstract Results", "objective response rate was significantly better with osimertinib (71%) than with platinum therapy plus pemetrexed (31%)", False, True),
+            provenance=ProvenancePin("PMID:27959700", "Abstract Results; sample size 419: Abstract Methods", "objective response rate was significantly better with osimertinib (71%; 95% CI, 65 to 76) than with platinum therapy plus pemetrexed (31%; 95% CI, 24 to 40)", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R302:O4",
@@ -821,7 +855,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=415,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:27959700", "Abstract Results", "adverse events of grade 3 or higher was lower with osimertinib (23%) than with platinum therapy plus pemetrexed (47%)", False, True),
+            provenance=ProvenancePin("PMID:27959700", "Abstract Results; sample size 415 (279 + 136, as treated): ClinicalTrials.gov NCT02151981", "adverse events of grade 3 or higher was lower with osimertinib (23%) than with platinum therapy plus pemetrexed (47%)", False, True),
         ),
         # --- R303: ADAURA (PMID:32955177) ---
         EvidenceAtom(
@@ -837,7 +871,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=470,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:32955177", "Abstract Results", "90% of the patients with stage II to IIIA disease in the osimertinib group and 44% of those in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:32955177", "Abstract Results; sample size 470 (233 + 237, stage II to IIIA): ClinicalTrials.gov NCT02511106", "90% of the patients with stage II to IIIA disease in the osimertinib group (95% confidence interval [CI], 84 to 93) and 44% of those in the placebo group (95% CI, 37 to 51)", False, True),
         ),
         EvidenceAtom(
             atom_id="ATOM:R303:O2",
@@ -852,7 +886,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=682,
             p_value_or_interval="P<0.001",
             polarity="favorable",
-            provenance=ProvenancePin("PMID:32955177", "Abstract Results", "In the overall population, 89% of the patients in the osimertinib group and 52% of those in the placebo group", False, True),
+            provenance=ProvenancePin("PMID:32955177", "Abstract Results; sample size 682: Abstract Results", "In the overall population, 89% of the patients in the osimertinib group (95% CI, 85 to 92) and 52% of those in the placebo group (95% CI, 46 to 58)", False, True),
         ),
         # --- R304: Preclinical EGFR Exon 20 Insertion Osimertinib (PMID:31108249) ---
         EvidenceAtom(
@@ -868,7 +902,7 @@ def build_real_text_corpus() -> tuple[
             sample_size=None,
             p_value_or_interval=None,
             polarity="favorable",
-            provenance=ProvenancePin("PMID:31108249", "Abstract Results", "osimertinib was highly potent against EGFR exon 20 insertion-mutant cells (IC50, 14.7-62.7 nM)", False, True),
+            provenance=ProvenancePin("PMID:31108249", "Abstract Results", "osimertinib was highly potent against EGFR exon 20 insertion-mutant cells (IC50, 14.7-62.7 nM)", False, False),
         ),
     ]
 
@@ -886,42 +920,15 @@ def build_real_text_corpus() -> tuple[
         raw_mentioned_arms_by_tuple=raw_mentioned_arms_by_tuple,
     )
 
-    # Build settled_corpus from atoms, then construct initial_corpus with 4 realistic pre-audit extraction errors
-    by_study: dict[str, list[dict[str, Any]]] = {sid: [] for sid in studies}
-    for tup, a in atoms.items():
-        oid = tup.split(":")[1]
-        fq, cq = a.focal_quantity, a.comparator_quantity
-        oc: dict[str, Any] = {
-            "outcome_id": oid,
-            "endpoint": a.endpoint,
-            "quantity_kind": fq.kind,
-            "unit": fq.unit,
-            "focal_arms": list(a.contrast.focal_arms),
-            "comparator_arms": list(a.contrast.comparator_arms),
-            "statistic_kind": a.statistic_kind,
-            "sample_size": a.sample_size,
-            "requires_figure_digitization": a.provenance.requires_figure_digitization,
-            "primary_pdf_verified": a.provenance.primary_pdf_verified,
-            "source_id": a.provenance.document_id,
-        }
-        if fq.kind == "interval_bound":
-            oc["focal_lower"] = fq.lower
-            oc["focal_upper"] = fq.upper
-        elif fq.kind == "censored_observation":
-            oc["focal_value"] = f"{fq.relation}{fq.value}"
-        else:
-            oc["focal_value"] = fq.value
-            if fq.change_direction is not None:
-                oc["change_direction"] = fq.change_direction
-        if cq is not None:
-            oc["comparator_kind"] = cq.kind
-            oc["comparator_value"] = cq.value
-        by_study[a.study_id].append(oc)
-
-    settled_target = {
-        "corpus_id": "CEG-PUBMED-REAL-TEXT-12",
-        "studies": [{"study_id": sid, "pmid": STUDY_METADATA[sid]["pmid"], "outcomes": by_study[sid]} for sid in sorted(studies)],
-    }
+    # The settled corpus is the complete projection of the graph (every atom field, nulls explicit);
+    # the initial corpus then receives 4 realistic pre-audit extraction errors.
+    settled_target = settled_corpus_from_graph(
+        graph,
+        "CEG-PUBMED-REAL-TEXT-12",
+        {sid: {"pmid": STUDY_METADATA[sid]["pmid"]} for sid in studies},
+    )
+    if [st["study_id"] for st in settled_target["studies"]][3:10:3] != ["R104", "R203", "R302"]:
+        raise RuntimeError("Real-text study order changed; the ledger pointers below assume it")
     initial_corpus = copy.deepcopy(settled_target)
     # Introduce 4 realistic initial extraction defects into initial_corpus, then repair via ReversiblePatchEvents
     initial_corpus["studies"][3]["outcomes"][0]["unit"] = "um"         # R104:O1 SI case fold defect (um instead of uM)
@@ -1360,7 +1367,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
                 ("R102:O1", "R102:O2"),
                 (),
                 (
-                    "In R102:O1 pirfenidone achieved a 47.9% relative reduction in FVC decline or death across 555 patients, and in R102:O2 pirfenidone produced a 132.5% relative increase in zero-decline responders.",
+                    "In R102:O1 pirfenidone achieved a 47.9% relative reduction in the proportion of patients with a decline of 10 percentage points or more in predicted FVC or death across 555 patients, and in R102:O2 pirfenidone produced a 132.5% relative increase in the proportion of patients with no FVC decline.",
                 ),
                 (prop("R102:O1", "P-VAL-02A"), prop("R102:O2", "P-VAL-02B")),
                 requests_direct_quantitative_promotion=True,
@@ -1505,7 +1512,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
                 ("R104:O1", "R104:O2"),
                 (),
                 (
-                    "In R104:O1 pirfenidone inhibited fibroblast MRTF activation at 50-150 uM, while in R104:O2 maximal inhibition was > 90%.",
+                    "In R104:O1 pirfenidone inhibited fibroblast MRTF activation with a half-maximal inhibitory concentration of 50-150 uM, while in R104:O2 maximal inhibition was > 90%.",
                 ),
                 (prop("R104:O1", "P-VAL-10A"), prop("R104:O2", "P-VAL-10B")),
                 prospective_gate=ProspectiveFalsifierGate(
@@ -1525,7 +1532,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
             SynthesisClaimRecord(
                 "REC-VAL-11",
                 "CANDIDATE_UPGRADE",
-                studies["R101"],
+                _ctx("phase3_rct", "ipf", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "bi_1015550"),
                 ("R103:O1", "R103:O2"),
                 (),
                 (
@@ -1553,7 +1560,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
                 ("R204:O1", "R204:O2"),
                 (),
                 (
-                    "In R204:O1 MI-ARNi lowered left ventricular end-diastolic diameter to 9.7 mm from 10.5 mm in MI-vehicle across 17 rats, while in R204:O2 ejection fraction increased from 47% to 60%.",
+                    "In R204:O1 left ventricular end-diastolic diameter was lower in MI-ARNi at 9.7 mm versus 10.5 mm in MI-vehicle across 17 rats, while in R204:O2 left ventricular ejection fraction was higher in MI-ARNi at 60% versus 47% in MI-vehicle.",
                 ),
                 (prop("R204:O1", "P-VAL-12A"), prop("R204:O2", "P-VAL-12B")),
                 prospective_gate=ProspectiveFalsifierGate(
@@ -1752,7 +1759,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
                     "In R104:O2 pirfenidone maximal fibroblast inhibition was not <= 90%.",
                 ),
                 (prop("R104:O2", "P-VAL-22"),),
-                requests_direct_quantitative_promotion=True,
+                requests_direct_quantitative_promotion=False,  # the atom is a preclinical outcome that was not checked against its primary source
             ),
         ),
         (
@@ -1777,7 +1784,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
             "TB-VAL-24",
             "HF",
             "B_P4_natural_comparative_and_censored_syntax",
-            "Valid 'although' contrast across two distinct HFrEF trials without pooling",
+            "Valid 'although' contrast across two distinct HFrEF trials without pooling (qualitative: two different drugs)",
             SynthesisClaimRecord(
                 "REC-VAL-24",
                 "SUPPORTS",
@@ -1788,7 +1795,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
                     "In R201:O1 primary events were 21.8% in the LCZ696 group versus 26.5% in the enalapril group, although in R203:O1 primary events were 35.5% in the vericiguat group versus 38.5% in the placebo group.",
                 ),
                 (prop("R201:O1", "P-VAL-24A"), prop("R203:O1", "P-VAL-24B")),
-                requests_direct_quantitative_promotion=True,
+                requests_direct_quantitative_promotion=False,  # the two trials tested different drugs, so one of them is a bounded bridge on the intervention axis
             ),
         ),
     ]
@@ -1954,7 +1961,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
         cases.append(GroundedSynthesisCase(cid, dom, "D1_cross_trial_incompatible_pooling", True, desc, rec))
 
     # D2: Active/placebo arm swaps, non-contrast multi-arm bindings & comma-appositive swaps (10 cases)
-    d2_specs: list[tuple[str, str, str, SynthesisClaimRecord]] = [
+    d2_specs: list[tuple[Any, ...]] = [
         (
             "TB-D2-01",
             "IPF",
@@ -2028,16 +2035,17 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
         (
             "TB-D2-06",
             "ONC",
-            "AURA3 symmetric non-contrast 'and' binding of osimertinib and platinum-pemetrexed",
+            "AURA3 progression-free survival values exchanged between osimertinib and platinum-pemetrexed",
             SynthesisClaimRecord(
                 "REC-D2-06",
                 "SUPPORTS",
                 studies["R302"],
                 ("R302:O1",),
                 (),
-                ("In R302:O1 osimertinib and platinum therapy plus pemetrexed showed progression-free survival of 10.1 months and 4.4 months.",),
+                ("In R302:O1 median progression-free survival was 4.4 months with osimertinib versus 10.1 months with platinum therapy plus pemetrexed.",),
                 (prop("R302:O1", "P-D2-06"),),
             ),
+            ("In R302:O1 median progression-free survival was 10.1 months with osimertinib versus 4.4 months with platinum therapy plus pemetrexed.",),
         ),
         (
             "TB-D2-07",
@@ -2109,8 +2117,13 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
             ),
         ),
     ]
-    for cid, dom, desc, rec in d2_specs:
-        cases.append(GroundedSynthesisCase(cid, dom, "D2_active_placebo_arm_and_appositive_swap", True, desc, rec))
+    for spec in d2_specs:
+        cid, dom, desc, rec = spec[:4]
+        cases.append(
+            GroundedSynthesisCase(
+                cid, dom, "D2_active_placebo_arm_and_appositive_swap", True, desc, rec, None, spec[4] if len(spec) > 4 else None
+            )
+        )
 
     # D3: Subgroup-to-overall promotion & cross-stratum misattribution (10 cases)
     d3_specs: list[tuple[str, str, str, SynthesisClaimRecord]] = [
@@ -2505,7 +2518,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
             SynthesisClaimRecord(
                 "REC-D5-05",
                 "CANDIDATE_UPGRADE",
-                _ctx("phase3_rct", "nsclc_egfr_exon20ins", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety"),
+                _ctx("phase3_rct", "nsclc_egfr_exon20ins", "overall_itt", "chronic_6m_plus", "clinical_efficacy_or_safety", "osimertinib"),
                 ("R304:O1",),
                 (),
                 ("In R304:O1 osimertinib inhibited EGFR exon 20 insertion-mutant cells with an IC50 of 14.7-62.7 nM.",),
@@ -2583,24 +2596,24 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
                 studies["R104"],
                 ("R104:O1",),
                 (),
-                ("In R104:O1 pirfenidone inhibited fibroblast MRTF activation at 50-150 uM.",),
+                ("In R104:O1 pirfenidone inhibited fibroblast MRTF activation with a half-maximal inhibitory concentration of 50-150 uM.",),
                 (prop("R104:O1", "P-D5-09"),),
-                requests_direct_quantitative_promotion=True,
+                requests_direct_quantitative_promotion=False,
             ),
             "tamper_settled_unit_um",
         ),
         (
             "TB-D5-10",
             "ONC",
-            "Atom-to-corpus drift: unrecorded edit altering AURA3 R302:O2 settled sample size from 144 to 419",
+            "Atom-to-corpus drift: the same unrecorded edit (ADAURA R303:O1 focal value 90 to 92) written into both D_0 and D_m; replay passes, binding refuses",
             SynthesisClaimRecord(
                 "REC-D5-10",
                 "SUPPORTS",
-                atoms["R302:O2"].context,
-                ("R302:O2",),
+                atoms["R303:O1"].context,
+                ("R303:O1",),
                 (),
-                ("In R302:O2 median progression-free survival was 8.5 months with osimertinib versus 4.2 months with platinum therapy plus pemetrexed.",),
-                (prop("R302:O2", "P-D5-10"),),
+                ("In R303:O1 24-month disease-free survival was 90% in the osimertinib group versus 44% in the placebo group.",),
+                (prop("R303:O1", "P-D5-10"),),
                 requests_direct_quantitative_promotion=True,
             ),
             "tamper_atom_corpus_drift",
@@ -2610,7 +2623,7 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
         cases.append(GroundedSynthesisCase(cid, dom, "D5_preclinical_to_clinical_conflation", True, desc, rec, t_kind))
 
     # D6: Cross-clause numeric theft (>2-cycles & 'although'), negated inequality bounds, and Unicode Mn/Me evasion (10 cases)
-    d6_specs: list[tuple[str, str, str, SynthesisClaimRecord]] = [
+    d6_specs: list[tuple[Any, ...]] = [
         (
             "TB-D6-01",
             "HF",
@@ -2749,20 +2762,26 @@ def build_track_b_cases(graph: ContextEvidenceGraph) -> list[GroundedSynthesisCa
         (
             "TB-D6-10",
             "HF",
-            "Standalone '3d' figure label ('Fig. 3d') attempting to satisfy 'days' unit or smuggle glued digit in R203:O1",
+            "False '95% relative reduction' written with a fullwidth digit (U+FF15) to slip past numeral reading in R203:O1",
             SynthesisClaimRecord(
                 "REC-D6-10",
                 "SUPPORTS",
                 studies["R203"],
                 ("R203:O1",),
                 (),
-                ("In R203:O1 (Fig. 3d) primary-outcome events occurred in 35.5% of the vericiguat group versus 38.5% of the placebo group.",),
+                ("In R203:O1 primary-outcome events occurred in 35.5% of the vericiguat group versus 38.5% of the placebo group, a 9\uff15% relative reduction.",),
                 (prop("R203:O1", "P-D6-10"),),
             ),
+            ("In R203:O1 primary-outcome events occurred in 35.5% of the vericiguat group versus 38.5% of the placebo group.",),
         ),
     ]
-    for cid, dom, desc, rec in d6_specs:
-        cases.append(GroundedSynthesisCase(cid, dom, "D6_cross_clause_theft_and_negated_bounds", True, desc, rec))
+    for spec in d6_specs:
+        cid, dom, desc, rec = spec[:4]
+        cases.append(
+            GroundedSynthesisCase(
+                cid, dom, "D6_cross_clause_theft_and_negated_bounds", True, desc, rec, None, spec[4] if len(spec) > 4 else None
+            )
+        )
 
     return cases
 
@@ -2889,7 +2908,7 @@ def evaluate_track_a(
                 "primary_phenomenon": c.primary_phenomenon,
                 "anchored_verdicts": dict(zip(verifiers, verdicts)),
                 "v3_primary_code": primary_code,
-                "v3_violations": rep_v3.violations[:2],
+                "v3_violations": list(rep_v3.violations),
             }
         )
 
@@ -2927,7 +2946,8 @@ def _eval_track_b_case(
     settled_corpus: Mapping[str, Any],
     patch_events: Sequence[ReversiblePatchEvent],
     expected_ledger_digest: str,
-) -> dict[str, bool]:
+) -> tuple[dict[str, bool], list[str]]:
+    """Verdict of each regime on one case, and every reason the full verifier gave for refusing it."""
     rec = c.record
     anchors = set(rec.supporting_tuples) | set(rec.counterevidence_tuples)
     # V0
@@ -2957,37 +2977,43 @@ def _eval_track_b_case(
     v2_ok = prose_regime("permit")
     v2s_ok = prose_regime("reject")
 
-    # V3 full CEG (including I2 replay + atom-to-corpus binding)
+    # V3 full CEG: graph integrity, I2 replay, atom-to-corpus binding and the record, all evaluated.
+    loc_initial = copy.deepcopy(dict(initial_corpus))
     loc_settled = copy.deepcopy(dict(settled_corpus))
     if c.tamper_kind == "tamper_settled_unit_um":
+        # One-sided edit of the settled corpus only: replay no longer reaches it.
         loc_settled["studies"][3]["outcomes"][0]["unit"] = "um"
     elif c.tamper_kind == "tamper_atom_corpus_drift":
-        # Alter both initial and settled + recompute tampered events without updating expected ledger digest
-        loc_settled["studies"][9]["outcomes"][1]["sample_size"] = 419
+        # The same edit on both sides, in a study that no ledger event touches (R303): replay
+        # passes with every step digest intact, and only the atom-to-corpus binding can see it.
+        for doc in (loc_initial, loc_settled):
+            if doc["studies"][10]["study_id"] != "R303" or doc["studies"][10]["outcomes"][0]["focal_value"] != "90":
+                raise RuntimeError("tamper_atom_corpus_drift expects R303:O1 with focal value 90 at /studies/10/outcomes/0")
+            doc["studies"][10]["outcomes"][0]["focal_value"] = "92"
+    elif c.tamper_kind is not None:
+        raise RuntimeError(f"unknown tamper_kind {c.tamper_kind!r}")
 
-    v3_ok = True
-    if graph.verify_graph_integrity():
-        v3_ok = False
-    if v3_ok:
-        try:
-            receipt = verify_bijective_patch_replay(initial_corpus, loc_settled, patch_events)
-            if receipt["ledger_sha256"] != expected_ledger_digest:
-                v3_ok = False
-        except ValueError:
-            v3_ok = False
-    if v3_ok and verify_atoms_bound_to_corpus(graph, loc_settled):
-        v3_ok = False
-    if v3_ok:
-        rep = graph.verify_synthesis_record(rec, pooled_numeral_policy="reject")
-        v3_ok = rep.passed_all_invariants
+    reasons: list[str] = list(graph.verify_graph_integrity())
+    try:
+        receipt = verify_bijective_patch_replay(loc_initial, loc_settled, patch_events)
+        if receipt["ledger_sha256"] != expected_ledger_digest:
+            reasons.append("LEDGER_DIGEST_MISMATCH")
+    except ValueError as exc:
+        reasons.append(str(exc))
+    reasons.extend(verify_atoms_bound_to_corpus(graph, loc_settled))
+    rep = graph.verify_synthesis_record(rec, pooled_numeral_policy="reject")
+    reasons.extend(rep.violations)
 
-    return {
-        "V0_citation_presence": v0_ok,
-        "V1_study_pool_numeric": v1_ok,
-        "V2_prose_pooled_permitted": v2_ok,
-        "V2s_prose_pooled_rejected": v2s_ok,
-        "V3_full_ceg": v3_ok,
-    }
+    return (
+        {
+            "V0_citation_presence": v0_ok,
+            "V1_study_pool_numeric": v1_ok,
+            "V2_prose_pooled_permitted": v2_ok,
+            "V2s_prose_pooled_rejected": v2s_ok,
+            "V3_full_ceg": not reasons,
+        },
+        reasons,
+    )
 
 
 def evaluate_track_b(
@@ -3005,10 +3031,31 @@ def evaluate_track_b(
         "V3_full_ceg",
     )
     expected_digest = ledger_sha256(patch_events)
-    verdicts_by_case = {
+    evaluated = {
         c.case_id: _eval_track_b_case(c, graph, initial_corpus, settled_corpus, patch_events, expected_digest)
         for c in cases
     }
+    verdicts_by_case = {cid: verdicts for cid, (verdicts, _reasons) in evaluated.items()}
+    reasons_by_case = {cid: reasons for cid, (_verdicts, reasons) in evaluated.items()}
+
+    def _code(reason: str) -> str:
+        return reason.split(":")[0].split(" ")[0]
+
+    # A repaired twin (the same record with its false sentence corrected) must be accepted.
+    repaired_twins: dict[str, bool] = {}
+    for c in cases:
+        if c.repaired_prose is None:
+            continue
+        twin = GroundedSynthesisCase(
+            c.case_id, c.domain, c.family, False, c.description,
+            replace(c.record, prose_sentences=c.repaired_prose), c.tamper_kind,
+        )
+        twin_verdicts, twin_reasons = _eval_track_b_case(
+            twin, graph, initial_corpus, settled_corpus, patch_events, expected_digest
+        )
+        if not twin_verdicts["V3_full_ceg"]:
+            raise RuntimeError(f"repaired twin of {c.case_id} is refused: {twin_reasons}")
+        repaired_twins[c.case_id] = True
 
     adv_cases = [c for c in cases if c.is_adversarial]
     val_cases = [c for c in cases if not c.is_adversarial]
@@ -3060,23 +3107,44 @@ def evaluate_track_b(
             "v3_adversarial_rejected": sum(1 for c in d_adv if not verdicts_by_case[c.case_id]["V3_full_ceg"]),
         }
 
-    # Mode B (self-attesting adversary): re-populate claim attestation after mutation and verify semantic rejection.
+    # Mode B (self-attesting adversary): attach a freshly computed, valid attestation to each
+    # adversarial record and require that the record is still refused on its content. The two
+    # corpus tampers are excluded: their defect is in the corpus, their record is valid, and an
+    # attestation has nothing to say about them. They are reported separately below.
+    record_level_adv = [c for c in adv_cases if c.tamper_kind is None]
+    corpus_tamper_adv = [c for c in adv_cases if c.tamper_kind is not None]
     mode_b_semantic_rejected = 0
-    for c in adv_cases:
-        re_attested = GroundedSynthesisCase(
-            case_id=c.case_id,
-            domain=c.domain,
-            family=c.family,
-            is_adversarial=c.is_adversarial,
-            description=c.description,
-            record=populate_claim_attestation(c.record, graph.atoms, graph.arm_aliases),
-            tamper_kind=c.tamper_kind,
-        )
-        v_res = _eval_track_b_case(re_attested, graph, initial_corpus, settled_corpus, patch_events, expected_digest)
-        rep = graph.verify_synthesis_record(re_attested.record, pooled_numeral_policy="reject")
+    for c in record_level_adv:
+        re_attested = populate_claim_attestation(c.record, graph.atoms, graph.arm_aliases)
+        rep = graph.verify_synthesis_record(re_attested, pooled_numeral_policy="reject")
         non_stale_violations = [v for v in rep.violations if not v.startswith("I6_STALE_CLAIM_ATTESTATION")]
-        if not v_res["V3_full_ceg"] and (c.tamper_kind is not None or bool(non_stale_violations)):
+        if not rep.passed_all_invariants and non_stale_violations:
             mode_b_semantic_rejected += 1
+    corpus_tampers: dict[str, Any] = {}
+    for c in corpus_tamper_adv:
+        record_alone = graph.verify_synthesis_record(c.record, pooled_numeral_policy="reject")
+        corpus_tampers[c.case_id] = {
+            "tamper_kind": c.tamper_kind,
+            "record_alone_passes": record_alone.passed_all_invariants,
+            "rejected_by_full_verifier": not verdicts_by_case[c.case_id]["V3_full_ceg"],
+            "codes": sorted({_code(r) for r in reasons_by_case[c.case_id]}),
+        }
+
+    # Records whose only defect is what the record declares about itself: with evidence and prose
+    # unchanged, the record is accepted once its promotion request alone, or its polarity label
+    # alone, is changed. For these records the verifier checks a declaration, not a sentence.
+    promotion_request_only: list[str] = []
+    polarity_label_only: list[str] = []
+    for c in record_level_adv:
+        flipped = replace(c.record, requests_direct_quantitative_promotion=not c.record.requests_direct_quantitative_promotion)
+        if graph.verify_synthesis_record(flipped, pooled_numeral_policy="reject").passed_all_invariants:
+            promotion_request_only.append(c.case_id)
+        for polarity in ("SUPPORTS", "CONTRADICTS", "SCOPING_QUALIFICATION", "CANDIDATE_UPGRADE", "FALSIFIED_GRAVEYARD"):
+            if polarity == c.record.polarity:
+                continue
+            if graph.verify_synthesis_record(replace(c.record, polarity=polarity), pooled_numeral_policy="reject").passed_all_invariants:
+                polarity_label_only.append(c.case_id)
+                break
 
     mode_b_valid_accepted = 0
     for c in val_cases:
@@ -3090,15 +3158,37 @@ def evaluate_track_b(
         "adversarial_cases": len(adv_cases),
         "overall_summary": overall,
         "mode_b_self_attesting_summary": {
-            "adversarial_total": len(adv_cases),
+            "adversarial_total": len(record_level_adv),
             "semantic_rejected": mode_b_semantic_rejected,
-            "semantic_rejection_rate_pct": round(100.0 * mode_b_semantic_rejected / len(adv_cases), 2),
+            "semantic_rejection_rate_pct": round(100.0 * mode_b_semantic_rejected / len(record_level_adv), 2),
             "valid_total": len(val_cases),
             "valid_accepted": mode_b_valid_accepted,
             "valid_acceptance_rate_pct": round(100.0 * mode_b_valid_accepted / len(val_cases), 2),
         },
+        "corpus_tampers": corpus_tampers,
+        "repaired_twins_accepted": repaired_twins,
+        "declaration_only_defects": {
+            "record_level_adversarial_total": len(record_level_adv),
+            "accepted_after_promotion_request_change_only": promotion_request_only,
+            "accepted_after_polarity_label_change_only": polarity_label_only,
+            "either": len(set(promotion_request_only) | set(polarity_label_only)),
+        },
+        "valid_promotions": sum(
+            1 for c in val_cases if c.record.requests_direct_quantitative_promotion is True and verdicts_by_case[c.case_id]["V3_full_ceg"]
+        ),
         "by_family": by_family,
         "by_domain": by_domain,
+        "per_case": [
+            {
+                "case_id": c.case_id,
+                "family": c.family,
+                "is_adversarial": c.is_adversarial,
+                "tamper_kind": c.tamper_kind,
+                "verdicts": verdicts_by_case[c.case_id],
+                "v3_codes": sorted({_code(r) for r in reasons_by_case[c.case_id]}),
+            }
+            for c in cases
+        ],
     }
 
 
@@ -3111,6 +3201,21 @@ def run_real_text_evaluation() -> dict[str, Any]:
     binding_errors = verify_atoms_bound_to_corpus(graph, settled_corpus)
     if binding_errors:
         raise RuntimeError(f"Real-text corpus binding failed: {binding_errors}")
+
+    # Every value an atom states must be readable in its own verbatim quote.
+    quotes_missing_a_value = []
+    for tup, atom in sorted(graph.atoms.items()):
+        literals = [
+            lit
+            for q in (atom.focal_quantity, atom.comparator_quantity)
+            if q is not None
+            for lit in (q.value, q.lower, q.upper)
+            if lit is not None
+        ]
+        if any(lit not in atom.provenance.verbatim_quote and lit.lstrip("-") not in atom.provenance.verbatim_quote for lit in literals):
+            quotes_missing_a_value.append(tup)
+    if quotes_missing_a_value:
+        raise RuntimeError(f"Verbatim quote does not contain every atom value: {quotes_missing_a_value}")
 
     track_a_cases = build_track_a_verbatim_cases()
     track_b_cases = build_track_b_cases(graph)
@@ -3131,6 +3236,10 @@ def run_real_text_evaluation() -> dict[str, Any]:
                 k: sum(1 for a in graph.atoms.values() if a.focal_quantity.kind == k)
                 for k in ("point_level", "relative_change", "interval_bound", "censored_observation")
             },
+            "atoms_flagged_primary_source_verified": sum(
+                1 for a in graph.atoms.values() if a.provenance.primary_pdf_verified
+            ),
+            "quotes_containing_every_atom_value": len(graph.atoms) - len(quotes_missing_a_value),
             "graph_integrity_errors": len(integrity_errors),
             "atom_corpus_binding_errors": len(binding_errors),
             "curation_ledger": replay_receipt,

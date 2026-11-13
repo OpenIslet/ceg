@@ -4,10 +4,10 @@
 Run from this directory:
     PYTHONDONTWRITEBYTECODE=1 python3 -B build.py
 
-Reads   ../CEG-JOURNAL-MANUSCRIPT-V3.1.md   (never modified)
-Writes  ./CEG-JOURNAL-MANUSCRIPT-V3.1.typ   (generated Typst source)
-        ./CEG-JOURNAL-MANUSCRIPT-V3.1.pdf
-        ../CEG-JOURNAL-MANUSCRIPT-V3.1.pdf  (copy)
+Reads   ../CEG-JOURNAL-MANUSCRIPT-V3.2.md   (never modified)
+Writes  ./CEG-JOURNAL-MANUSCRIPT-V3.2.typ   (generated Typst source)
+        ./CEG-JOURNAL-MANUSCRIPT-V3.2.pdf
+        ../CEG-JOURNAL-MANUSCRIPT-V3.2.pdf  (copy)
 
 Requires the `pandoc` and `typst` executables on PATH and ./figures/*.pdf
 from make_figures.py. Only the Python standard library is used here.
@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-STEM = "CEG-JOURNAL-MANUSCRIPT-V3.1"
+STEM = "CEG-JOURNAL-MANUSCRIPT-V3.2"
 SOURCE = HERE.parent / f"{STEM}.md"
 FIGURES = {
     1: "figures/fig1_context_poset_hasse.pdf",

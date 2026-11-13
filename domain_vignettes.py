@@ -43,9 +43,11 @@ from ceg_reference import (
     ReversiblePatchEvent,
     SynthesisClaimRecord,
     TypedProposition,
+    corpus_outcome_from_atom,
     populate_claim_attestation,
     proposition_from_atom,
     render_atom_sentence,
+    settled_corpus_from_graph,
     sha256_canonical,
     verify_atoms_bound_to_corpus,
     verify_bijective_patch_replay,
@@ -161,6 +163,48 @@ def _make_patch_event(
     )
 
 
+def _corpora_and_ledger(
+    graph: ContextEvidenceGraph,
+    corpus_id: str,
+    repairs: list[tuple[str, str, str, Any, str]],
+    study_metadata: dict[str, dict[str, Any]] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any], list[ReversiblePatchEvent]]:
+    """Complete corpora and ledger for a vignette.
+
+    The settled corpus D_m is the complete projection of the graph: every corpus
+    outcome record carries every atom field. Each repair is
+    `(event_id, study_id, pointer_suffix, raw_value, rationale)`: the raw
+    extraction D_0 is D_m with `raw_value` written at that pointer, and the
+    ledger event restores the settled value.
+    """
+    settled = settled_corpus_from_graph(graph, corpus_id, study_metadata)
+    position = {st["study_id"]: i for i, st in enumerate(settled["studies"])}
+
+    def _locate(doc: dict[str, Any], study_id: str, suffix: str) -> tuple[Any, Any]:
+        cur: Any = doc["studies"][position[study_id]]
+        segs = suffix.lstrip("/").split("/")
+        for seg in segs[:-1]:
+            cur = cur[int(seg)] if isinstance(cur, list) else cur[seg]
+        last: Any = int(segs[-1]) if isinstance(cur, list) else segs[-1]
+        return cur, last
+
+    initial = copy.deepcopy(settled)
+    for _event_id, study_id, suffix, raw_value, _rationale in repairs:
+        parent, key = _locate(initial, study_id, suffix)
+        parent[key] = copy.deepcopy(raw_value)
+
+    work_doc = copy.deepcopy(initial)
+    events: list[ReversiblePatchEvent] = []
+    for event_id, study_id, suffix, _raw_value, rationale in repairs:
+        parent, key = _locate(settled, study_id, suffix)
+        events.append(
+            _make_patch_event(work_doc, event_id, position[study_id], suffix, copy.deepcopy(parent[key]), rationale)
+        )
+    if work_doc != settled:
+        raise RuntimeError(f"VIGNETTE_PATCHES_DO_NOT_REACH_SETTLED_CORPUS ({corpus_id})")
+    return initial, settled, events
+
+
 def build_drug_development_vignette() -> DomainVignetteBundle:
     """Build the translational antifibrotic (`NX-410`) drug-development case study."""
     # 1. Define 4-axis product context poset with a non-linear diamond on `model_system`:
@@ -247,100 +291,6 @@ def build_drug_development_vignette() -> DomainVignetteBundle:
         }
     )
 
-    # 2. Construct initial extraction corpus D_0 and apply 3 reversible curation patches -> D_3
-    initial_corpus: dict[str, Any] = {
-        "corpus_id": "NX410_TRANSLATIONAL_EVIDENCE_CORPUS",
-        "studies": [
-            {
-                "study_id": "S101",
-                "title": "High-concentration NX-410 bath suppresses TGF-beta1-induced COL1A1 mRNA in A549-fibroblast co-culture",
-                "outcomes": [
-                    {
-                        "outcome_id": "O1",
-                        "endpoint": "COL1A1 transcript relative expression",
-                        "quantity_kind": "point_level",  # Bug in raw extraction: relative % reduction mis-typed as point_level
-                        "value": "72.0",
-                        "unit": "%",
-                        "requires_figure_digitization": False,
-                    }
-                ],
-            },
-            {
-                "study_id": "S102",
-                "title": "Three-arm therapeutic evaluation of NX-410, pirfenidone, and vehicle in murine bleomycin lung fibrosis",
-                "outcomes": [
-                    {
-                        "outcome_id": "O1",
-                        "endpoint": "Total lung hydroxyproline content",
-                        "comparator_arms": ["VAR:S102:Vehicle"],  # Bug in raw extraction: omitted active comparator arm Pirfenidone
-                        "focal_value": "142.5",
-                        "unit": "ug/lung",
-                        "requires_figure_digitization": False,
-                    },
-                    {
-                        "outcome_id": "O2",
-                        "endpoint": "Day-28 survival censor",
-                        "focal_value": ">28",
-                        "unit": "days",
-                        "requires_figure_digitization": False,  # Bug in raw extraction: derived from undigitized Kaplan-Meier curve Fig 2C
-                    },
-                ],
-            },
-            {
-                "study_id": "S103",
-                "title": "Explanted human IPF precision-cut lung slices treated at clinically matched unbound NX-410 concentrations",
-                "outcomes": [
-                    {"outcome_id": "O1", "endpoint": "Secreted PRO-C3 neo-epitope concentration", "focal_value": "29.4", "comparator_value": "48.6", "unit": "ng/mL"},
-                    {"outcome_id": "O2", "endpoint": "Tissue slice ATP viability", "focal_value": "96.2", "comparator_value": "95.8", "unit": "%"},
-                ],
-            },
-            {
-                "study_id": "S104",
-                "title": "Randomized 12-week Phase IIa trial of oral NX-410 40 mg BID versus placebo in idiopathic pulmonary fibrosis",
-                "outcomes": [
-                    {"outcome_id": "O1", "endpoint": "12-week forced vital capacity change", "focal_value": "-28.5", "comparator_value": "-84.0", "unit": "mL"},
-                    {"outcome_id": "O2", "endpoint": "12-week supine vital capacity secondary readout", "focal_value": "-31.0", "comparator_value": "-79.5", "unit": "mL"},
-                    {"outcome_id": "O3", "endpoint": "Grade >=2 gastrointestinal adverse event incidence", "focal_value": "18.8", "comparator_value": "9.4", "unit": "%"},
-                ],
-            },
-            {
-                "study_id": "S105",
-                "title": "Phase Ib dose-escalation safety cohort of high-dose oral NX-410 120 mg BID",
-                "outcomes": [
-                    {"outcome_id": "O1", "endpoint": "ALT >3x ULN transaminase elevation incidence", "focal_value": "25.0", "comparator_value": "0", "unit": "%"},
-                ],
-            },
-        ],
-    }
-
-    work_doc = copy.deepcopy(initial_corpus)
-    patch_events = [
-        _make_patch_event(
-            work_doc,
-            event_id="PATCH-001",
-            study_idx=0,
-            pointer_suffix="/outcomes/0/quantity_kind",
-            new_value="relative_change",
-            rationale="Reclassify 72.0% COL1A1 reduction from point_level to relative_change.",
-        ),
-        _make_patch_event(
-            work_doc,
-            event_id="PATCH-002",
-            study_idx=1,
-            pointer_suffix="/outcomes/0/comparator_arms",
-            new_value=["VAR:S102:Pirfenidone_100mgkg", "VAR:S102:Vehicle"],
-            rationale="Restore active comparator arm Pirfenidone_100mgkg in 3-arm murine contrast.",
-        ),
-        _make_patch_event(
-            work_doc,
-            event_id="PATCH-003",
-            study_idx=1,
-            pointer_suffix="/outcomes/1/requires_figure_digitization",
-            new_value=True,
-            rationale="Flag Kaplan-Meier curve readout S102:O2 (Fig. 2C) as requiring figure digitization.",
-        ),
-    ]
-    settled_corpus = work_doc
 
     # 3. Build study contexts, variable sets, and canonical EvidenceAtoms
     ctx_s101 = ContextSignature(
@@ -394,16 +344,16 @@ def build_drug_development_vignette() -> DomainVignetteBundle:
     }
 
     arm_aliases = {
-        "VAR:S101:NX410_10uM": ("nx-410 10 um", "10 um bath"),
+        "VAR:S101:NX410_10uM": ("nx-410 10 um", "nx-410", "10 um bath"),
         "VAR:S101:DMSO_Control": ("dmso control", "dmso"),
         "VAR:S102:NX410_30mgkg": ("nx-410", "nx-410 30 mg/kg"),
         "VAR:S102:Pirfenidone_100mgkg": ("pirfenidone",),
         "VAR:S102:Vehicle": ("vehicle",),
         "VAR:S103:NX410_180nM_Unbound": ("nx-410", "treated slices"),
         "VAR:S103:Vehicle_Slice": ("vehicle slices", "vehicle"),
-        "VAR:S104:NX410_40mg_BID": ("nx-410 40 mg bid", "nx-410 arm", "treated cohort"),
+        "VAR:S104:NX410_40mg_BID": ("nx-410 40 mg bid", "nx-410 arm", "nx-410", "treated cohort"),
         "VAR:S104:Placebo_BID": ("placebo", "placebo arm"),
-        "VAR:S105:NX410_120mg_BID": ("nx-410 120 mg bid", "120 mg bid"),
+        "VAR:S105:NX410_120mg_BID": ("nx-410 120 mg bid", "nx-410", "120 mg bid"),
         "VAR:S105:Placebo_BID": ("placebo",),
     }
 
@@ -753,6 +703,28 @@ def build_drug_development_vignette() -> DomainVignetteBundle:
         raw_mentioned_arms_by_tuple=raw_mentioned_arms,
     )
 
+    # 2. Corpora and ledger. The settled corpus D_3 is the complete projection of the graph;
+    #    the raw extraction D_0 differs from it by three extraction defects, each repaired by one event.
+    initial_corpus, settled_corpus, patch_events = _corpora_and_ledger(
+        graph,
+        "NX410_TRANSLATIONAL_EVIDENCE_CORPUS",
+        [
+            # Raw extraction mis-typed the relative % reduction as a level.
+            ("PATCH-001", "S101", "/outcomes/0/quantity_kind", "point_level", "Reclassify 72.0% COL1A1 reduction from point_level to relative_change."),
+            # Raw extraction omitted the active comparator arm.
+            ("PATCH-002", "S102", "/outcomes/0/comparator_arms", ["VAR:S102:Vehicle"], "Restore active comparator arm Pirfenidone_100mgkg in 3-arm murine contrast."),
+            # Raw extraction did not flag the Kaplan-Meier readout as undigitized.
+            ("PATCH-003", "S102", "/outcomes/1/requires_figure_digitization", False, "Flag Kaplan-Meier curve readout S102:O2 (Fig. 2C) as requiring figure digitization."),
+        ],
+        study_metadata={
+            "S101": {"title": "High-concentration NX-410 bath suppresses TGF-beta1-induced COL1A1 mRNA in A549-fibroblast co-culture"},
+            "S102": {"title": "Three-arm therapeutic evaluation of NX-410, pirfenidone, and vehicle in murine bleomycin lung fibrosis"},
+            "S103": {"title": "Explanted human IPF precision-cut lung slices treated at clinically matched unbound NX-410 concentrations"},
+            "S104": {"title": "Randomized 12-week Phase IIa trial of oral NX-410 40 mg BID versus placebo in idiopathic pulmonary fibrosis"},
+            "S105": {"title": "Phase Ib dose-escalation safety cohort of high-dose oral NX-410 120 mg BID"},
+        },
+    )
+
     # 4. Canonical valid synthesis records spanning all valid epistemic roles
     valid_records = [
         SynthesisClaimRecord(
@@ -1039,31 +1011,6 @@ def build_sport_exercise_vignette() -> DomainVignetteBundle:
         {"cohort_training_tier": "elite_endurance_cohort", "environmental_stress": "humid_heat_32C"}
     )
 
-    initial_corpus: dict[str, Any] = {
-        "corpus_id": "CARB_HYDROGEL_ENDURANCE_CORPUS",
-        "studies": [
-            {
-                "study_id": "E201",
-                "outcomes": [{"outcome_id": "O1", "value": "45.0", "kind": "point_level"}],
-            },
-            {
-                "study_id": "E202",
-                "outcomes": [{"outcome_id": "O1", "value": "298.0", "comparator": "284.0"}],
-            },
-        ],
-    }
-    work_doc = copy.deepcopy(initial_corpus)
-    patch_events = [
-        _make_patch_event(
-            work_doc,
-            event_id="PATCH-EX-001",
-            study_idx=0,
-            pointer_suffix="/outcomes/0/kind",
-            new_value="relative_change",
-            rationale="Reclassify C2C12 glycogen resynthesis % increase as relative_change.",
-        )
-    ]
-
     ctx_vitro = ContextSignature(
         {"cohort_training_tier": "c2c12_myotube_vitro", "environmental_stress": "thermoneutral_20C"}
     )
@@ -1155,6 +1102,13 @@ def build_sport_exercise_vignette() -> DomainVignetteBundle:
         atoms=atoms,
         raw_mentioned_arms_by_tuple=raw_mentioned_arms,
     )
+
+    # Corpora and ledger: D_1 is the complete projection of the graph; D_0 carries one extraction defect.
+    initial_corpus, settled_corpus, patch_events = _corpora_and_ledger(
+        graph,
+        "CARB_HYDROGEL_ENDURANCE_CORPUS",
+        [("PATCH-EX-001", "E201", "/outcomes/0/quantity_kind", "point_level", "Reclassify C2C12 glycogen resynthesis % increase as relative_change.")],
+    )
     valid_records = [
         SynthesisClaimRecord(
             record_id="SPORT-PROM-01",
@@ -1214,7 +1168,7 @@ def build_sport_exercise_vignette() -> DomainVignetteBundle:
         target_context=target_ctx,
         graph=graph,
         initial_corpus=initial_corpus,
-        settled_corpus=work_doc,
+        settled_corpus=settled_corpus,
         patch_events=patch_events,
         valid_records=valid_records,
         invalid_probe_records=invalid_probes,
@@ -1592,28 +1546,11 @@ def build_t1d_vignette() -> DomainVignetteBundle:
         atoms[f["tuple"]] = atom
         studies.setdefault(sid, contexts[f["study_context"]])
         study_variables.setdefault(sid, set()).update(focal + comp)
-        q = atom.focal_quantity
-        record: dict[str, Any] = {
-            "outcome_id": f["tuple"].split(":")[1],
-            "endpoint": atom.endpoint,
-            "quantity_kind": q.kind,
-            "statistic_kind": atom.statistic_kind,
-            "sample_size": atom.sample_size,
-            "focal_arms": list(focal),
-            "comparator_arms": list(comp),
-            "requires_figure_digitization": f["figure"],
-            "primary_pdf_verified": False,
-            "document_id": f"PMID:{f['pmid']}",
-            "section_pointer": f["section"],
-            "verbatim_quote": f["quote"],
-        }
-        if q.kind == "missing_numeric":
-            record["missing_reason"] = q.missing_reason
-        else:
-            record.update(
-                {"relation": q.relation, "value": q.value, "unit": q.unit, "change_direction": q.change_direction}
-            )
-        settled_studies.setdefault(sid, {"study_id": sid, "outcomes": []})["outcomes"].append(record)
+        # Complete corpus record: every atom field, nulls explicit (release 3.2).
+        record = corpus_outcome_from_atom(atom)
+        settled_studies.setdefault(
+            sid, {"study_id": sid, "context": dict(studies[sid].axes), "outcomes": []}
+        )["outcomes"].append(record)
 
     settled_corpus: dict[str, Any] = {
         "corpus_id": "OPENISLET_T1D_WORKED_EXAMPLE",

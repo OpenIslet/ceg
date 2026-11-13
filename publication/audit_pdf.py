@@ -31,7 +31,7 @@ from pathlib import Path
 import pymupdf
 
 HERE = Path(__file__).resolve().parent
-STEM = "CEG-JOURNAL-MANUSCRIPT-V3.1"
+STEM = "CEG-JOURNAL-MANUSCRIPT-V3.2"
 MM = 72 / 25.4
 LEFT, RIGHT, TOP, BOTTOM = 22 * MM, 22 * MM, 22 * MM, 25 * MM
 TOL = 1.0
