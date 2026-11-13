@@ -878,9 +878,15 @@ class EvidenceAtom:
                 raise ValueError(f"FORBIDDEN_CODE_POINT_IN_ARM_IDENTIFIER: {self.atom_id}")
             if contains_confusable_homoglyphs(arm):
                 raise ValueError(f"CONFUSABLE_HOMOGLYPH_IN_ARM_IDENTIFIER: {self.atom_id}")
-        if self.statistic_kind == "qualitative" and self.focal_quantity.kind != "missing_numeric":
+        if self.statistic_kind == "qualitative" and (
+            self.focal_quantity.kind != "missing_numeric"
+            or (self.comparator_quantity is not None and self.comparator_quantity.kind != "missing_numeric")
+        ):
             raise ValueError(f"QUALITATIVE_OUTCOME_CANNOT_EMIT_NUMERIC_ATOM: {self.atom_id}")
-        if self.provenance.requires_figure_digitization and self.focal_quantity.kind == "point_level":
+        if self.provenance.requires_figure_digitization and (
+            self.focal_quantity.kind == "point_level"
+            or (self.comparator_quantity is not None and self.comparator_quantity.kind == "point_level")
+        ):
             raise ValueError(f"UNDIGITIZED_FIGURE_CANNOT_EMIT_EXACT_POINT_ATOM: {self.atom_id}")
 
 
@@ -2420,9 +2426,14 @@ def verify_prose_sentence(
 def render_atom_sentence(atom: EvidenceAtom) -> str:
     """Canonical single-tuple sentence for an atom, focal value first.
 
-    The strict lint accepts the rendering of every atom that passes validation:
-    the endpoint name is masked as a registered phrase, each value carries the
-    atom's own unit string, and no arm is named.
+    The endpoint name is masked as a registered phrase, each value carries the
+    atom's own unit string, and no arm is named. The strict lint accepts the
+    rendering of an atom that passes validation and also meets the rendering
+    preconditions of section 4.3 of the manuscript. It is refused, for example,
+    when the outcome identifier lacks the `O<digits>` form, when a
+    `relative_change` atom carries an inequality relation (which this template
+    omits), or when an endpoint or unit string contains a tuple identifier, a
+    number word, a direction cue or a relation operator.
     """
     fq, cq = atom.focal_quantity, atom.comparator_quantity
     n = f" (n = {atom.sample_size})" if atom.sample_size is not None else ""
@@ -2843,6 +2854,13 @@ class ContextEvidenceGraph:
         while Mode B (self-attesting adversary) is tested purely on semantic grounding.
         """
         violations: list[str] = []
+        # The promotion flag must be a genuine boolean; any other type is refused and never requests promotion.
+        prom = rec.requests_direct_quantitative_promotion is True
+        if type(rec.requests_direct_quantitative_promotion) is not bool:
+            violations.append(
+                f"I1_INVALID_PROMOTION_BOOLEAN ({rec.record_id}): requests_direct_quantitative_promotion must be a bool, "
+                f"got {type(rec.requests_direct_quantitative_promotion).__name__}"
+            )
         if check_attestation_digest and rec.attestation_sha256 is not None:
             expected_att = compute_claim_attestation_sha256(rec, self.atoms, self.arm_aliases)
             if rec.attestation_sha256 != expected_att:
@@ -2863,7 +2881,7 @@ class ContextEvidenceGraph:
             violations.append("I6_VACUOUS_SYNTHESIS_RECORD_NO_ANCHORS")
         if rec.polarity in ("SUPPORTS", "CANDIDATE_UPGRADE") and not rec.supporting_tuples:
             violations.append(f"I6_MISSING_SUPPORTING_ANCHORS_FOR_POSITIVE_CLAIM: polarity={rec.polarity!r}")
-        if rec.requests_direct_quantitative_promotion and rec.polarity != "SUPPORTS":
+        if prom and rec.polarity != "SUPPORTS":
             violations.append(f"I6_INCOMPATIBLE_POLARITY_FOR_PROMOTION: polarity={rec.polarity!r}")
         overlap = sorted(set(rec.supporting_tuples) & set(rec.counterevidence_tuples))
         if overlap:
@@ -2898,7 +2916,7 @@ class ContextEvidenceGraph:
             violations.extend(verify_typed_proposition_homomorphism(prop, self.atoms))
 
         # Promotion needs a typed proposition for every supporting tuple
-        if rec.requests_direct_quantitative_promotion:
+        if prom:
             if not rec.typed_propositions:
                 violations.append("I3_TYPED_MISSING_FOR_QUANTITATIVE_PROMOTION")
             else:
@@ -2951,13 +2969,23 @@ class ContextEvidenceGraph:
             except ValueError as exc:
                 violations.append(f"I4_INVALID_PROSPECTIVE_FALSIFIER_GATE: {exc}")
 
-        if rec.requests_direct_quantitative_promotion:
+        if prom:
             if any(v != "DIRECT_MATCH" for v in transfer_map.values()) or not transfer_map:
                 violations.append(
                     f"I4_ILLEGAL_QUANTITATIVE_PROMOTION_ACROSS_CONTEXT_GAP: transfers={transfer_map}, unresolved={sorted(unresolved_union)}"
                 )
             if any_unverified_or_undigitized:
                 violations.append("I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE")
+            # A quantitative promotion needs a quantity: at least one supporting atom must hold a number.
+            if transfer_map and not any(
+                self.atoms[t].focal_quantity.kind != "missing_numeric"
+                or (
+                    self.atoms[t].comparator_quantity is not None
+                    and self.atoms[t].comparator_quantity.kind != "missing_numeric"
+                )
+                for t in transfer_map
+            ):
+                violations.append("I5_ILLEGAL_QUANTITATIVE_PROMOTION_OF_MISSING_NUMERIC")
 
         if rec.polarity in ("SUPPORTS", "CANDIDATE_UPGRADE") and any(
             v == "INADMISSIBLE_TRANSFER" for v in transfer_map.values()
@@ -2975,7 +3003,7 @@ class ContextEvidenceGraph:
         passed = len(violations) == 0
         if not passed:
             decision: PromotionDecision = "REJECT_INADMISSIBLE_OR_INVALID"
-        elif rec.requests_direct_quantitative_promotion:
+        elif prom:
             decision = "PROMOTE_QUANTITATIVE_PARAMETER"
         elif unresolved_union or any_unverified_or_undigitized:
             decision = (
@@ -3120,6 +3148,8 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
                         differ(key, literal, fq.value)
                         if "relation" not in oc:
                             differ(f"{key}.relation", relation or "=", fq.relation)
+                        elif relation is not None:
+                            differ(f"{key}.relation", relation, fq.relation)
             if "relation" in oc:
                 differ("relation", oc["relation"], fq.relation)
             for key in ("lower", "focal_lower"):
@@ -3135,10 +3165,20 @@ def verify_atoms_bound_to_corpus(graph: ContextEvidenceGraph, settled_corpus: Ma
             for key in ("comparator_value", "comparator"):
                 if key in oc:
                     raw_cv = oc[key]
-                    if raw_cv is not None and not isinstance(raw_cv, str):
+                    if cq is None:
+                        differ(key, raw_cv, None)
+                    elif raw_cv is None and cq.kind == "missing_numeric":
+                        differ(key, None, cq.value)
+                    elif not isinstance(raw_cv, str):
                         errs.append(f"I1_ATOM_CORPUS_FIELD_MISMATCH ({tup}.{key}): non-string corpus value {raw_cv!r}")
                     else:
-                        differ(key, raw_cv, cq.value if cq is not None else None)
+                        m = _RELATION_PREFIX_RE.match(raw_cv)
+                        relation, literal = (m.group(1), m.group(2)) if m else (None, raw_cv)
+                        differ(key, literal, cq.value)
+                        if "comparator_relation" not in oc:
+                            differ(f"{key}.relation", relation or "=", cq.relation)
+                        elif relation is not None:
+                            differ(f"{key}.relation", relation, cq.relation)
             if "comparator_relation" in oc:
                 differ("comparator_relation", oc["comparator_relation"], cq.relation if cq is not None else None)
             if "comparator_lower" in oc:

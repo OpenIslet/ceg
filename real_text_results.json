@@ -22,9 +22,9 @@
     "curation_ledger": {
       "events_replayed": 4,
       "distinct_patched_studies": 3,
-      "initial_sha256": "bad3c6d29dab3f2b71b5dd4f3bf6f1df7fc6e531d50b7faa610b2e4202d75d8c",
-      "settled_sha256": "adda477aab37841fe0b428996807e45977e45033d6f88f66ee8946eae5d825e4",
-      "ledger_sha256": "5697cf35bc0a3084d681b593b20db0eed0653e8c7e978b16ca21f8af890eb9c8",
+      "initial_sha256": "b762d8d6898655920024474145ad0560a8b16f3c750d8579fc39d441caa3fe5d",
+      "settled_sha256": "23586ef51fcd73f253e4aa90b4c3adb32bcb6aa9de9cea1d0232993ff2874fd8",
+      "ledger_sha256": "8b2b3925c493a8ff3038c0aac1d5bba5b34cd105f4838de1df03377ca33f1575",
       "step_digests_checked": true,
       "bijective_replay_verified": true
     },
@@ -152,10 +152,10 @@
         "refused_pct": 0.0
       },
       "V1_study_pool_numeric": {
-        "accepted": 9,
-        "refused": 27,
-        "accepted_pct": 25.0,
-        "refused_pct": 75.0
+        "accepted": 8,
+        "refused": 28,
+        "accepted_pct": 22.22,
+        "refused_pct": 77.78
       },
       "V2_prose_pooled_permitted": {
         "accepted": 7,
@@ -180,7 +180,7 @@
       "IPF": {
         "n": 12,
         "V0_accepted": 12,
-        "V1_accepted": 5,
+        "V1_accepted": 4,
         "V2_accepted": 4,
         "V2s_accepted": 3,
         "V3_accepted": 3
@@ -204,10 +204,9 @@
     },
     "v3_primary_outcome_codes": {
       "I3_CLAUSE_AMBIGUOUS_POOLED_CITATION": 3,
-      "I3_CLAUSE_NON_CONTRAST_MULTI_ARM": 1,
       "I3_TOK_FORBIDDEN_UNICODE": 4,
       "I3_TOK_NONCANONICAL_NUMERAL": 2,
-      "I3_TOK_UNGROUNDED_VALUE": 20,
+      "I3_TOK_UNGROUNDED_VALUE": 21,
       "accepted": 6
     },
     "phenomenon_breakdown": {
@@ -331,8 +330,8 @@
         },
         "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
         "v3_violations": [
-          "I3_TOK_UNGROUNDED_VALUE (R101:O1): '3' is not licensed by the cited atom",
-          "I3_TOK_UNGROUNDED_VALUE (R101:O1): '2' is not licensed by the cited atom"
+          "I3_TOK_UNGROUNDED_VALUE (R101:O1): '1066' is not licensed by the cited atom",
+          "I3_TOK_UNGROUNDED_VALUE (R101:O1): '3' is not licensed by the cited atom"
         ]
       },
       {
@@ -497,13 +496,14 @@
         "primary_phenomenon": "sample_size_only_sentence",
         "anchored_verdicts": {
           "V0_citation_presence": true,
-          "V1_study_pool_numeric": true,
+          "V1_study_pool_numeric": false,
           "V2_prose_pooled_permitted": false,
           "V2s_prose_pooled_rejected": false,
           "V3_full_ceg": false
         },
-        "v3_primary_code": "I3_CLAUSE_NON_CONTRAST_MULTI_ARM",
+        "v3_primary_code": "I3_TOK_UNGROUNDED_VALUE",
         "v3_violations": [
+          "I3_TOK_UNGROUNDED_VALUE (R103:O1): '147' is not licensed by the cited atom",
           "I3_CLAUSE_NON_CONTRAST_MULTI_ARM (R103:O1): multi-arm binding requires an explicit contrast connector"
         ]
       },

@@ -72,10 +72,10 @@
       "year": 2017,
       "volume_issue_pages": "56(5):667-679",
       "doi": "10.1165/rcmb.2017-0096ST",
-      "pmid": "28459601",
-      "authority_checked": "PubMed (PMID:28459601) / ATS Journals",
+      "pmid": "28459387",
+      "authority_checked": "PubMed (PMID:28459387) / ATS Journals",
       "v2_status": "verified_added_pmid",
-      "v2_to_v3_delta": "Verified ATS workshop report metadata and DOI; added PMID 28459601."
+      "v2_to_v3_delta": "Verified ATS workshop report metadata and DOI; added PMID 28459387."
     },
     {
       "ref_num": 6,
@@ -137,10 +137,10 @@
       "year": 2011,
       "volume_issue_pages": "64(12):1303-1310",
       "doi": "10.1016/j.jclinepi.2011.04.014",
-      "pmid": "21803546",
-      "authority_checked": "PubMed (PMID:21803546) / Elsevier",
+      "pmid": "21802903",
+      "authority_checked": "PubMed (PMID:21802903) / Elsevier",
       "v2_status": "verified_added_pmid",
-      "v2_to_v3_delta": "Verified metadata and DOI; added PMID 21803546."
+      "v2_to_v3_delta": "Verified metadata and DOI; added PMID 21802903."
     },
     {
       "ref_num": 11,
@@ -470,7 +470,7 @@
     {
       "ref_num": 36,
       "authors": "Ma HY, Vander Heiden JA, Uttarwar S, Xi Y, N'Diaye EN, LaCanna R, et al.",
-      "title": "Pirfenidone inhibits myofibroblast differentiation and lung fibrosis development through regulating myocardin-related transcription factor signalling",
+      "title": "Inhibition of MRTF activation as a clinically achievable anti-fibrotic mechanism for pirfenidone",
       "venue": "European Respiratory Journal",
       "year": 2023,
       "volume_issue_pages": "61(4):2200604",

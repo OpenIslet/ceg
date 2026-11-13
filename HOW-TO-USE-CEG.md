@@ -24,13 +24,13 @@ CEG separates **exploration** from **saving**:
 
 Instead of one flat summary per paper, extract each primary empirical paper into four linked pieces:
 
-1. **Study metadata (`Study`):** Stable identifier (such as a DOI, PMID or arXiv ID), year and primary-source verification flag.
-2. **Experimental and control groups (`Arm`):** Every treatment arm and its matched control arm listed separately (`arm_id`, intervention, dose, sample size `n`).
-3. **Context coordinates (`ContextTuple`):** Named axes describing the experimental setting — for example:
+1. **Study context & registry (`ContextEvidenceGraph.studies`):** Stable study identifier (such as a DOI, PMID or arXiv ID) mapped to its experimental `ContextSignature`, tracked variables, and arm aliases.
+2. **Experimental and control groups (`MultiArmContrast`):** Explicit focal arm(s) and matched comparator arm(s) (`focal_arms`, `comparator_arms`, `contrast_kind`).
+3. **Context coordinates (`ContextSignature`):** Named axes describing the experimental setting — for example:
    - *Biomedicine:* `model_system` (`immortalized_line`, `murine_in_vivo`, `primary_human_ex_vivo`, `clinical_trial`), `perturbation_regime`, `readout_time_horizon`, `microenvironment`.
    - *Materials science:* `sample_form` (`thin_film`, `bulk_pellet`, `device_stack`), `operating_temperature`, `atmosphere`, `cycling_horizon`.
    - *Machine learning:* `evaluation_split` (`in_domain_val`, `out_of_distribution`, `live_deployment`), `compute_budget`, `prompt_regime`.
-4. **Measured outcomes (`EvidenceAtom`):** Endpoint name, compared arm IDs, direction or numeric value, exact measurement unit (checked for SI case sensitivity, e.g. `mM` vs `mm`, `µg` vs `mg`), and a **source pointer** (figure panel, table row or verified verbatim quote).
+4. **Measured outcomes (`EvidenceAtom`):** Endpoint name, `MultiArmContrast`, typed `QuantitySpec` (checked for SI case sensitivity, e.g. `mM` vs `mm`, `µg` vs `mg`), sample size (`n`), and a **`ProvenancePin`** (document ID, section/figure/table pointer, verbatim quote, figure-digitisation flag and primary-PDF verification flag).
 
 ---
 
@@ -41,10 +41,10 @@ In real science, two experimental models often answer *different* parts of a que
 - A **mouse graft** tests whole-body blood supply and immune recruitment, but in mouse biology.
 - **Primary human cells in a dish** test human genetics and receptors, but without blood vessels or organs.
 
-Neither setting dominates the other. In CEG, each context axis is a **partially ordered set (poset)**:
+Neither setting dominates the other. In CEG, each context axis is a **partially ordered set (`ContextAxisPoset`)** assembled into a product lattice (`ContextLatticeSpec`):
 
-- If source context `c_src` is at least as close to the target along every axis, transfer is `DIRECT` or `MONOTONE_BOUNDED`.
-- If one model is stronger on one axis and weaker on another (such as mouse *in vivo* vs human *in vitro*), `evaluate_transfer` classifies the relationship as `INCOMPARABLE` and keeps both pieces of evidence visible side by side rather than averaging them.
+- If source context `c_src` covers target context `c_tgt` along every axis (`c_tgt <=_C c_src`), `lattice.evaluate_transfer(c_src, c_tgt)` returns `DIRECT_MATCH` with `()` unresolved axes.
+- If one or more axes remain unresolved — for example because `c_src` sits below `c_tgt` or is incomparable with it (such as mouse *in vivo* vs primary human *ex vivo*) — `evaluate_transfer` returns `BOUNDED_BRIDGE` (plus the tuple of unresolved axes when a common upper bound exists and any bridge floor is met) or `INADMISSIBLE_TRANSFER` (when no common upper bound exists or `c_src` falls below a required bridge floor), keeping both contexts and their unresolved axes explicit rather than averaging them away.
 
 ---
 
@@ -54,42 +54,52 @@ Create a script in the repository folder (requires only Python 3.9+):
 
 ```python
 from ceg_reference import (
-    Arm,
-    ContextPoset,
-    ContextTuple,
-    EvidenceAtom,
-    Study,
-    ContextEvidenceGraph,
-    evaluate_transfer,
-    verify_atom,
+    ContextAxisPoset,
+    ContextLatticeSpec,
+    ContextSignature,
 )
 
 # 1. Define a partial order over experimental settings for your domain.
-poset = ContextPoset(
-    axes={
-        "system": {
-            "cell_line_dish": set(),
-            "mouse_in_vivo": {"cell_line_dish"},
-            "human_primary_dish": {"cell_line_dish"},
-            "human_clinical": {"mouse_in_vivo", "human_primary_dish", "cell_line_dish"},
-        }
-    }
+#    dominates[x] holds every setting y with y <= x (including x itself).
+system_poset = ContextAxisPoset(
+    name="system",
+    dominates={
+        "cell_free_assay": frozenset({"cell_free_assay"}),
+        "cell_line_dish": frozenset({"cell_line_dish", "cell_free_assay"}),
+        "mouse_in_vivo": frozenset({"mouse_in_vivo", "cell_line_dish", "cell_free_assay"}),
+        "human_primary_dish": frozenset({"human_primary_dish", "cell_line_dish", "cell_free_assay"}),
+        "human_clinical": frozenset({
+            "human_clinical",
+            "mouse_in_vivo",
+            "human_primary_dish",
+            "cell_line_dish",
+            "cell_free_assay",
+        }),
+    },
 )
+lattice = ContextLatticeSpec(
+    axis_posets={"system": system_poset},
+    bridge_floor={"system": "cell_line_dish"},
+)
+lattice.validate()
 
-# 2. Compare two contexts against a clinical target: mouse_in_vivo and human_primary_dish
-#    each refine cell_line_dish, yet remain incomparable with each other.
-dish_human = ContextTuple({"system": "human_primary_dish"})
-mouse_graft = ContextTuple({"system": "mouse_in_vivo"})
-clinical = ContextTuple({"system": "human_clinical"})
+# 2. Compare contexts: mouse_in_vivo and human_primary_dish each refine cell_line_dish,
+#    remain incomparable with each other, and share human_clinical as a common upper bound.
+cell_free = ContextSignature({"system": "cell_free_assay"})
+dish_human = ContextSignature({"system": "human_primary_dish"})
+mouse_graft = ContextSignature({"system": "mouse_in_vivo"})
+clinical = ContextSignature({"system": "human_clinical"})
 
-print("Human dish -> Mouse graft:", evaluate_transfer(poset, dish_human, mouse_graft))
-print("Human dish -> Clinical:", evaluate_transfer(poset, dish_human, clinical))
+print("Clinical -> Human dish:", lattice.evaluate_transfer(clinical, dish_human))
+print("Human dish -> Mouse graft:", lattice.evaluate_transfer(dish_human, mouse_graft))
+print("Human dish -> Clinical:", lattice.evaluate_transfer(dish_human, clinical))
+print("Cell-free -> Clinical:", lattice.evaluate_transfer(cell_free, clinical))
 ```
 
 Inspect [`domain_vignettes.py`](domain_vignettes.py) for complete end-to-end graphs including:
 
-- `build_antifibrotic_vignette()` — translational drug discovery (`NX-410`),
-- `build_sport_science_vignette()` — human performance & exercise physiology,
+- `build_drug_development_vignette()` — translational antifibrotic drug discovery (`NX-410`),
+- `build_sport_exercise_vignette()` — human performance & exercise physiology,
 - `build_t1d_vignette()` — type 1 diabetes islet engineering built from peer-reviewed studies.
 
 ---

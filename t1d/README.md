@@ -4,7 +4,7 @@ This folder holds the verification scripts and stored JSON outputs behind Sectio
 
 All scripts use only the Python 3 standard library and import `../ceg_reference.py` and `../domain_vignettes.py` unmodified.
 
-The settled 1,151-study type 1 diabetes Context–Evidence Graph is publicly available under `CC-BY-4.0` in the OpenIslet repository (`https://github.com/openislet/openislet`; `https://openislet.org/blueprint`). The pre-export staging masters and curation ledger read by `--recompute` are pinned by SHA-256 digest in `t1d_corpus_metrics.json` and `production_ledger_replay.json` and are available as a read-only archive on request from `kev@openislet.org`.
+A public projection of the settled 1,151-study type 1 diabetes Context–Evidence Graph is available under `CC-BY-4.0` in the OpenIslet repository (`https://github.com/openislet/openislet`; `https://openislet.org/blueprint`), with verbatim quotes replaced by SHA-256 digests (`quote_sha256`) and source-overlapping prose replaced by structured descriptors. The pre-export staging masters and curation ledger read by `--recompute` are pinned by SHA-256 digest in `t1d_corpus_metrics.json` and `production_ledger_replay.json` and are available as a read-only archive on request from `kev@openislet.org`.
 
 ## Contents
 

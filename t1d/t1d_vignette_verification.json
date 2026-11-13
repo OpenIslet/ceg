@@ -404,7 +404,8 @@
     },
     "PROBE_PROMOTION_FROM_UNVERIFIED_SOURCE": {
       "codes": [
-        "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE"
+        "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE",
+        "I5_ILLEGAL_QUANTITATIVE_PROMOTION_OF_MISSING_NUMERIC"
       ],
       "expected_code": "I5_ILLEGAL_QUANTITATIVE_PROMOTION_WITHOUT_PRIMARY_OR_DIGITIZED_SOURCE"
     },
@@ -523,7 +524,7 @@
     }
   },
   "reference_release": "3.1",
-  "run_digest": "828eb74aa3d860c8fdf2b67b030c42923ff7d86c3853274a2730e5b747856689",
+  "run_digest": "408a0a770a3875afa69195e67f1d8edfb4d055dd0b359234f0b071a7a1c6d062",
   "studies": 8,
   "target_context": {
     "engraftment_microenvironment": "vascularized_marginal_mass_graft",
